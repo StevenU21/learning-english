@@ -37,14 +37,14 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
-                                    Dashboard
+                                    <i class="fa-solid fa-house mr-2"></i>Inicio
                                 </NavLink>
 
-                                                                <NavLink
+                                <NavLink
                                     :href="route('units.index')"
                                     :active="route().current('units.index')"
                                 >
-                                    Units
+                                    <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                                 </NavLink>
                             </div>
                         </div>
@@ -59,7 +59,8 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
                                             >
-                                                {{ $page.props.auth.user.full_name }}
+
+                                                <i class="fa-solid fa-user mr-2"></i>{{ $page.props.auth.user.full_name }}
 
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
@@ -81,14 +82,14 @@ const showingNavigationDropdown = ref(false);
                                         <DropdownLink
                                             :href="route('profile.edit')"
                                         >
-                                            Profile
+                                            <i class="fa-solid fa-user mr-2"></i>Perfil
                                         </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar sesión
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
@@ -151,7 +152,14 @@ const showingNavigationDropdown = ref(false);
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            Dashboard
+                            <i class="fa-solid fa-house mr-2"></i>Inicio
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('units.index')"
+                            :active="route().current('units.index')"
+                        >
+                            <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                         </ResponsiveNavLink>
                     </div>
 
@@ -172,14 +180,14 @@ const showingNavigationDropdown = ref(false);
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
+                                <i class="fa-solid fa-user mr-2"></i>Perfil
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar sesión
                             </ResponsiveNavLink>
                         </div>
                     </div>
