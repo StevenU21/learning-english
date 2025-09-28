@@ -1,19 +1,24 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 
 const props = defineProps({
     exercises: [Object, Array],
-    permissions: Object,
     filters: Object,
     types: Array,
     lessons: Array,
 });
 
-const { exercises, permissions, filters, types, lessons } = props;
-const exerciseList = Array.isArray(exercises) ? exercises : (exercises.data ?? []);
+const exerciseList = computed(() => {
+    const list = props.exercises;
+    return Array.isArray(list) ? list : (list?.data ?? []);
+});
+const filters = props.filters;
+const types = props.types;
+const lessons = props.lessons;
 
 const form = useForm({
     type: filters.type || '',
@@ -22,6 +27,11 @@ const form = useForm({
 
 function applyFilters() {
     form.get(route('exercises.index'), { preserveState: true, replace: true });
+}
+
+function deleteExercise(id) {
+    if (!confirm('¿Estás seguro de eliminar este ejercicio?')) return;
+    router.delete(route('exercises.destroy', id));
 }
 </script>
 
@@ -36,7 +46,7 @@ function applyFilters() {
                     Ejercicios
                 </h2>
                 <div>
-                    <Link v-if="permissions.create" :href="route('exercises.create')">
+                    <Link :href="route('exercises.create')">
                     <PrimaryButton>
                         <i class="fa-solid fa-plus mr-2"></i> Agregar Ejercicio
                     </PrimaryButton>
@@ -90,24 +100,22 @@ function applyFilters() {
                                     </td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">
                                         {{ exercise.prompt && exercise.prompt.length > 20 ? exercise.prompt.slice(0, 20)
-                                        + '…' :
-                                        exercise.prompt }}
+                                            + '…' :
+                                            exercise.prompt }}
                                     </td>
                                     <td class="px-4 py-2 space-x-2 text-center">
                                         <div class="flex justify-center space-x-2">
-                                            <Link v-if="permissions.view" :href="route('exercises.show', exercise.id)">
+                                            <Link :href="route('exercises.show', exercise.id)">
                                             <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
                                                 <i class="fa-solid fa-eye mr-2"></i> Ver
                                             </PrimaryButton>
                                             </Link>
-                                            <Link v-if="permissions.update"
-                                                :href="route('exercises.edit', exercise.id)">
+                                            <Link :href="route('exercises.edit', exercise.id)">
                                             <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
                                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                                             </PrimaryButton>
                                             </Link>
-                                            <PrimaryButton v-if="permissions.destroy"
-                                                @click="confirm('¿Estás seguro?') && $inertia.delete(route('exercises.destroy', exercise.id))"
+                                            <PrimaryButton @click="deleteExercise(exercise.id)"
                                                 class="bg-red-500 hover:bg-red-700 text-white">
                                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
                                             </PrimaryButton>

@@ -23,6 +23,8 @@ function deleteUnit(id) {
     router.delete(route('units.destroy', id), {
         preserveScroll: true,
         onSuccess: () => {
+            // Recarga los props para actualizar la lista
+            router.reload({ preserveScroll: true });
         },
     });
 }
@@ -90,7 +92,7 @@ function deleteUnit(id) {
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.expected_time }}
                                     </td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.level?.name || ''
-                                    }}
+                                        }}
                                     </td>
                                     <td class="px-4 py-2 space-x-2 text-center">
                                         <div class="flex justify-center space-x-2">

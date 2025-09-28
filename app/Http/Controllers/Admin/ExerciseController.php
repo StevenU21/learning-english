@@ -80,8 +80,10 @@ class ExerciseController extends Controller
     {
         $this->authorize('view', $exercise);
         $exercise->load('exerciseType', 'lesson');
+        $permissions = PermissionHelper::getPermissions('exercises');
         return Inertia::render('Admin/Exercises/Show', [
-            'exercise' => $exercise
+            'exercise' => $exercise,
+            'permissions' => $permissions,
         ]);
     }
 
