@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Services\FileService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,25 +20,56 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user()->load(['profile']);
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Update only the user's main data (first_name, last_name, email).
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function updateUser(UserUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+        if ($user) {
+            $originalEmail = $user->email;
+            $user->fill($request->only([
+                'first_name',
+                'last_name',
+                'email',
+            ]));
+            if ($user->isDirty('email') && $user->email !== $originalEmail) {
+                $user->email_verified_at = $user->email_verified_at instanceof \Carbon\Carbon ? null : $user->email_verified_at;
+            }
+            $user->save();
         }
+        return Redirect::route('profile.edit');
+    }
 
-        $request->user()->save();
+    /**
+     * Update only the user's profile data (nickname, birthdate, academic_level, gender).
+     */
+    public function updateProfile(ProfileUpdateRequest $request, FileService $fileService): RedirectResponse
+    {
+        $user = $request->user();
+        if ($user) {
+            $profile = $user->profile()->firstOrNew([]);
+            $profile->fill($request->only([
+                'nickname',
+                'birthdate',
+                'academic_level',
+                'gender',
+            ]));
 
+            if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+                $profile->avatar = $fileService->updateLocal($profile, 'avatar', $request->file('avatar'));
+            }
+
+            $profile->user()->associate($user);
+            $profile->save();
+        }
         return Redirect::route('profile.edit');
     }
 
