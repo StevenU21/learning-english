@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ImageCell from '@/Components/ImageCell.vue';
 
 const props = defineProps({ units: [Object, Array] });
 const { units } = props;
@@ -15,20 +16,20 @@ const unitList = Array.isArray(units) ? units : (units.data ?? []);
         <Head title="Unidades" />
 
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Unidades
-            </h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                    Unidades
+                </h2>
+                <Link :href="route('units.create')">
+                <PrimaryButton>
+                    <i class="fa-solid fa-plus mr-2"></i> Agregar Unidad
+                </PrimaryButton>
+                </Link>
+            </div>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex justify-between mb-6">
-                    <Link :href="route('units.create')">
-                    <PrimaryButton>
-                        <i class="fa-solid fa-plus mr-2"></i> Agregar Unidad
-                    </PrimaryButton>
-                    </Link>
-                </div>
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="overflow-x-auto">
                         <table class="w-full min-w-max">
@@ -37,11 +38,13 @@ const unitList = Array.isArray(units) ? units : (units.data ?? []);
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
                                             class="fa-solid fa-id-badge mr-2"></i>ID</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
+                                            class="fa-solid fa-image mr-2"></i>Imagen</th>
+                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
                                             class="fa-solid fa-font mr-2"></i>Nombre</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
                                             class="fa-solid fa-align-left mr-2"></i>Descripción</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
-                                            class="fa-solid fa-clock mr-2"></i>Tiempo Esperado</th>
+                                            class="fa-solid fa-clock mr-2"></i>Duración</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left"><i
                                             class="fa-solid fa-layer-group mr-2"></i>Nivel</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4"><i
@@ -50,17 +53,22 @@ const unitList = Array.isArray(units) ? units : (units.data ?? []);
                             </thead>
                             <tbody>
                                 <tr v-if="unitList.length === 0">
-                                    <td colspan="6"
+                                    <td colspan="7"
                                         class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
                                         No se encontraron unidades.
                                     </td>
                                 </tr>
                                 <tr v-for="unit in unitList" :key="unit.id"
-                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                >
+                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ unit.id }}</td>
+                                    <td class="px-4 py-2">
+                                        <ImageCell :src="unit.image_url || unit.image" alt="Imagen de la unidad" />
+                                    </td>
                                     <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ unit.name }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.description && unit.description.length > 12 ? unit.description.slice(0, 12) + '…' : unit.description }}</td>
+                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.description &&
+                                        unit.description.length > 12 ? unit.description.slice(0, 12) + '…' :
+                                        unit.description }}
+                                    </td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.expected_time }}</td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.level?.name || '' }}
                                     </td>
