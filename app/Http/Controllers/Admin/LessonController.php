@@ -20,8 +20,7 @@ class LessonController extends Controller
         $permissions = PermissionHelper::getPermissions('lessons');
         $lessons = Lesson::with('unit')->paginate(10);
         return Inertia::render('Admin/Lessons/Index', [
-            'lessons' => $lessons,
-            'permissions' => $permissions
+            'lessons' => $lessons
         ]);
     }
 
