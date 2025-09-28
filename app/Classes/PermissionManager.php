@@ -208,7 +208,6 @@ class PermissionManager
 
     public function sync(?array $rolesDefinition = null): array
     {
-        // Evitar referencia directa a clases Spatie si no están cargadas (permite testear aislado).
         if (!class_exists(\Spatie\Permission\Models\Permission::class) || !class_exists(\Spatie\Permission\Models\Role::class)) {
             throw new \RuntimeException('Spatie Permission classes not found.');
         }
