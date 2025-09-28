@@ -56,8 +56,17 @@ class UnitController extends Controller
     {
         $this->authorize('view', $unit);
         $unit->load('level');
+        $unitData = [
+            'id' => $unit->id,
+            'name' => $unit->name,
+            'description' => $unit->description,
+            'expected_time' => $unit->expected_time,
+            'image_url' => $unit->image_url,
+            'level' => $unit->level,
+            'created_at' => $unit->created_at,
+        ];
         return Inertia::render('Admin/Units/Show', [
-            'unit' => $unit
+            'unit' => $unitData
         ]);
     }
 
