@@ -135,7 +135,7 @@ function progressBarColor(progress) {
                                 class="text-xs font-medium inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
                             <i class="fa-solid fa-play"></i> Ingresar
                             </Link>
-                            <Link :href="route('lessons.index', { unit: unit.id })"
+                            <Link :href="route('student.units.start', { id: unit.id })"
                                 class="text-xs font-medium inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-gray-600 text-white hover:bg-gray-700 shadow-sm">
                             <i class="fa-solid fa-book-open"></i> Lecciones
                             </Link>
