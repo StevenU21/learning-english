@@ -8,6 +8,8 @@ use App\Http\Requests\UnitRequest;
 use App\Models\Level;
 use App\Models\Unit;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+// use Illuminate\Http\Request; (not needed for JSON destroy)
+// use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class UnitController extends Controller
