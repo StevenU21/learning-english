@@ -21,7 +21,7 @@ class UnitController extends Controller
         $units = Unit::with('level')->get();
         return Inertia::render('Admin/Units/Index', [
             'units' => $units,
-            'permissions' => $permissions
+            // 'permissions' => $permissions
         ]);
     }
 
