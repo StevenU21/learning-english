@@ -54,7 +54,8 @@ const formatDate = (date) => {
                                         <i class="fa-solid fa-layer-group mr-2"></i>Unidad
                                     </th>
                                     <td class="p-4">
-                                        <span v-if="resource.unit?.name" class="inline-block bg-gray-600/80 text-gray-300 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                                        <span v-if="resource.unit?.name"
+                                            class="inline-block bg-gray-600/80 text-gray-300 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                                             {{ resource.unit.name }}
                                         </span>
                                         <span v-else class="text-gray-400">-</span>
@@ -65,8 +66,9 @@ const formatDate = (date) => {
                                         <i class="fa-solid fa-file mr-2"></i>Archivo
                                     </th>
                                     <td class="p-4">
-                                        <a :href="route('resources.download', resource.id)" class="text-blue-400 hover:underline">
-                                            Descargar
+                                        <a :href="route('resources.download', resource.id)"
+                                            class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                                            <i class="fa-solid fa-download mr-2"></i> Descargar
                                         </a>
                                     </td>
                                 </tr>
