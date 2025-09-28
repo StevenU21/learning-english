@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 
@@ -26,8 +26,22 @@ const form = useForm({
 });
 
 function applyFilters() {
-    form.get(route('exercises.index'), { preserveState: true, replace: true });
+    // Usamos router.get directamente para evitar que el estado interno del form retenga props antiguos
+    router.get(route('exercises.index'), {
+        type: form.type || '',
+        lesson: form.lesson || '',
+    }, {
+        replace: true,
+        preserveScroll: true,
+        preserveState: true,
+    });
 }
+
+// Watch reactivo: cada cambio en los selects dispara el filtrado
+watch(() => [form.type, form.lesson], ([newType, newLesson], [oldType, oldLesson]) => {
+    if (newType === oldType && newLesson === oldLesson) return;
+    applyFilters();
+});
 
 function deleteExercise(id) {
     if (!confirm('¿Estás seguro de eliminar este ejercicio?')) return;
@@ -55,13 +69,13 @@ function deleteExercise(id) {
             </div>
             <div class="mt-4 flex space-x-4">
                 <div>
-                    <SelectInput v-model="form.type" @change="applyFilters">
-                        <option value="">Todos los tipos</option>
+                    <SelectInput v-model="form.type" class="w-60">
+                        <option value="">Todos los tipos de ejercicio</option>
                         <option v-for="type in types" :value="type.id" :key="type.id">{{ type.name }}</option>
                     </SelectInput>
                 </div>
                 <div>
-                    <SelectInput v-model="form.lesson" @change="applyFilters">
+                    <SelectInput v-model="form.lesson" class="w-56">
                         <option value="">Todas las lecciones</option>
                         <option v-for="lesson in lessons" :value="lesson.id" :key="lesson.id">{{ lesson.name }}</option>
                     </SelectInput>

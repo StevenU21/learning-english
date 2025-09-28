@@ -22,20 +22,36 @@ class ExerciseController extends Controller
         $this->authorize('viewAny', Exercise::class);
         $permissions = PermissionHelper::getPermissions('exercises');
 
-        $query = Exercise::query();
-        $type = request('type');
-        $lesson = request('lesson');
+        $type = request('type') ?: null;      // id de tipo seleccionado
+        $lesson = request('lesson') ?: null;  // id de lección seleccionada
 
+        // Query principal (con ambos filtros aplicados si existen)
+        $mainQuery = Exercise::query();
         if ($type) {
-            $query->where('exercise_type_id', $type);
+            $mainQuery->where('exercise_type_id', $type);
         }
         if ($lesson) {
-            $query->where('lesson_id', $lesson);
+            $mainQuery->where('lesson_id', $lesson);
         }
 
-        $exercises = $query->with('exerciseType', 'lesson')->paginate(10)->appends(request()->all());
-        $types = ExerciseType::all(['id', 'name']);
-        $lessons = Lesson::all(['id', 'name']);
+        // Paginamos resultados finales
+        $exercises = $mainQuery->with('exerciseType', 'lesson')->paginate(10)->appends(request()->all());
+
+        // Construimos la lista de tipos aplicando SOLO el filtro de lección (para poder cambiar de tipo)
+        $typesQuery = Exercise::query();
+        if ($lesson) {
+            $typesQuery->where('lesson_id', $lesson);
+        }
+        $typeIds = $typesQuery->distinct()->pluck('exercise_type_id')->filter()->values();
+        $types = ExerciseType::whereIn('id', $typeIds)->orderBy('name')->get(['id', 'name']);
+
+        // Construimos la lista de lecciones aplicando SOLO el filtro de tipo (para poder cambiar de lección)
+        $lessonsQuery = Exercise::query();
+        if ($type) {
+            $lessonsQuery->where('exercise_type_id', $type);
+        }
+        $lessonIds = $lessonsQuery->distinct()->pluck('lesson_id')->filter()->values();
+        $lessons = Lesson::whereIn('id', $lessonIds)->orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Admin/Exercises/Index', [
             'exercises' => $exercises,

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, watch } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import MultipleChoiceFields from './components/MultipleChoiceFields.vue';
 import TrueFalseFields from './components/TrueFalseFields.vue';
 import ShortAnswerFields from './components/ShortAnswerFields.vue';
@@ -114,8 +115,14 @@ const componentMap = computed(() => {
         </div>
 
         <!-- Acciones -->
-        <div class="flex justify-end gap-3 pt-2">
-            <PrimaryButton type="submit" :disabled="form.processing" class="flex items-center gap-2">
+        <div class="mt-8 flex justify-between gap-2 pt-2">
+            <Link :href="route('exercises.index')">
+            <PrimaryButton class="bg-gray-500 hover:bg-gray-700 text-white flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Volver
+            </PrimaryButton>
+            </Link>
+            <PrimaryButton type="submit" :disabled="form.processing"
+                class="bg-indigo-600 hover:bg-indigo-800 text-white flex items-center gap-2">
                 <i class="fa-solid fa-save"></i>
                 {{ isEdit ? 'Actualizar' : 'Guardar' }}
             </PrimaryButton>
