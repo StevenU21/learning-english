@@ -1,5 +1,13 @@
 <script setup>
 import { defineProps } from 'vue';
+import { Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import TextArea from '@/Components/TextArea.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+
 const props = defineProps({
     form: Object,
     levels: Array,
@@ -12,45 +20,45 @@ const props = defineProps({
 </script>
 
 <template>
-    <form @submit.prevent="onSubmit" enctype="multipart/form-data"
-        class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-        <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300">Nombre</label>
-            <input v-model="form.name" type="text" class="w-full mt-1 p-2 border rounded" />
-            <div v-if="form.errors.name" class="text-red-600">{{ form.errors.name }}</div>
+    <div class="space-y-6">
+        <div>
+            <InputLabel for="name" value="Nombre" />
+            <TextInput id="name" v-model="form.name" type="text" class="block w-full" autocomplete="name-input" />
+            <InputError :message="form.errors.name" class="mt-2" />
         </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300">Descripción</label>
-            <textarea v-model="form.description" class="w-full mt-1 p-2 border rounded"></textarea>
-            <div v-if="form.errors.description" class="text-red-600">{{ form.errors.description }}</div>
+        <div>
+            <InputLabel for="description" value="Descripción" />
+            <TextArea id="description" v-model="form.description" class="mt-1 block w-full"
+                autocomplete="description-input" />
+            <InputError :message="form.errors.description" class="mt-2" />
         </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300">Tiempo Esperado</label>
-            <input v-model="form.expected_time" type="text" class="w-full mt-1 p-2 border rounded" />
-            <div v-if="form.errors.expected_time" class="text-red-600">{{ form.errors.expected_time }}</div>
+        <div>
+            <InputLabel for="expected_time" value="Tiempo Esperado" />
+            <TextInput id="expected_time" v-model="form.expected_time" type="number" class="block w-full"
+                autocomplete="expected-time-input" />
+            <InputError :message="form.errors.expected_time" class="mt-2" />
         </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300">Nivel</label>
-            <select v-model="form.level_id" class="w-full mt-1 p-2 border rounded">
+        <div>
+            <InputLabel for="level_id" value="Nivel" />
+            <SelectInput id="level_id" v-model="form.level_id">
                 <option v-for="level in levels" :value="level.id" :key="level.id">{{ level.name }}</option>
-            </select>
-            <div v-if="form.errors.level_id" class="text-red-600">{{ form.errors.level_id }}</div>
+            </SelectInput>
+            <InputError :message="form.errors.level_id" class="mt-2" />
         </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300">Imagen</label>
-            <input @change="e => form.image = e.target.files[0]" type="file" class="w-full mt-1" />
-            <div v-if="form.errors.image" class="text-red-600">{{ form.errors.image }}</div>
+        <div>
+            <InputLabel for="image" value="Imagen" />
+            <input id="image" @change="e => form.image = e.target.files[0]" type="file" class="block w-full mt-1" />
+            <InputError :message="form.errors.image" class="mt-2" />
         </div>
-
-        <div class="flex justify-end">
-            <button type="submit" :disabled="form.processing"
-                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                {{ submitText }}
-            </button>
+        <div class="mt-8 flex justify-between gap-2">
+            <Link :href="route('units.index')">
+            <PrimaryButton class="bg-gray-500 hover:bg-gray-700 text-white">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Volver
+            </PrimaryButton>
+            </Link>
+            <PrimaryButton type="submit" :disabled="form.processing">
+                <i class="fas fa-save mr-2"></i> {{ submitText }}
+            </PrimaryButton>
         </div>
-    </form>
+    </div>
 </template>

@@ -55,23 +55,23 @@ const unitList = Array.isArray(units) ? units : (units.data ?? []);
                                         No se encontraron unidades.
                                     </td>
                                 </tr>
-                                <tr v-for="unit in unitList" :key="unit.id">
+                                <tr v-for="unit in unitList" :key="unit.id"
+                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
                                     <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ unit.id }}</td>
                                     <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ unit.name }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.description }}</td>
+                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.description && unit.description.length > 12 ? unit.description.slice(0, 12) + '…' : unit.description }}</td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.expected_time }}</td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ unit.level?.name || '' }}
                                     </td>
                                     <td class="px-4 py-2 space-x-2 text-center">
                                         <div class="flex justify-center space-x-2">
                                             <Link :href="route('units.show', unit.id)">
-                                            <PrimaryButton
-                                                class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"><i
+                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white"><i
                                                     class="fa-solid fa-eye mr-2"></i> Ver</PrimaryButton>
                                             </Link>
                                             <Link :href="route('units.edit', unit.id)">
-                                            <PrimaryButton
-                                                class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"><i
+                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white"><i
                                                     class="fa-solid fa-pen-to-square mr-2"></i> Editar</PrimaryButton>
                                             </Link>
                                             <PrimaryButton

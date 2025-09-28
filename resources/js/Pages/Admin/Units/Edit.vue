@@ -20,16 +20,20 @@ function submit() {
 </script>
 
 <template>
-
-    <Head title="Editar Unidad" />
     <AuthenticatedLayout>
+        <Head title="Editar Unidad" />
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">Editar Unidad</h2>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Editar Unidad
+            </h2>
         </template>
-
         <div class="py-12">
-            <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-                <Form :form="form" :levels="props.levels" submitText="Actualizar" :onSubmit="submit" />
+            <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-8">
+                    <form @submit.prevent="submit" enctype="multipart/form-data">
+                        <Form :form="form" :levels="props.levels" submitText="Actualizar" />
+                    </form>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>
