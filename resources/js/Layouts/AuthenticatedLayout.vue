@@ -46,6 +46,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                                 </NavLink>
+
+                                <NavLink
+                                    :href="route('levels.index')"
+                                    :active="route().current('levels.index')"
+                                >
+                                    <i class="fa-solid fa-list mr-2"></i>Niveles
+                                </NavLink>
                             </div>
                         </div>
 

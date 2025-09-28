@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\PermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LevelRequest;
 use App\Models\Level;
@@ -16,10 +15,8 @@ class LevelController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Level::class);
-        $permissions = PermissionHelper::getPermissions('levels');
         return Inertia::render('Admin/Levels/Index', [
-            'levels' => Level::all(),
-            'permissions' => $permissions
+            'levels' => Level::all()
         ]);
     }
 
