@@ -60,6 +60,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     <i class="fa-solid fa-book mr-2"></i>Lecciones
                                 </NavLink>
+
+                                <NavLink
+                                    :href="route('resources.index')"
+                                    :active="route().current('resources.index')"
+                                >
+                                    <i class="fa-solid fa-user mr-2"></i>Recursos
+                                </NavLink>
                             </div>
                         </div>
 
@@ -181,6 +188,19 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('levels.index')"
                         >
                             <i class="fa-solid fa-list mr-2"></i>Niveles
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('lessons.index')"
+                            :active="route().current('lessons.index')"
+                        >
+                            <i class="fa-solid fa-book mr-2"></i>Lecciones
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('resources.index')"
+                        >
+                            <i class="fa-solid fa-user mr-2"></i>Recursos
                         </ResponsiveNavLink>
                     </div>
 
