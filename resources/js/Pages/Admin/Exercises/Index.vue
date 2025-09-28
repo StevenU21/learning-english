@@ -37,9 +37,9 @@ function applyFilters() {
                 </h2>
                 <div>
                     <Link v-if="permissions.create" :href="route('exercises.create')">
-                        <PrimaryButton>
-                            <i class="fa-solid fa-plus mr-2"></i> Agregar Ejercicio
-                        </PrimaryButton>
+                    <PrimaryButton>
+                        <i class="fa-solid fa-plus mr-2"></i> Agregar Ejercicio
+                    </PrimaryButton>
                     </Link>
                 </div>
             </div>
@@ -75,28 +75,36 @@ function applyFilters() {
                             </thead>
                             <tbody>
                                 <tr v-if="exerciseList.length === 0">
-                                    <td colspan="5" class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                    <td colspan="5"
+                                        class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
                                         No se encontraron ejercicios.
                                     </td>
                                 </tr>
-                                <tr v-for="exercise in exerciseList" :key="exercise.id" class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <tr v-for="exercise in exerciseList" :key="exercise.id"
+                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ exercise.id }}</td>
-                                    <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ exercise.exercise_type?.name }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ exercise.lesson?.name }}</td>
+                                    <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{
+                                        exercise.exercise_type?.name }}
+                                    </td>
+                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ exercise.lesson?.name }}
+                                    </td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">
-                                        {{ exercise.prompt && exercise.prompt.length > 20 ? exercise.prompt.slice(0, 20) + '…' : exercise.prompt }}
+                                        {{ exercise.prompt && exercise.prompt.length > 20 ? exercise.prompt.slice(0, 20)
+                                        + '…' :
+                                        exercise.prompt }}
                                     </td>
                                     <td class="px-4 py-2 space-x-2 text-center">
                                         <div class="flex justify-center space-x-2">
                                             <Link v-if="permissions.view" :href="route('exercises.show', exercise.id)">
-                                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                                    <i class="fa-solid fa-eye mr-2"></i> Ver
-                                                </PrimaryButton>
+                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                                <i class="fa-solid fa-eye mr-2"></i> Ver
+                                            </PrimaryButton>
                                             </Link>
-                                            <Link v-if="permissions.update" :href="route('exercises.edit', exercise.id)">
-                                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                                    <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                                                </PrimaryButton>
+                                            <Link v-if="permissions.update"
+                                                :href="route('exercises.edit', exercise.id)">
+                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                                            </PrimaryButton>
                                             </Link>
                                             <PrimaryButton v-if="permissions.destroy"
                                                 @click="confirm('¿Estás seguro?') && $inertia.delete(route('exercises.destroy', exercise.id))"
