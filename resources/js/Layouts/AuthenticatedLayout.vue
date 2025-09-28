@@ -67,6 +67,10 @@ function can(perm) {
                                     :active="route().current('admin.progress.index')">
                                     <i class="fa-solid fa-chart-line mr-2"></i>Progreso
                                 </NavLink>
+
+                                <NavLink :href="route('student.units.index')" :active="route().current('student.units.index')">
+                                    <i class="fa-solid fa-layer-group mr-2"></i>Unidades
+                                </NavLink>
                             </div>
                         </div>
 

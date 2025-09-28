@@ -18,11 +18,14 @@ class UnitController extends Controller
         if ($levelId) {
             $unitsQuery->where('level_id', $levelId);
         }
-        $units = $unitsQuery->with(['level', 'unitUserProgress' => function($q) {
-            $q->where('user_id', auth()->id());
-        }])->get();
+        $units = $unitsQuery->with([
+            'level',
+            'unitUserProgress' => function ($q) {
+                $q->where('user_id', auth()->id());
+            }
+        ])->get();
 
-        $units = $units->map(function($unit) {
+        $units = $units->map(function ($unit) {
             $progress = $unit->unitUserProgress->first();
             $unitArr = $unit->toArray();
             $unitArr['progress'] = $progress ? $progress->progress : 0;
