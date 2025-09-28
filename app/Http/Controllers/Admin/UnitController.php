@@ -18,7 +18,20 @@ class UnitController extends Controller
     {
         $this->authorize('viewAny', Unit::class);
         $permissions = PermissionHelper::getPermissions('units');
-        $units = Unit::with('level')->get();
+
+        $units = Unit::with('level')->paginate(10);
+        $units->getCollection()->transform(function ($unit) {
+            return [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'description' => $unit->description,
+                'expected_time' => $unit->expected_time,
+                'image_url' => $unit->image_url,
+                'level' => $unit->level,
+                // agrega otros campos que necesites
+            ];
+        });
+
         return Inertia::render('Admin/Units/Index', [
             'units' => $units,
             // 'permissions' => $permissions
