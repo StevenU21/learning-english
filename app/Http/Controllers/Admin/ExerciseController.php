@@ -52,8 +52,8 @@ class ExerciseController extends Controller
     public function create()
     {
         $this->authorize('create', Exercise::class);
-        $types = ExerciseType::all();
-        $lessons = Lesson::all();
+        $types = ExerciseType::all(['id', 'name']);
+        $lessons = Lesson::all(['id', 'name']);
         return Inertia::render('Admin/Exercises/Create', [
             'types' => $types,
             'lessons' => $lessons
@@ -88,8 +88,8 @@ class ExerciseController extends Controller
     public function edit(Exercise $exercise)
     {
         $this->authorize('update', $exercise);
-        $types = ExerciseType::all();
-        $lessons = Lesson::all();
+        $types = ExerciseType::all(['id', 'name']);
+        $lessons = Lesson::all(['id', 'name']);
         return Inertia::render('Admin/Exercises/Edit', [
             'exercise' => $exercise,
             'types' => $types,
