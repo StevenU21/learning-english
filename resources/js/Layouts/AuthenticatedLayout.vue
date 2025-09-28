@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -8,6 +9,12 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+// Obtener permisos del usuario autenticado
+const page = usePage();
+const permissions = computed(() => page.props.auth.user.permissions || []);
+function can(perm) {
+    return permissions.value.includes(perm);
+}
 </script>
 
 <template>
@@ -25,34 +32,39 @@ const showingNavigationDropdown = ref(false);
                                     class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                                 </Link>
                             </div>
-
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     <i class="fa-solid fa-house mr-2"></i>Inicio
                                 </NavLink>
 
-                                <NavLink :href="route('units.index')" :active="route().current('units.index')">
+                                <NavLink v-if="can('read units')" :href="route('units.index')"
+                                    :active="route().current('units.index')">
                                     <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                                 </NavLink>
 
-                                <NavLink :href="route('levels.index')" :active="route().current('levels.index')">
+                                <NavLink v-if="can('read levels')" :href="route('levels.index')"
+                                    :active="route().current('levels.index')">
                                     <i class="fa-solid fa-list mr-2"></i>Niveles
                                 </NavLink>
 
-                                <NavLink :href="route('lessons.index')" :active="route().current('lessons.index')">
+                                <NavLink v-if="can('read lessons')" :href="route('lessons.index')"
+                                    :active="route().current('lessons.index')">
                                     <i class="fa-solid fa-book mr-2"></i>Lecciones
                                 </NavLink>
 
-                                <NavLink :href="route('resources.index')" :active="route().current('resources.index')">
+                                <NavLink v-if="can('read resources')" :href="route('resources.index')"
+                                    :active="route().current('resources.index')">
                                     <i class="fa-solid fa-user mr-2"></i>Recursos
                                 </NavLink>
 
-                                <NavLink :href="route('exercises.index')" :active="route().current('exercises.index')">
+                                <NavLink v-if="can('read exercises')" :href="route('exercises.index')"
+                                    :active="route().current('exercises.index')">
                                     <i class="fa-solid fa-pencil mr-2"></i>Ejercicios
                                 </NavLink>
 
-                                <NavLink :href="route('admin.progress.index')" :active="route().current('admin.progress.index')">
+                                <NavLink v-if="can('read progress')" :href="route('admin.progress.index')"
+                                    :active="route().current('admin.progress.index')">
                                     <i class="fa-solid fa-chart-line mr-2"></i>Progreso
                                 </NavLink>
                             </div>
@@ -128,23 +140,27 @@ const showingNavigationDropdown = ref(false);
                             <i class="fa-solid fa-house mr-2"></i>Inicio
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('units.index')" :active="route().current('units.index')">
+                        <ResponsiveNavLink v-if="can('read units')" :href="route('units.index')"
+                            :active="route().current('units.index')">
                             <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('levels.index')" :active="route().current('levels.index')">
+                        <ResponsiveNavLink v-if="can('read levels')" :href="route('levels.index')"
+                            :active="route().current('levels.index')">
                             <i class="fa-solid fa-list mr-2"></i>Niveles
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('lessons.index')" :active="route().current('lessons.index')">
+                        <ResponsiveNavLink v-if="can('read lessons')" :href="route('lessons.index')"
+                            :active="route().current('lessons.index')">
                             <i class="fa-solid fa-book mr-2"></i>Lecciones
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('resources.index')">
+                        <ResponsiveNavLink v-if="can('read resources')" :href="route('resources.index')">
                             <i class="fa-solid fa-user mr-2"></i>Recursos
                         </ResponsiveNavLink>
 
-                        <ResponsiveNavLink :href="route('exercises.index')" :active="route().current('exercises.index')">
+                        <ResponsiveNavLink v-if="can('read exercises')" :href="route('exercises.index')"
+                            :active="route().current('exercises.index')">
                             <i class="fa-solid fa-pencil mr-2"></i>Ejercicios
                         </ResponsiveNavLink>
                     </div>
