@@ -59,7 +59,7 @@ class ExerciseController extends Controller
             $progress = $total > 0 ? intval(($correct / $total) * 100) : 0;
             $status = $progress === 100 ? 'completado' : 'en_progreso';
 
-            \App\Models\LessonUserProgress::updateOrCreate(
+            LessonUserProgress::updateOrCreate(
                 [
                     'user_id' => $userId,
                     'lesson_id' => $lessonId,

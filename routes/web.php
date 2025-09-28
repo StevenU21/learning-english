@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ExerciseController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\LevelController;
+use App\Http\Controllers\Admin\ProgressController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\ProfileController;
@@ -47,10 +48,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('resources', ResourceController::class);
         Route::get('resources/{resource}/download', [ResourceController::class, 'download'])->name('resources.download');
         Route::resource('exercises', ExerciseController::class);
-        Route::get('progress', [\App\Http\Controllers\Admin\ProgressController::class, 'index'])->name('admin.progress.index');
+        Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
     });
 
-    Route::get('/admin/progress/{user}', [\App\Http\Controllers\Admin\ProgressController::class, 'show'])->name('admin.progress.show');
+    Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
 
 });
 
