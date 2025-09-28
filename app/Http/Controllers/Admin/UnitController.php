@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UnitRequest;
 use App\Models\Level;
 use App\Models\Unit;
-use App\Services\FileService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Inertia\Inertia;
 
@@ -17,9 +16,9 @@ class UnitController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Unit::class);
-        $permissions = PermissionHelper::getPermissions('units');
 
         $units = Unit::with('level')->paginate(10);
+
         $units->getCollection()->transform(function ($unit) {
             return [
                 'id' => $unit->id,
@@ -27,14 +26,12 @@ class UnitController extends Controller
                 'description' => $unit->description,
                 'expected_time' => $unit->expected_time,
                 'image_url' => $unit->image_url,
-                'level' => $unit->level,
-                // agrega otros campos que necesites
+                'level' => $unit->level
             ];
         });
 
         return Inertia::render('Admin/Units/Index', [
-            'units' => $units,
-            // 'permissions' => $permissions
+            'units' => $units
         ]);
     }
 
@@ -47,18 +44,10 @@ class UnitController extends Controller
         ]);
     }
 
-    public function store(UnitRequest $request, FileService $fileService)
+    public function store(UnitRequest $request)
     {
-        $data = $request->validated();
-
-        $unit = new Unit();
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $fileService->storeLocal($unit, 'image', $request->file('image'));
-        }
-
-        $unit->fill($data);
-        $unit->save();
+        $this->authorize('create', Unit::class);
+        Unit::create($request->validated());
 
         return redirect()->route('units.index')->with('success', 'Unidad creada correctamente');
     }
@@ -82,15 +71,9 @@ class UnitController extends Controller
         ]);
     }
 
-    public function update(UnitRequest $request, Unit $unit, FileService $fileService)
+    public function update(UnitRequest $request, Unit $unit)
     {
-        $data = $request->validated();
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $fileService->storeLocal($unit, 'image', $request->file('image'));
-        }
-
-        $unit->update($data);
+        $unit->update($request->validated());
         return redirect()->route('units.index')->with('success', 'Unidad actualizada correctamente');
     }
 
