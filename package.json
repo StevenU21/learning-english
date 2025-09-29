@@ -21,5 +21,8 @@
         "vite": "^7.0.4",
         "vue": "^3.4.0",
         "vue-tsc": "^2.0.24"
+    },
+    "dependencies": {
+        "vue-draggable-next": "^2.3.0"
     }
 }

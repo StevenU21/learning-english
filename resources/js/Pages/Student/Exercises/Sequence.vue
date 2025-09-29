@@ -42,16 +42,14 @@ function handleAnswer(result, userValue = null) {
     playSound(result ? 'success' : 'error');
 }
 
-async function nextExercise() {
+function nextExercise() {
     showFeedback.value = false;
     lastAnswer.value = null;
     if (current.value < total.value - 1) {
         current.value++;
     } else {
-        // last exercise: save results then show summary
-        await saveSummary();
-        playSound('finish');
         showSummary.value = true;
+        playSound('finish');
     }
 }
 
@@ -88,7 +86,8 @@ async function saveSummary() {
     }));
     await router.post(route('student.exercises.attemptsBatch'), { attempts }, {
         onSuccess: () => {
-            // results saved, keep summary visible
+            finished.value = true;
+            showSummary.value = false;
         },
         onFinish: () => saving.value = false
     });
@@ -180,7 +179,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                    }}</span>
+                                }}</span>
                                 <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </span>
@@ -189,9 +188,11 @@ const componentMap = {
                                 formatAnswer(userAnswers[idx]) }}</div>
                         </div>
                     </div>
-                    <div class="flex justify-center">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button @click="saveSummary" :disabled="saving"
+                            class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">Finalizar</button>
                         <button @click="goToLessons"
-                            class="inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">Lecciones</button>
+                            class="flex-1 inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">Lecciones</button>
                     </div>
                 </div>
 
