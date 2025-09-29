@@ -132,12 +132,6 @@ function hasRole(role) {
                 <!-- Responsive Navigation Menu -->
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden">
-                    <!-- Always visible -->
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            <i class="fa-solid fa-house mr-2"></i>Inicio
-                        </ResponsiveNavLink>
-                    </div>
                     <!-- Admin links -->
                     <div v-if="hasRole('admin')" class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink :href="route('units.index')" :active="route().current('units.index')">
