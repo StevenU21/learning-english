@@ -11,9 +11,9 @@ import { Link } from '@inertiajs/vue3';
 const showingNavigationDropdown = ref(false);
 // Obtener permisos del usuario autenticado
 const page = usePage();
-const permissions = computed(() => page.props.auth.user.permissions || []);
-function can(perm) {
-    return permissions.value.includes(perm);
+const roles = computed(() => page.props.auth.user?.roles || []);
+function hasRole(role) {
+    return roles.value.includes(role);
 }
 </script>
 
@@ -33,42 +33,37 @@ function can(perm) {
                                 </Link>
                             </div>
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    <i class="fa-solid fa-house mr-2"></i>Inicio
-                                </NavLink>
-
-                                <NavLink v-if="can('read units')" :href="route('units.index')"
-                                    :active="route().current('units.index')">
+                            <div v-if="hasRole('admin')" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('units.index')" :active="route().current('units.index')">
                                     <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                                 </NavLink>
 
-                                <NavLink v-if="can('read levels')" :href="route('levels.index')"
-                                    :active="route().current('levels.index')">
+                                <NavLink :href="route('levels.index')" :active="route().current('levels.index')">
                                     <i class="fa-solid fa-list mr-2"></i>Niveles
                                 </NavLink>
 
-                                <NavLink v-if="can('read lessons')" :href="route('lessons.index')"
-                                    :active="route().current('lessons.index')">
+                                <NavLink :href="route('lessons.index')" :active="route().current('lessons.index')">
                                     <i class="fa-solid fa-book mr-2"></i>Lecciones
                                 </NavLink>
 
-                                <NavLink v-if="can('read resources')" :href="route('resources.index')"
-                                    :active="route().current('resources.index')">
+                                <NavLink :href="route('resources.index')" :active="route().current('resources.index')">
                                     <i class="fa-solid fa-user mr-2"></i>Recursos
                                 </NavLink>
 
-                                <NavLink v-if="can('read exercises')" :href="route('exercises.index')"
-                                    :active="route().current('exercises.index')">
+                                <NavLink :href="route('exercises.index')" :active="route().current('exercises.index')">
                                     <i class="fa-solid fa-pencil mr-2"></i>Ejercicios
                                 </NavLink>
 
-                                <NavLink v-if="can('read progress')" :href="route('admin.progress.index')"
+                                <NavLink :href="route('admin.progress.index')"
                                     :active="route().current('admin.progress.index')">
                                     <i class="fa-solid fa-chart-line mr-2"></i>Progreso
                                 </NavLink>
 
-                                <NavLink :href="route('student.units.index')" :active="route().current('student.units.index')">
+                            </div>
+                            <!-- Student link for desktop -->
+                            <div v-if="hasRole('student')" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('student.units.index')"
+                                    :active="route().current('student.units.index')">
                                     <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                                 </NavLink>
                             </div>
@@ -135,37 +130,43 @@ function can(perm) {
                 </div>
 
                 <!-- Responsive Navigation Menu -->
-                <div :class="{
-                    block: showingNavigationDropdown,
-                    hidden: !showingNavigationDropdown,
-                }" class="sm:hidden">
+                <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
+                    class="sm:hidden">
+                    <!-- Always visible -->
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             <i class="fa-solid fa-house mr-2"></i>Inicio
                         </ResponsiveNavLink>
-
-                        <ResponsiveNavLink v-if="can('read units')" :href="route('units.index')"
-                            :active="route().current('units.index')">
+                    </div>
+                    <!-- Admin links -->
+                    <div v-if="hasRole('admin')" class="space-y-1 pb-3 pt-2">
+                        <ResponsiveNavLink :href="route('units.index')" :active="route().current('units.index')">
                             <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                         </ResponsiveNavLink>
-
-                        <ResponsiveNavLink v-if="can('read levels')" :href="route('levels.index')"
-                            :active="route().current('levels.index')">
+                        <ResponsiveNavLink :href="route('levels.index')" :active="route().current('levels.index')">
                             <i class="fa-solid fa-list mr-2"></i>Niveles
                         </ResponsiveNavLink>
-
-                        <ResponsiveNavLink v-if="can('read lessons')" :href="route('lessons.index')"
-                            :active="route().current('lessons.index')">
+                        <ResponsiveNavLink :href="route('lessons.index')" :active="route().current('lessons.index')">
                             <i class="fa-solid fa-book mr-2"></i>Lecciones
                         </ResponsiveNavLink>
-
-                        <ResponsiveNavLink v-if="can('read resources')" :href="route('resources.index')">
+                        <ResponsiveNavLink :href="route('resources.index')"
+                            :active="route().current('resources.index')">
                             <i class="fa-solid fa-user mr-2"></i>Recursos
                         </ResponsiveNavLink>
-
-                        <ResponsiveNavLink v-if="can('read exercises')" :href="route('exercises.index')"
+                        <ResponsiveNavLink :href="route('exercises.index')"
                             :active="route().current('exercises.index')">
                             <i class="fa-solid fa-pencil mr-2"></i>Ejercicios
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('admin.progress.index')"
+                            :active="route().current('admin.progress.index')">
+                            <i class="fa-solid fa-chart-line mr-2"></i>Progreso
+                        </ResponsiveNavLink>
+                    </div>
+                    <!-- Student links -->
+                    <div v-if="hasRole('student')" class="space-y-1 pb-3 pt-2">
+                        <ResponsiveNavLink :href="route('student.units.index')"
+                            :active="route().current('student.units.index')">
+                            <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                         </ResponsiveNavLink>
                     </div>
 

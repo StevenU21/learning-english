@@ -46,37 +46,208 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Intermedio', 'description' => 'Nivel para reforzar y ampliar conocimientos previos.'],
             ['name' => 'Avanzado', 'description' => 'Nivel para dominar y profundizar en los temas más complejos.'],
         ]);
-
+        // Unidad y lecciones enfocadas al aprendizaje básico de inglés
         $unit = Unit::create([
-            'name' => 'Números y operaciones básicas',
-            'description' => 'Que el estudiante aprenda a reconocer y operar con números naturales y operaciones aritméticas simples.',
-            'expected_time' => 60,
-            'level_id' => 1
+            'name' => 'Introducción al Inglés',
+            'description' => 'Fundamentos iniciales para comenzar a comunicarse en inglés: saludos, presentaciones, números y colores.',
+            'expected_time' => 90,
+            'level_id' => Level::where('name', 'Básico')->value('id') ?? 1,
         ]);
 
-        $lesson = Lesson::create([
+        $lessonGreetings = Lesson::create([
             'unit_id' => $unit->id,
-            'name' => 'Contar del 1 al 20',
-            'description' => 'Aprende a contar los números del 1 al 20.'
+            'name' => 'Saludos y Presentaciones',
+            'description' => 'Aprende saludos básicos y cómo presentarte.'
         ]);
 
-        $multipleChoiceType = ExerciseType::where('name', 'Opción múltiple')->first();
-        $fillBlankType = ExerciseType::where('name', 'Completar espacios')->first();
+        $lessonNumbersColors = Lesson::create([
+            'unit_id' => $unit->id,
+            'name' => 'Números y Colores',
+            'description' => 'Aprende los números básicos y los colores más comunes.'
+        ]);
 
+        // Obtener tipos de ejercicio
+        $typeMultiple = ExerciseType::where('name', 'Opción múltiple')->first();
+        $typeFill = ExerciseType::where('name', 'Completar espacios')->first();
+        $typeTrueFalse = ExerciseType::where('name', 'Verdadero o falso')->first();
+        $typeMatchCols = ExerciseType::where('name', 'Relacionar columnas')->first();
+        $typeOrder = ExerciseType::where('name', 'Ordenar elementos')->first();
+        $typePairDefs = ExerciseType::where('name', 'Emparejar definiciones')->first();
+        $typeDialogue = ExerciseType::where('name', 'Completar diálogo')->first();
+
+        /*
+         * Lección 1: Saludos y Presentaciones (8 ejercicios variados)
+         */
         Exercise::create([
-            'lesson_id' => $lesson->id,
-            'exercise_type_id' => $multipleChoiceType->id,
-            'prompt' => '¿Cuál de los siguientes números viene después del 14?',
-            'options' => [12, 13, 15, 16],
-            'solution' => ['15']
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeMultiple->id,
+            'prompt' => 'Selecciona el saludo apropiado para la mañana:',
+            'options' => ['Good morning', 'Good night', 'Goodbye', 'See you later'],
+            'solution' => ['Good morning']
         ]);
 
         Exercise::create([
-            'lesson_id' => $lesson->id,
-            'exercise_type_id' => $fillBlankType->id,
-            'prompt' => 'Escribe el número que viene antes del 8.',
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeFill->id,
+            'prompt' => 'Completa: Hello, my name ___ John.',
             'options' => [],
-            'solution' => ['7']
+            'solution' => ['is']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeTrueFalse->id,
+            'prompt' => 'La frase "See you later" se usa para despedirse.',
+            'options' => [], // será forzado a True/False por la lógica
+            'solution' => ['True']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeMatchCols->id,
+            'prompt' => 'Relaciona el saludo en inglés con su equivalente en español.',
+            'options' => [
+                ['Hello', 'Hola'],
+                ['Goodbye', 'Adiós'],
+                ['Thanks', 'Gracias'],
+            ],
+            'solution' => [
+                ['Hello', 'Hola'],
+                ['Goodbye', 'Adiós'],
+                ['Thanks', 'Gracias'],
+            ]
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeOrder->id,
+            'prompt' => 'Ordena las palabras para formar la oración: "My name is Ana"',
+            'options' => ['name', 'is', 'My', 'Ana'],
+            'solution' => ['My', 'name', 'is', 'Ana']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typePairDefs->id,
+            'prompt' => 'Empareja cada palabra con su definición.',
+            'options' => [
+                ['concepto' => 'Hello', 'definicion' => 'A greeting'],
+                ['concepto' => 'Bye', 'definicion' => 'A way to say farewell'],
+                ['concepto' => 'Name', 'definicion' => 'What you are called'],
+            ],
+            'solution' => [
+                ['concepto' => 'Hello', 'definicion' => 'A greeting'],
+                ['concepto' => 'Bye', 'definicion' => 'A way to say farewell'],
+                ['concepto' => 'Name', 'definicion' => 'What you are called'],
+            ]
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeDialogue->id,
+            'prompt' => 'Completa el diálogo: A: "Hi! ____ name is Mark." B: "Nice to meet you, Mark."',
+            'options' => [
+                'A: Hi! My name is Mark.',
+                'A: Hi! Your name is Mark.',
+                'A: Hi! His name is Mark.',
+            ],
+            'solution' => ['A: Hi! My name is Mark.']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonGreetings->id,
+            'exercise_type_id' => $typeMultiple->id,
+            'prompt' => 'Elige la forma correcta para responder: "What\'s your name?"',
+            'options' => [
+                'I am name Carlos.',
+                'My name is Carlos.',
+                'Name my is Carlos.',
+                'Carlos is name my.'
+            ],
+            'solution' => ['My name is Carlos.']
+        ]);
+
+        /*
+         * Lección 2: Números y Colores (8 ejercicios variados)
+         */
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeMultiple->id,
+            'prompt' => '¿Qué número viene después de 5?',
+            'options' => ['4', '6', '8', '2'],
+            'solution' => ['6']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeFill->id,
+            'prompt' => 'Completa: The color of the sky is ____.',
+            'options' => [],
+            'solution' => ['blue']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeTrueFalse->id,
+            'prompt' => 'La palabra en inglés para el número 10 es "ten".',
+            'options' => [],
+            'solution' => ['True']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeOrder->id,
+            'prompt' => 'Ordena para formar: "There are three red apples"',
+            'options' => ['three', 'There', 'red', 'are', 'apples'],
+            'solution' => ['There', 'are', 'three', 'red', 'apples']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeMatchCols->id,
+            'prompt' => 'Relaciona el número con su palabra.',
+            'options' => [
+                ['1', 'one'],
+                ['2', 'two'],
+                ['3', 'three'],
+            ],
+            'solution' => [
+                ['1', 'one'],
+                ['2', 'two'],
+                ['3', 'three'],
+            ]
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typePairDefs->id,
+            'prompt' => 'Empareja el color con su definición.',
+            'options' => [
+                ['concepto' => 'Red', 'definicion' => 'Color of many apples'],
+                ['concepto' => 'Blue', 'definicion' => 'Color of the clear sky'],
+                ['concepto' => 'Green', 'definicion' => 'Color of grass'],
+            ],
+            'solution' => [
+                ['concepto' => 'Red', 'definicion' => 'Color of many apples'],
+                ['concepto' => 'Blue', 'definicion' => 'Color of the clear sky'],
+                ['concepto' => 'Green', 'definicion' => 'Color of grass'],
+            ]
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeDialogue->id,
+            'prompt' => 'Completa el diálogo: A: "What color is the sun?" B: "It is _____."',
+            'options' => ['yellow', 'blue', 'black'],
+            'solution' => ['yellow']
+        ]);
+
+        Exercise::create([
+            'lesson_id' => $lessonNumbersColors->id,
+            'exercise_type_id' => $typeMultiple->id,
+            'prompt' => '¿Qué color resulta de mezclar rojo (red) y azul (blue)?',
+            'options' => ['Purple', 'Green', 'Orange', 'Brown'],
+            'solution' => ['Purple']
         ]);
     }
 }

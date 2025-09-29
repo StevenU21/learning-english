@@ -29,13 +29,21 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user()
+                'user' => $user
                     ? array_merge(
-                        $request->user()->only(['id', 'first_name', 'last_name', 'email']),
-                        ['full_name' => $request->user()->full_name]
+                        $user->only(['id', 'first_name', 'last_name', 'email']),
+                        [
+                            'full_name' => $user->full_name,
+                            // Array of role names (Spatie getRoleNames returns a collection)
+                            'roles' => $user->getRoleNames()->toArray(),
+                            // Array of permission names (can be useful later if needed)
+                            'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+                        ]
                     )
                     : null,
             ],
