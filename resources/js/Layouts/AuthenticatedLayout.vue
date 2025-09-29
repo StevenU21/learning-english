@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
@@ -28,8 +27,9 @@ function hasRole(role) {
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
-                                <ApplicationLogo
-                                    class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                                    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                                        Learning <span class="text-[#FF2D20]">English</span>
+                                    </h1>
                                 </Link>
                             </div>
                             <!-- Navigation Links -->
