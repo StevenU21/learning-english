@@ -26,7 +26,7 @@ function hasRole(role) {
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="hasRole('admin') ? route('units.index') : route('student.units.index')">
                                     <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
                                         Learning <span class="text-[#FF2D20]">English</span>
                                     </h1>

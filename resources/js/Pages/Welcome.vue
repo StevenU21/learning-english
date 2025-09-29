@@ -30,15 +30,16 @@ defineProps({
                         class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link :href="route('login')"
                             class="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-semibold text-white bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition">
-                            <i class="fas fa-sign-in-alt mr-2"></i> Iniciar sesión
+                        <i class="fas fa-sign-in-alt mr-2"></i> Iniciar sesión
                         </Link>
                         <Link v-if="canRegister" :href="route('register')"
                             class="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-semibold text-blue-500 bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition">
-                            <i class="fas fa-user-plus mr-2"></i> Crear cuenta
+                        <i class="fas fa-user-plus mr-2"></i> Crear cuenta
                         </Link>
                     </div>
                     <div v-else class="mt-8">
-                        <Link :href="route('levels.index')"
+                        <Link
+                            :href="route($page.props.auth.user.roles.includes('admin') ? 'units.index' : 'student.units.index')"
                             class="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 shadow-md transition">
                         Ir al Panel
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
