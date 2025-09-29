@@ -38,4 +38,46 @@ class ExerciseRequest extends FormRequest
             'lesson_id' => ['required', 'exists:lessons,id'],
         ];
     }
+    /**
+     * Custom attribute names.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'prompt' => 'enunciado',
+            'options' => 'opciones',
+            'solution' => 'solución',
+            'explanation' => 'explicación',
+            'exercise_type_id' => 'tipo de ejercicio',
+            'lesson_id' => 'lección',
+        ];
+    }
+
+    /**
+     * Custom validation messages in Spanish.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'prompt.required' => 'El enunciado es obligatorio.',
+            'prompt.string'   => 'El enunciado debe ser una cadena de texto.',
+            'prompt.min'      => 'El enunciado debe tener al menos :min caracteres.',
+            'prompt.max'      => 'El enunciado no debe exceder de :max caracteres.',
+            'options.array'   => 'Las opciones deben ser un arreglo.',
+            'options.max'     => 'Las opciones no pueden ser más de :max.',
+            'solution.array'  => 'La solución debe ser un arreglo.',
+            'solution.max'    => 'La solución no puede ser más de :max.',
+            'explanation.string' => 'La explicación debe ser una cadena de texto.',
+            'explanation.min'    => 'La explicación debe tener al menos :min caracteres.',
+            'explanation.max'    => 'La explicación no debe exceder de :max caracteres.',
+            'exercise_type_id.required' => 'El tipo de ejercicio es obligatorio.',
+            'exercise_type_id.exists'   => 'El tipo de ejercicio seleccionado no es válido.',
+            'lesson_id.required' => 'La lección es obligatoria.',
+            'lesson_id.exists'   => 'La lección seleccionada no es válida.',
+        ];
+    }
 }

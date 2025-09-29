@@ -33,6 +33,35 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Nombres de atributos personalizados en español.
+     *
+     * @return array<string,string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'email' => 'correo electrónico',
+            'password' => 'contraseña',
+        ];
+    }
+
+    /**
+     * Mensajes de validación personalizados en español.
+     *
+     * @return array<string,string>
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.string'   => 'El correo electrónico debe ser una cadena de texto.',
+            'email.email'    => 'El correo electrónico no es válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string'   => 'La contraseña debe ser una cadena de texto.',
+        ];
+    }
+
+    /**
      * Attempt to authenticate the request's credentials.
      *
      * @throws \Illuminate\Validation\ValidationException

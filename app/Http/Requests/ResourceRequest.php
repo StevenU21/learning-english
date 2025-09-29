@@ -46,4 +46,41 @@ class ResourceRequest extends FormRequest
 
         return $rules;
     }
+
+    /**
+     * Custom attribute names in Spanish.
+     *
+     * @return array<string,string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'description' => 'descripción',
+            'unit_id' => 'unidad',
+            'file_path' => 'archivo',
+        ];
+    }
+
+    /**
+     * Custom validation messages in Spanish.
+     *
+     * @return array<string,string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string'   => 'El nombre debe ser una cadena de texto.',
+            'name.min'      => 'El nombre debe tener al menos :min caracteres.',
+            'name.max'      => 'El nombre no debe exceder de :max caracteres.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'unit_id.required' => 'La unidad es obligatoria.',
+            'unit_id.exists'   => 'La unidad seleccionada no es válida.',
+            'file_path.required' => 'El archivo es obligatorio.',
+            'file_path.file'     => 'El archivo debe ser un archivo válido.',
+            'file_path.mimes'    => 'El archivo debe ser de tipo: :values.',
+            'file_path.max'      => 'El archivo no debe exceder de :max kilobytes.',
+        ];
+    }
 }

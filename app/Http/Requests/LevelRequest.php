@@ -36,4 +36,35 @@ class LevelRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:255'],
         ];
     }
+
+    /**
+     * Custom attribute names.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'description' => 'descripción',
+        ];
+    }
+
+    /**
+     * Custom validation messages in Spanish.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'name.unique' => 'El nombre ya está en uso.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'description.max' => 'La descripción no debe exceder de :max caracteres.',
+        ];
+    }
 }

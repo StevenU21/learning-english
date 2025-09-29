@@ -30,12 +30,36 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()]
-        ]);
+        $request->validate(
+            [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+                'password' => ['required', 'confirmed', Rules\Password::defaults()]
+            ],
+            // Mensajes personalizados en español
+            [
+                'first_name.required' => 'El nombre es obligatorio.',
+                'first_name.string' => 'El nombre debe ser una cadena de texto.',
+                'first_name.max' => 'El nombre no debe exceder de :max caracteres.',
+                'last_name.required' => 'El apellido es obligatorio.',
+                'last_name.string' => 'El apellido debe ser una cadena de texto.',
+                'last_name.max' => 'El apellido no debe exceder de :max caracteres.',
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'El correo electrónico no es válido.',
+                'email.max' => 'El correo electrónico no debe exceder de :max caracteres.',
+                'email.unique' => 'El correo electrónico ya está en uso.',
+                'password.required' => 'La contraseña es obligatoria.',
+                'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            ],
+            // Nombres de atributos en español
+            [
+                'first_name' => 'nombre',
+                'last_name' => 'apellido',
+                'email' => 'correo electrónico',
+                'password' => 'contraseña',
+            ]
+        );
 
         $user = User::create([
             'first_name' => $request->first_name,

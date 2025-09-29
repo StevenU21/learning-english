@@ -36,4 +36,40 @@ class UserUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Nombres de atributos personalizados en español.
+     *
+     * @return array<string,string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'first_name' => 'nombre',
+            'last_name'  => 'apellido',
+            'email'      => 'correo electrónico',
+        ];
+    }
+
+    /**
+     * Mensajes de validación personalizados en español.
+     *
+     * @return array<string,string>
+     */
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'El nombre es obligatorio.',
+            'first_name.string'   => 'El nombre debe ser una cadena de texto.',
+            'first_name.max'      => 'El nombre no debe exceder de :max caracteres.',
+            'last_name.required'  => 'El apellido es obligatorio.',
+            'last_name.string'    => 'El apellido debe ser una cadena de texto.',
+            'last_name.max'       => 'El apellido no debe exceder de :max caracteres.',
+            'email.required'      => 'El correo electrónico es obligatorio.',
+            'email.string'        => 'El correo electrónico debe ser una cadena de texto.',
+            'email.email'         => 'El correo electrónico no es válido.',
+            'email.max'           => 'El correo electrónico no debe exceder de :max caracteres.',
+            'email.unique'        => 'El correo electrónico ya está en uso.',
+        ];
+    }
 }

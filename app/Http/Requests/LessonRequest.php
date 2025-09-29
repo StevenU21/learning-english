@@ -36,4 +36,35 @@ class LessonRequest extends FormRequest
             'unit_id' => ['required', 'exists:units,id'],
         ];
     }
+
+    /**
+     * Custom attribute names.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'description' => 'descripción',
+            'unit_id' => 'unidad',
+        ];
+    }
+
+    /**
+     * Custom validation messages in Spanish.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string'   => 'El nombre debe ser una cadena de texto.',
+            'name.max'      => 'El nombre no debe exceder de :max caracteres.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'unit_id.required' => 'La unidad es obligatoria.',
+            'unit_id.exists'   => 'La unidad seleccionada no es válida.',
+        ];
+    }
 }
