@@ -11,7 +11,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('lessons.update', props.lesson.id), { _method: 'put' });
+    form.put(route('lessons.update', props.lesson.id));
 }
 </script>
 

@@ -12,7 +12,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('resources.update', props.resource.id), { _method: 'put' });
+    form.put(route('resources.update', props.resource.id));
 }
 </script>
 

@@ -10,7 +10,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('levels.update', props.level.id), { _method: 'put' });
+    form.put(route('levels.update', props.level.id));
 }
 </script>
 

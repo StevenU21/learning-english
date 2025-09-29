@@ -13,9 +13,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('units.update', props.unit.id), {
-        _method: 'put',
-    });
+    form.put(route('units.update', props.unit.id));
 }
 </script>
 
