@@ -162,10 +162,6 @@ const componentMap = {
                                 class="flex-1 inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                                 Ver resumen
                             </button>
-                            <button v-if="showFeedback" @click="retryCurrent"
-                                class="flex-1 inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
-                                Reintentar
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -183,7 +179,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                    }}</span>
+                                }}</span>
                                 <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </span>

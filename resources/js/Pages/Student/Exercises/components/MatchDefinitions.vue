@@ -131,13 +131,6 @@ function checkAnswer() {
             </div>
         </div>
 
-        <!-- Pares seleccionados -->
-        <div v-if="studentMatches.length" class="bg-gray-50 dark:bg-gray-700/40 rounded-md p-3 border border-dashed border-gray-300 dark:border-gray-600">
-            <h5 class="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Pares seleccionados</h5>
-            <ul class="text-xs text-gray-700 dark:text-gray-300 space-y-1">
-                <li v-for="(pair, idx) in studentMatches" :key="idx">{{ pair.concepto }} → {{ pair.definicion }}</li>
-            </ul>
-        </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
             <button
