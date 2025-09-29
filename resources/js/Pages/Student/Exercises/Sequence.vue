@@ -69,8 +69,31 @@ function goToLessons() {
 
 function formatAnswer(answer) {
     if (answer === undefined || answer === null || answer === '') return 'Sin respuesta';
-    if (Array.isArray(answer)) return answer.join(', ');
-    if (typeof answer === 'object') return JSON.stringify(answer);
+    // Arrays
+    if (Array.isArray(answer)) {
+        if (!answer.length) return 'Sin respuesta';
+        // If array of primitives
+        if (answer.every(a => ['string', 'number', 'boolean'].includes(typeof a))) {
+            return answer.join(', ');
+        }
+        // Array of objects (pairs)
+        if (answer.every(a => a && typeof a === 'object')) {
+            return answer.map(a => {
+                if ('left' in a && 'right' in a) return `${a.left} → ${a.right}`;
+                if ('concepto' in a && 'definicion' in a) return `${a.concepto} → ${a.definicion}`;
+                // Fallback: first two key-value pairs
+                const entries = Object.entries(a).slice(0, 2).map(([k, v]) => `${k}: ${v}`);
+                return entries.join(' | ');
+            }).join(', ');
+        }
+        return 'Sin respuesta';
+    }
+    // Single object (maybe one pair)
+    if (typeof answer === 'object') {
+        if ('left' in answer && 'right' in answer) return `${answer.left} → ${answer.right}`;
+        if ('concepto' in answer && 'definicion' in answer) return `${answer.concepto} → ${answer.definicion}`;
+        return JSON.stringify(answer);
+    }
     return String(answer);
 }
 
@@ -179,7 +202,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                }}</span>
+                                    }}</span>
                                 <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </span>
@@ -213,3 +236,4 @@ const componentMap = {
         </div>
     </AuthenticatedLayout>
 </template>
+    
