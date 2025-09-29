@@ -19,7 +19,7 @@ defineProps({
             <!-- Hero Card -->
             <div class="w-full max-w-2xl">
                 <div
-                    class="rounded-2xl bg-white/80 dark:bg-gray-900 ring-1 ring-black/10 dark:ring-white/10 shadow-xl p-10 text-center backdrop-blur">
+                    class="rounded-2xl bg-white/80 dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 shadow-xl p-10 text-center backdrop-blur">
                     <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
                         Bienvenido a <span class="text-[#FF2D20]">Learning English</span>
                     </h1>
@@ -30,10 +30,12 @@ defineProps({
                         class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link :href="route('login')"
                             class="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-semibold text-white bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition">
-                        Iniciar sesión</Link>
+                            <i class="fas fa-sign-in-alt mr-2"></i> Iniciar sesión
+                        </Link>
                         <Link v-if="canRegister" :href="route('register')"
                             class="w-full sm:w-auto rounded-lg px-6 py-3 text-sm font-semibold text-blue-500 bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition">
-                        Crear cuenta</Link>
+                            <i class="fas fa-user-plus mr-2"></i> Crear cuenta
+                        </Link>
                     </div>
                     <div v-else class="mt-8">
                         <Link :href="route('levels.index')"
@@ -50,8 +52,10 @@ defineProps({
             </div>
 
             <!-- Sub info -->
-            <footer class="mt-16 text-center text-xs text-gray-500 dark:text-gray-400">
-                Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+            <footer class="mt-16 text-center text-xxl uppercase text-gray-500 dark:text-gray-400">
+                Arelis Antonia Ortiz Bucardo<br>
+                Madeling Haidee Perez Moreno<br>
+                Andy Ruppert Ulloa Gutierrez
             </footer>
         </div>
     </div>
