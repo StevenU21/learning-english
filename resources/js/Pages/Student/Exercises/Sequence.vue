@@ -202,7 +202,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                    }}</span>
+                                }}</span>
                                 <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </span>
@@ -236,4 +236,3 @@ const componentMap = {
         </div>
     </AuthenticatedLayout>
 </template>
-    
