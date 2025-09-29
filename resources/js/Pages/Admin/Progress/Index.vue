@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
 import SelectInput from '@/Components/SelectInput.vue';
 
 const props = defineProps({
@@ -91,6 +91,7 @@ function applyFilters() {
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Lección</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Progreso</th>
                                     <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Estado</th>
+                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,6 +109,12 @@ function applyFilters() {
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ item.lesson.name }}</td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ item.progress }}</td>
                                     <td class="text-gray-600 dark:text-gray-400 px-4 py-2 capitalize">{{ item.status }}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <Link :href="route('admin.progress.show', item.user.id)"
+                                            class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition">
+                                        Ver detalle
+                                        </Link>
                                     </td>
                                 </tr>
                             </tbody>
