@@ -90,7 +90,7 @@ class ExerciseController extends Controller
                     [
                         'user_id' => $userId,
                         'unit_id' => $unitId,
-                    ],
+                    ],  
                     [
                         'progress' => $unitProgress,
                         'status' => $unitStatus,
