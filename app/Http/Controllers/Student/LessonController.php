@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
+use App\Models\Lesson;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -27,6 +28,23 @@ class LessonController extends Controller
         return Inertia::render('Student/Lessons/Index', [
             'unit' => $unit,
             'lessons' => $lessons
+        ]);
+    }
+
+    /**
+     * Display the specified lesson summary with exercises.
+     */
+    public function show($lessonId)
+    {
+        $lesson = Lesson::with('exercises.exerciseType')->findOrFail($lessonId);
+        $exercises = $lesson->exercises->map(function ($exercise) {
+            $exerciseArr = $exercise->toArray();
+            $exerciseArr['options'] = is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true);
+            return $exerciseArr;
+        });
+        return Inertia::render('Student/Lessons/Show', [
+            'lesson' => $lesson,
+            'exercises' => $exercises,
         ]);
     }
 }
