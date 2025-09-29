@@ -57,7 +57,7 @@ function applyFilters() {
                     <div>
                         <SelectInput v-model="form.user_id" @change="applyFilters" class="w-60">
                             <option value="">Todos los Usuarios</option>
-                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.first_name }}</option>
                         </SelectInput>
                     </div>
                     <div>

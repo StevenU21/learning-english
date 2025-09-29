@@ -54,6 +54,22 @@ class User extends Authenticatable
     {
         return trim("{$this->first_name} {$this->last_name}");
     }
+    /**
+     * Append name attribute for JSON serialization.
+     *
+     * @var array<string>
+     */
+    protected $appends = ['name'];
+
+    /**
+     * Get the user's name attribute for JSON.
+     *
+     * @return string
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->full_name;
+    }
 
     public function profile(): HasOne
     {
