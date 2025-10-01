@@ -2,16 +2,16 @@
 	<h1>📘 Learning English Platform</h1>
 	<p>Aplicación web para gestión y seguimiento del aprendizaje de inglés: unidades, lecciones, recursos, ejercicios interactivos y progreso de estudiantes.</p>
 
-    <p>
-    	<img alt="PHP" src="https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white" />
-    	<img alt="Laravel" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white" />
-    	<img alt="Vue" src="https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white" />
-    	<img alt="Inertia" src="https://img.shields.io/badge/Inertia.js-2.0-9553e9" />
-    	<img alt="Tailwind" src="https://img.shields.io/badge/TailwindCSS-3-38bdf8?logo=tailwindcss&logoColor=white" />
-    	<img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white" />
-    	<img alt="SQLite" src="https://img.shields.io/badge/SQLite-DB-003B57?logo=sqlite&logoColor=white" />
-    	<img alt="License" src="https://img.shields.io/badge/License-MIT-green" />
-    </p>
+	<p>
+		<img alt="PHP" src="https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white" />
+		<img alt="Laravel" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white" />
+		<img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-3-42b883?logo=vue.js&logoColor=white" />
+		<img alt="Inertia.js" src="https://img.shields.io/badge/Inertia.js-2.0-9553e9?logo=inertia&logoColor=white" />
+		<img alt="Tailwind CSS" src="https://img.shields.io/badge/TailwindCSS-3-38bdf8?logo=tailwindcss&logoColor=white" />
+		<img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white" />
+		<img alt="SQLite" src="https://img.shields.io/badge/SQLite-DB-003B57?logo=sqlite&logoColor=white" />
+		<img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green?logo=open-source-initiative&logoColor=white" />
+	</p>
 
 </div>
 
