@@ -109,22 +109,6 @@ Infra / Otros:
 
 Laravel + Sanctum. Ziggy expone rutas y las vistas Inertia consumen endpoints protegidos. Policies controlan la autorización.
 
-## 📂 Estructura Destacada
-
-```
-app/
-	Models/ (Unit, Lesson, Exercise, ...)
-	Policies/ (UnitPolicy, ExercisePolicy, ...)
-	Traits/HasPermissionCheck.php
-	Classes/PermissionHelper.php
-	Services/FileService.php
-resources/
-	views/app.blade.php (layout Inertia)
-	js/ (componentes Vue + Pages)
-database/
-	migrations/ (tablas, permisos, progreso)
-```
-
 ## ⚙️ Instalación (Desarrollo)
 
 ### Requisitos
