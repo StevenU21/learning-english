@@ -202,16 +202,6 @@ Recomendado antes de crear PRs. Añadir pruebas para nuevas reglas de negocio (p
 -   [ ] Exportación PDF del historial del estudiante
 -   [ ] Notificaciones in-app / email por unidad completada
 -   [ ] Modo examen (evaluación cronometrada)
-
-## 📄 Licencia
-
-MIT. Ver `LICENSE`
-
-## 🙌 Agradecimientos
-
--   Laravel & comunidad open source
--   Paquetes: Spatie Permission, Inertia, Tailwind, Ziggy
-
 ---
 
 > "Aprender un idioma abre una puerta a un mundo nuevo."
