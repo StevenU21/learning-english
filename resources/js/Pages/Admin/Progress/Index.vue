@@ -96,7 +96,7 @@ function applyFilters() {
                             </thead>
                             <tbody>
                                 <tr v-if="progressList.length === 0">
-                                    <td colspan="5"
+                                    <td colspan="6"
                                         class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
                                         No se encontraron registros de progreso.
                                     </td>

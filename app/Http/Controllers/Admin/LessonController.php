@@ -17,7 +17,7 @@ class LessonController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Lesson::class);
-        $permissions = PermissionHelper::getPermissions('lessons');
+        PermissionHelper::getPermissions('lessons');
         $lessons = Lesson::with('unit')->paginate(10);
         return Inertia::render('Admin/Lessons/Index', [
             'lessons' => $lessons
