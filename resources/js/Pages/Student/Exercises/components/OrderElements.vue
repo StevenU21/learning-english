@@ -1,28 +1,77 @@
 <script setup>
-import { ref } from 'vue';
-import { VueDraggableNext as draggable } from 'vue-draggable-next';
-const props = defineProps({ exercise: Object, showFeedback: Boolean });
-const emit = defineEmits(['answered']);
-const currentOrder = ref([...(props.exercise.options || [])]);
+import { ref, watch } from 'vue';
 
+const props = defineProps({
+    exercise: { type: Object, required: true },
+    showFeedback: { type: Boolean, default: false }
+});
+const emit = defineEmits(['answered']);
+
+// Palabras que el usuario ha seleccionado para su respuesta
+const userAnswerWords = ref([]);
+// Palabras disponibles en el banco de opciones
+const availableWords = ref([]);
+
+// Inicializa o resetea el estado cuando el ejercicio cambia
+function initializeState() {
+    userAnswerWords.value = [];
+    // Desordena las opciones para que no aparezcan siempre en el mismo orden
+    availableWords.value = [...(props.exercise.options || [])].sort(() => Math.random() - 0.5);
+}
+
+// Observa si el ejercicio cambia para reiniciar el componente
+watch(() => props.exercise, initializeState, { immediate: true });
+
+// Mueve una palabra del banco a la respuesta del usuario
+function selectWord(word, index) {
+    if (props.showFeedback) return;
+    userAnswerWords.value.push(word);
+    availableWords.value.splice(index, 1);
+}
+
+// Devuelve una palabra de la respuesta al banco
+function deselectWord(word, index) {
+    if (props.showFeedback) return;
+    availableWords.value.push(word);
+    userAnswerWords.value.splice(index, 1);
+}
 
 function submit() {
     if (props.showFeedback) return;
-    const target = Array.isArray(props.exercise.solution) ? props.exercise.solution : [];
-    const correct = JSON.stringify(target) === JSON.stringify(currentOrder.value);
-    emit('answered', correct, currentOrder.value);
+    const solution = Array.isArray(props.exercise.solution) ? props.exercise.solution : [];
+    const isCorrect = JSON.stringify(userAnswerWords.value) === JSON.stringify(solution);
+    emit('answered', isCorrect, userAnswerWords.value);
 }
 </script>
+
 <template>
-    <div class="space-y-3">
-        <draggable v-model="currentOrder" item-key="item" tag="ul" class="space-y-2" handle=".drag-handle">
-            <li v-for="(item, idx) in currentOrder" :key="item"
-                class="flex items-center bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded text-sm text-gray-800 dark:text-gray-200 cursor-grab active:cursor-grabbing">
-                <i class="fa-solid fa-grip-vertical drag-handle mr-3 text-gray-500"></i>
-                <span class="flex-1">{{ item }}</span>
-            </li>
-        </draggable>
-        <button @click="submit"
-            class="w-full inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Confirmar</button>
+    <div class="space-y-6">
+        <!-- Pregunta -->
+        <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ exercise.text }}</p>
+
+        <!-- Área de respuesta del usuario -->
+        <div
+            class="min-h-[4rem] w-full border-b-2 border-gray-300 dark:border-gray-600 flex flex-wrap items-center gap-2 pb-2">
+            <button v-for="(word, index) in userAnswerWords" :key="`${word}-${index}`"
+                @click="deselectWord(word, index)" :disabled="showFeedback"
+                class="px-3 py-1.5 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ word }}
+            </button>
+        </div>
+
+        <!-- Banco de palabras disponibles -->
+        <div class="flex flex-wrap justify-center gap-2">
+            <button v-for="(word, index) in availableWords" :key="`${word}-${index}`" @click="selectWord(word, index)"
+                :disabled="showFeedback"
+                class="px-3 py-1.5 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-b-4 border-gray-300 dark:border-gray-600 font-semibold hover:bg-gray-100 dark:hover:bg-gray-600 transform active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ word }}
+            </button>
+        </div>
+
+        <!-- Botón de confirmación -->
+        <button @click="submit" :disabled="showFeedback || userAnswerWords.length === 0"
+            class="w-full inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed">
+            Confirmar
+        </button>
     </div>
 </template>
