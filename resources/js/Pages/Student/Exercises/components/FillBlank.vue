@@ -17,6 +17,6 @@ function submit() {
             class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 text-sm"
             placeholder="Escribe tu respuesta" />
         <button @click="submit"
-            class="w-full inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Responder</button>
+            class="w-full inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Comprobar</button>
     </div>
 </template>

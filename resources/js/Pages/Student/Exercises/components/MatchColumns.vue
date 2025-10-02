@@ -81,38 +81,30 @@ function checkAnswer() {
         <div v-if="leftValues.length && rightValues.length" class="grid grid-cols-2 gap-4 text-xs sm:text-sm">
             <!-- Columna Izquierda -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Izquierda</h4>
+                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Izquierda
+                </h4>
                 <div class="space-y-2">
-                    <button
-                        v-for="left in leftValues"
-                        :key="left"
-                        @click="selectLeft(left)"
-                        :disabled="props.showFeedback || checked"
-                        :class="[
+                    <button v-for="left in leftValues" :key="left" @click="selectLeft(left)"
+                        :disabled="props.showFeedback || checked" :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
                             selectedLeft === left ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
                             studentMatches.some(p => p.left === left) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
-                        ]"
-                    >
+                        ]">
                         {{ left }}
                     </button>
                 </div>
             </div>
             <!-- Columna Derecha -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Derecha</h4>
+                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Derecha
+                </h4>
                 <div class="space-y-2">
-                    <button
-                        v-for="right in rightValues"
-                        :key="right"
-                        @click="selectRight(right)"
-                        :disabled="props.showFeedback || checked"
-                        :class="[
+                    <button v-for="right in rightValues" :key="right" @click="selectRight(right)"
+                        :disabled="props.showFeedback || checked" :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
                             selectedRight === right ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
                             studentMatches.some(p => p.right === right) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
-                        ]"
-                    >
+                        ]">
                         {{ right }}
                     </button>
                 </div>
@@ -123,9 +115,7 @@ function checkAnswer() {
         <div class="flex flex-col sm:flex-row gap-3">
             <button
                 class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                @click="checkAnswer"
-                :disabled="props.showFeedback || checked || !studentMatches.length"
-            >
+                @click="checkAnswer" :disabled="props.showFeedback || checked || !studentMatches.length">
                 Comprobar respuesta
             </button>
         </div>

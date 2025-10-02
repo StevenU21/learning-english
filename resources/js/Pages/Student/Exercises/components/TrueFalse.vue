@@ -56,9 +56,6 @@ function getButtonClasses(option) {
 
 <template>
     <div class="space-y-6">
-        <p class="text-lg font-semibold text-center text-gray-800 dark:text-gray-200">
-            {{ questionText || 'Selecciona la respuesta correcta' }}
-        </p>
         <div class="space-y-3">
             <button v-for="option in ['True', 'False']" :key="option" @click="answer(option)" :disabled="showFeedback"
                 :class="getButtonClasses(option)">
