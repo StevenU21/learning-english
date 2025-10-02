@@ -76,6 +76,16 @@ function selectDefinicion(definicion) {
 function isCorrectConcepto(concepto) { return feedback.value[concepto] === true; }
 function isIncorrectConcepto(concepto) { return feedback.value[concepto] === false; }
 
+// Add functions for definitions feedback
+function isCorrectDefinicion(definicion) {
+    const pair = studentMatches.value.find(p => p.definicion === definicion);
+    return pair ? feedback.value[pair.concepto] === true : false;
+}
+function isIncorrectDefinicion(definicion) {
+    const pair = studentMatches.value.find(p => p.definicion === definicion);
+    return pair ? feedback.value[pair.concepto] === false : false;
+}
+
 function checkAnswer() {
     if (validated.value) return;
     const sol = solutionArray();
@@ -91,40 +101,36 @@ function checkAnswer() {
         <div v-if="conceptos.length && definiciones.length" class="grid grid-cols-2 gap-4 text-xs sm:text-sm">
             <!-- Conceptos -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Conceptos</h4>
                 <div class="space-y-2">
-                    <button
-                        v-for="concepto in conceptos"
-                        :key="concepto"
-                        @click="selectConcepto(concepto)"
-                        :disabled="props.showFeedback || validated"
-                        :class="[
+                    <button v-for="concepto in conceptos" :key="concepto" @click="selectConcepto(concepto)"
+                        :disabled="props.showFeedback || validated" :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
                             selectedConcepto === concepto ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
                             isCorrectConcepto(concepto) ? 'bg-green-500 text-white border-green-500' : '',
                             isIncorrectConcepto(concepto) ? 'bg-red-500 text-white border-red-500' : '',
                             !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600' : ''
-                        ]"
-                    >
+                        ]">
                         {{ concepto }}
                     </button>
                 </div>
             </div>
             <!-- Definiciones -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Definiciones</h4>
                 <div class="space-y-2">
-                    <button
-                        v-for="definicion in definiciones"
-                        :key="definicion"
-                        @click="selectDefinicion(definicion)"
-                        :disabled="props.showFeedback || validated"
-                        :class="[
+                    <button v-for="definicion in definiciones" :key="definicion" @click="selectDefinicion(definicion)"
+                        :disabled="props.showFeedback || validated" :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
                             selectedDefinicion === definicion ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
-                            studentMatches.some(p => p.definicion === definicion) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600'
-                        ]"
-                    >
+                            // Feedback and selection styling similar to concepts
+                            isCorrectDefinicion(definicion) ? 'bg-green-500 text-white border-green-500' : '',
+                            isIncorrectDefinicion(definicion) ? 'bg-red-500 text-white border-red-500' : '',
+                            // Default or selected state when not validated
+                            !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion)
+                                ? (studentMatches.some(p => p.definicion === definicion)
+                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600')
+                                : ''
+                        ]">
                         {{ definicion }}
                     </button>
                 </div>
@@ -135,9 +141,7 @@ function checkAnswer() {
         <div class="flex flex-col sm:flex-row gap-3">
             <button
                 class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                @click="checkAnswer"
-                :disabled="props.showFeedback || validated || !studentMatches.length"
-            >
+                @click="checkAnswer" :disabled="props.showFeedback || validated || !studentMatches.length">
                 Comprobar respuesta
             </button>
         </div>
