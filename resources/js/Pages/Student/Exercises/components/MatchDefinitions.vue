@@ -103,12 +103,14 @@ function checkAnswer() {
             <div class="space-y-2">
                 <div class="space-y-2">
                     <button v-for="concepto in conceptos" :key="concepto" @click="selectConcepto(concepto)"
-                        :disabled="props.showFeedback || validated" :class="[
+                        :disabled="props.showFeedback || validated || studentMatches.some(p => p.concepto === concepto)"
+                        :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
-                            selectedConcepto === concepto ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
+                            selectedConcepto === concepto ? 'ring-2 ring-indigo-500 border-indigo-500 text-indigo-500' : 'border-gray-200 dark:border-gray-600',
                             isCorrectConcepto(concepto) ? 'bg-green-500 text-white border-green-500' : '',
                             isIncorrectConcepto(concepto) ? 'bg-red-500 text-white border-red-500' : '',
-                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600' : ''
+                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600' : '',
+                            'disabled:opacity-50 disabled:cursor-not-allowed'
                         ]">
                         {{ concepto }}
                     </button>
@@ -118,18 +120,18 @@ function checkAnswer() {
             <div class="space-y-2">
                 <div class="space-y-2">
                     <button v-for="definicion in definiciones" :key="definicion" @click="selectDefinicion(definicion)"
-                        :disabled="props.showFeedback || validated" :class="[
+                        :disabled="props.showFeedback || validated || studentMatches.some(p => p.definicion === definicion)"
+                        :class="[
                             'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
-                            selectedDefinicion === definicion ? 'ring-2 ring-indigo-500 border-indigo-500' : 'border-gray-200 dark:border-gray-600',
-                            // Feedback and selection styling similar to concepts
+                            selectedDefinicion === definicion ? 'ring-2 ring-indigo-500 border-indigo-500 text-indigo-500' : 'border-gray-200 dark:border-gray-600',
                             isCorrectDefinicion(definicion) ? 'bg-green-500 text-white border-green-500' : '',
                             isIncorrectDefinicion(definicion) ? 'bg-red-500 text-white border-red-500' : '',
-                            // Default or selected state when not validated
                             !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion)
                                 ? (studentMatches.some(p => p.definicion === definicion)
                                     ? 'bg-indigo-600 text-white border-indigo-600'
                                     : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600')
-                                : ''
+                                : '',
+                            'disabled:opacity-50 disabled:cursor-not-allowed'
                         ]">
                         {{ definicion }}
                     </button>

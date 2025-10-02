@@ -81,8 +81,6 @@ function checkAnswer() {
         <div v-if="leftValues.length && rightValues.length" class="grid grid-cols-2 gap-4 text-xs sm:text-sm">
             <!-- Columna Izquierda -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Izquierda
-                </h4>
                 <div class="space-y-2">
                     <button v-for="left in leftValues" :key="left" @click="selectLeft(left)"
                         :disabled="props.showFeedback || checked" :class="[
@@ -96,8 +94,6 @@ function checkAnswer() {
             </div>
             <!-- Columna Derecha -->
             <div class="space-y-2">
-                <h4 class="font-semibold text-gray-600 dark:text-gray-300 text-[11px] uppercase tracking-wide">Derecha
-                </h4>
                 <div class="space-y-2">
                     <button v-for="right in rightValues" :key="right" @click="selectRight(right)"
                         :disabled="props.showFeedback || checked" :class="[
