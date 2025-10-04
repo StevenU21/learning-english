@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class Unit extends Model
 {
@@ -22,21 +24,15 @@ class Unit extends Model
     {
         return $this->image ? asset('storage/' . $this->image) : null;
     }
-    /**
-     * Handle image file uploads and deletion.
-     */
+
     public function setImageAttribute($value)
     {
-        // If a new file is uploaded, store it and delete old one
-        if ($value instanceof \Illuminate\Http\UploadedFile) {
-            // Delete old file if exists
+        if ($value instanceof UploadedFile) {
             if (!empty($this->attributes['image'])) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($this->attributes['image']);
+                Storage::disk('public')->delete($this->attributes['image']);
             }
-            // Store new file in 'units' directory
             $this->attributes['image'] = $value->store('units', 'public');
         } elseif (is_string($value) || is_null($value)) {
-            // Allow setting existing path or null
             $this->attributes['image'] = $value;
         }
     }
