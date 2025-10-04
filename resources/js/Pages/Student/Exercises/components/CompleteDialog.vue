@@ -20,9 +20,15 @@ function submit() {
 </script>
 <template>
     <div class="space-y-3">
-        <div class="flex flex-wrap gap-2">
-            <button v-for="opt in props.exercise.options" :key="opt" @click="toggle(opt)"
-                :class="['px-3 py-1.5 rounded-full text-sm border', selected.includes(opt) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200']">
+        <div class="space-y-3">
+            <button v-for="opt in props.exercise.options" :key="opt" @click="toggle(opt)" :disabled="showFeedback"
+                :class="[
+                    'w-full text-center px-4 py-3 rounded-xl border-2 text-sm font-bold transition-colors duration-150',
+                    'disabled:cursor-not-allowed disabled:opacity-70',
+                    selected.includes(opt)
+                        ? 'bg-indigo-600 text-white border-indigo-600 dark:bg-indigo-900 dark:border-indigo-900'
+                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                ]">
                 {{ opt }}
             </button>
         </div>
