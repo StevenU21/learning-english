@@ -1,4 +1,5 @@
 <script setup>
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref } from 'vue';
 const props = defineProps({ exercise: Object, showFeedback: Boolean });
 const emit = defineEmits(['answered']);
@@ -27,7 +28,8 @@ function submit() {
                 {{ opt }}
             </button>
         </div>
-        <button @click="submit"
-            class="w-full inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Confirmar</button>
+        <PrimaryButton @click="submit" class="w-full">
+            <i class="fa-solid fa-check mr-2"></i> Comprobar
+        </PrimaryButton>
     </div>
 </template>

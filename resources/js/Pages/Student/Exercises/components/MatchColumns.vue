@@ -1,4 +1,5 @@
 <script setup>
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref, watch } from 'vue';
 // Nueva lógica solicitada para Match Columns: selección de pares con comprobación única.
 // Se mantiene el contrato de emitir 'answered' (correcto, respuestaClonada).
@@ -109,11 +110,9 @@ function checkAnswer() {
 
 
         <div class="flex flex-col sm:flex-row gap-3">
-            <button
-                class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                @click="checkAnswer" :disabled="props.showFeedback || checked || !studentMatches.length">
-                Comprobar respuesta
-            </button>
+            <PrimaryButton class="flex-1" @click="checkAnswer" :disabled="props.showFeedback || checked || !studentMatches.length">
+                <i class="fa-solid fa-check mr-2"></i> Comprobar respuesta
+            </PrimaryButton>
         </div>
     </div>
 </template>

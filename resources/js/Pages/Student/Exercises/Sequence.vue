@@ -9,6 +9,7 @@ import OrderElements from './components/OrderElements.vue';
 import MatchColumns from './components/MatchColumns.vue';
 import MatchDefinitions from './components/MatchDefinitions.vue';
 import CompleteDialog from './components/CompleteDialog.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     lesson: { type: Object, required: true },
@@ -177,14 +178,12 @@ const componentMap = {
                             @answered="handleAnswer" />
 
                         <div class="mt-5 flex flex-col sm:flex-row gap-3">
-                            <button v-if="showFeedback && current < total - 1" @click="nextExercise"
-                                class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                Siguiente
-                            </button>
-                            <button v-else-if="showFeedback && current === total - 1" @click="nextExercise"
-                                class="flex-1 inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                                Ver resumen
-                            </button>
+                            <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise" class="flex-1">
+                                <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
+                            </PrimaryButton>
+                            <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise" class="flex-1">
+                                <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
+                            </PrimaryButton>
                         </div>
                     </div>
                 </div>
@@ -202,7 +201,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                }}</span>
+                                    }}</span>
                                 <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </span>
@@ -212,10 +211,9 @@ const componentMap = {
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <button @click="saveSummary" :disabled="saving"
-                            class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50">Finalizar</button>
-                        <button @click="goToLessons"
-                            class="flex-1 inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">Lecciones</button>
+                        <PrimaryButton @click="saveSummary" :disabled="saving" class="flex-1">
+                            <i class="fa-solid fa-flag-checkered mr-2"></i> Finalizar
+                        </PrimaryButton>
                     </div>
                 </div>
 
