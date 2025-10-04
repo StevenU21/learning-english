@@ -76,9 +76,7 @@ import UnitCard from './components/UnitCard.vue';
                 </div>
 
                 <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <UnitCard v-for="unit in filteredUnits" :key="unit.id" :unit="unit" />
-                    </div>
+                    <UnitCard v-for="unit in filteredUnits" :key="unit.id" :unit="unit" />
                 </div>
             </div>
         </div>

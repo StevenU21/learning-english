@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 
 class Exercise extends Model
 {
@@ -47,12 +46,9 @@ class Exercise extends Model
     {
         if ($value instanceof UploadedFile) {
             if (!empty($this->attributes['file'])) {
-                $deleted = Storage::disk('public')->delete($this->attributes['file']);
-                Log::info('Exercise file deleted', ['path' => $this->attributes['file'], 'deleted' => $deleted]);
+                Storage::disk('public')->delete($this->attributes['file']);
             }
-            $stored = $value->store('units', 'public');
-            Log::info('Exercise file stored', ['path' => $stored, 'original' => $value->getClientOriginalName()]);
-            $this->attributes['file'] = $stored;
+            $this->attributes['file'] = $value->store('units', 'public');
         } elseif (is_string($value) || is_null($value)) {
             $this->attributes['file'] = $value;
         }
@@ -62,12 +58,9 @@ class Exercise extends Model
     {
         if ($value instanceof UploadedFile) {
             if (!empty($this->attributes['file_b'])) {
-                $deleted = Storage::disk('public')->delete($this->attributes['file_b']);
-                Log::info('Exercise file_b deleted', ['path' => $this->attributes['file_b'], 'deleted' => $deleted]);
+                Storage::disk('public')->delete($this->attributes['file_b']);
             }
-            $stored = $value->store('units', 'public');
-            Log::info('Exercise file_b stored', ['path' => $stored, 'original' => $value->getClientOriginalName()]);
-            $this->attributes['file_b'] = $stored;
+            $this->attributes['file_b'] = $value->store('units', 'public');
         } elseif (is_string($value) || is_null($value)) {
             $this->attributes['file_b'] = $value;
         }

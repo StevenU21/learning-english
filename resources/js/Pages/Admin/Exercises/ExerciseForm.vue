@@ -63,7 +63,7 @@ const componentMap = computed(() => {
 </script>
 
 <template>
-    <form @submit.prevent="onSubmit" class="space-y-8" enctype="multipart/form-data">
+    <div class="space-y-8">
         <!-- Campos básicos -->
         <div class="grid grid-cols-2 gap-6">
             <div class="md:col-span-2">
@@ -133,5 +133,5 @@ const componentMap = computed(() => {
                 {{ isEdit ? 'Actualizar' : 'Guardar' }}
             </PrimaryButton>
         </div>
-    </form>
+    </div>
 </template>

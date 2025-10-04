@@ -23,7 +23,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.put(route('exercises.update', props.exercise.id));
+    form.put(route('exercises.update', props.exercise.id), { forceFormData: true });
 }
 </script>
 <template>
@@ -36,8 +36,10 @@ function submit() {
         <div class="py-8">
             <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-                    <ExerciseForm :form="form" :types="props.types" :lessons="props.lessons" :errors="form.errors"
-                        :on-submit="submit" :is-edit="true" />
+                    <form @submit.prevent="submit" enctype="multipart/form-data">
+                        <ExerciseForm :form="form" :types="props.types" :lessons="props.lessons" :errors="form.errors"
+                            :on-submit="submit" :is-edit="true" />
+                    </form>
                 </div>
             </div>
         </div>

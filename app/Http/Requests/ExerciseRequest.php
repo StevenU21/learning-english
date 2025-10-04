@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Models\Exercise;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 
 class ExerciseRequest extends FormRequest
 {
@@ -44,47 +43,19 @@ class ExerciseRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        try {
-            $file = $this->file('file');
-            $fileB = $this->file('file_b');
-            Log::info('ExerciseRequest incoming payload', [
-                'method' => $this->method(),
-                'exercise_type_id' => $this->input('exercise_type_id'),
-                'lesson_id' => $this->input('lesson_id'),
-                'has_file' => (bool) $file,
-                'has_file_b' => (bool) $fileB,
-                'file' => $file ? $this->fileDebugInfo($file) : null,
-                'file_b' => $fileB ? $this->fileDebugInfo($fileB) : null,
-            ]);
-        } catch (\Throwable $e) {
-            Log::warning('ExerciseRequest prepareForValidation logging failed', ['error' => $e->getMessage()]);
+        // Normalize empty optional fields
+        $explanation = $this->input('explanation');
+        if (is_string($explanation) && trim($explanation) === '') {
+            $this->merge(['explanation' => null]);
         }
     }
 
     public function withValidator($validator)
     {
-        $validator->after(function ($validator) {
-            if ($validator->fails()) {
-                Log::warning('ExerciseRequest validation failed', [
-                    'errors' => $validator->errors()->toArray(),
-                ]);
-            } else {
-                Log::info('ExerciseRequest validation passed');
-            }
-        });
+        // no-op
     }
 
-    private function fileDebugInfo(\Illuminate\Http\UploadedFile $file): array
-    {
-        return [
-            'original_name' => $file->getClientOriginalName(),
-            'client_mime' => $file->getClientMimeType(),
-            'detected_mime' => $file->getMimeType(),
-            'extension' => $file->getClientOriginalExtension(),
-            'size_kb' => round(($file->getSize() ?? 0) / 1024, 2),
-            'is_valid' => method_exists($file, 'isValid') ? $file->isValid() : null,
-        ];
-    }
+    // Removed verbose file debug logging
     /**
      * Custom attribute names.
      *

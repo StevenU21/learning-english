@@ -12,7 +12,6 @@ use Inertia\Inertia;
 use App\Models\Exercise;
 use App\Models\ExerciseType;
 use App\Classes\ExerciseTypeLogic;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
@@ -86,6 +85,14 @@ class ExerciseController extends Controller
         $uploadedB = $request->file('file_b');
         $data['file'] = $uploadedA;
         $data['file_b'] = $uploadedB;
+
+        // Normalize arrays: drop null/empty strings and reindex
+        $data['options'] = array_values(array_filter((array) ($data['options'] ?? []), function ($v) {
+            return !is_null($v) && !(is_string($v) && trim($v) === '');
+        }));
+        $data['solution'] = array_values(array_filter((array) ($data['solution'] ?? []), function ($v) {
+            return !is_null($v) && !(is_string($v) && trim($v) === '');
+        }));
         $type = ExerciseType::find($data['exercise_type_id']);
         if (!$type instanceof ExerciseType) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
@@ -93,7 +100,7 @@ class ExerciseController extends Controller
 
         $result = ExerciseTypeLogic::validateAndProcess($type->name, $data);
         if (!empty($result['errors'])) {
-            return back()->withErrors($result['errors']);
+            return back()->withErrors($result['errors'])->withInput();
         }
         // If validation passed, persist files and replace with stored paths
         if ($uploadedA) {
@@ -104,18 +111,7 @@ class ExerciseController extends Controller
             $storedB = $uploadedB->store('units', 'public');
             $result['data']['file_b'] = $storedB;
         }
-
-        Log::info('ExerciseController@store creating exercise', [
-            'type' => $type->name,
-            'stored_file' => $result['data']['file'] ?? null,
-            'stored_file_b' => $result['data']['file_b'] ?? null,
-        ]);
-        $exercise = Exercise::create($result['data']);
-        Log::info('ExerciseController@store created exercise', [
-            'id' => $exercise->id,
-            'file' => $exercise->file,
-            'file_b' => $exercise->file_b,
-        ]);
+        Exercise::create($result['data']);
         return redirect()->route('exercises.index')->with('success', 'Ejercicio creado correctamente');
     }
 
@@ -151,6 +147,14 @@ class ExerciseController extends Controller
         $uploadedB = $request->file('file_b');
         $data['file'] = $uploadedA;
         $data['file_b'] = $uploadedB;
+
+        // Normalize arrays: drop null/empty strings and reindex
+        $data['options'] = array_values(array_filter((array) ($data['options'] ?? []), function ($v) {
+            return !is_null($v) && !(is_string($v) && trim($v) === '');
+        }));
+        $data['solution'] = array_values(array_filter((array) ($data['solution'] ?? []), function ($v) {
+            return !is_null($v) && !(is_string($v) && trim($v) === '');
+        }));
         $type = ExerciseType::find($data['exercise_type_id']);
         if (!$type instanceof ExerciseType) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
@@ -158,7 +162,7 @@ class ExerciseController extends Controller
 
         $result = ExerciseTypeLogic::validateAndProcess($type->name, $data);
         if (!empty($result['errors'])) {
-            return back()->withErrors($result['errors']);
+            return back()->withErrors($result['errors'])->withInput();
         }
         // Persist new files if any; delete old ones; keep existing paths otherwise
         if ($uploadedA) {
@@ -177,20 +181,7 @@ class ExerciseController extends Controller
         } else {
             unset($result['data']['file_b']);
         }
-
-        Log::info('ExerciseController@update updating exercise', [
-            'id' => $exercise->id,
-            'type' => $type->name,
-            'stored_file' => $result['data']['file'] ?? 'unchanged',
-            'stored_file_b' => $result['data']['file_b'] ?? 'unchanged',
-        ]);
         $exercise->update($result['data']);
-        $exercise->refresh();
-        Log::info('ExerciseController@update updated exercise', [
-            'id' => $exercise->id,
-            'file' => $exercise->file,
-            'file_b' => $exercise->file_b,
-        ]);
         return redirect()->route('exercises.index')->with('success', 'Ejercicio actualizado correctamente');
     }
 
