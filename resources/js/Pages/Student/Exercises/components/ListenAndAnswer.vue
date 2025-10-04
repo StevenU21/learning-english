@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -8,23 +9,50 @@ const props = defineProps({
 const emit = defineEmits(['answered']);
 
 const selected = ref(null);
+const isPlaying = ref(false);
+const current = ref(null);
+let audio = null;
 
 watch(() => props.showFeedback, (v) => { if (!v) selected.value = null; });
-
-function play(which = 'a') {
-    const url = which === 'a' ? props.exercise.file_url : props.exercise.file_b_url;
-    if (!url) return;
-    const audio = new Audio(url);
-    audio.play();
-}
 
 function choose(value) {
     if (props.showFeedback) return;
     selected.value = value;
 }
 
+function togglePlay(which = 'a') {
+    const url = which === 'a' ? props.exercise.file_url : props.exercise.file_b_url;
+    if (!url) return;
+    // switching track
+    if (!audio || current.value !== which) {
+        if (audio) audio.pause();
+        audio = new Audio(url);
+        audio.addEventListener('ended', () => {
+            isPlaying.value = false;
+            current.value = null;
+        });
+        current.value = which;
+        audio.play();
+        isPlaying.value = true;
+    } else {
+        // same track toggle play/pause
+        if (isPlaying.value) {
+            audio.pause();
+            isPlaying.value = false;
+        } else {
+            audio.play();
+            isPlaying.value = true;
+        }
+    }
+}
+
 function submit() {
     if (props.showFeedback || selected.value === null) return;
+    // stop audio when submitting
+    if (audio && isPlaying.value) {
+        audio.pause();
+        isPlaying.value = false;
+    }
     const isCorrect = Array.isArray(props.exercise.solution) && props.exercise.solution.includes(selected.value);
     emit('answered', isCorrect, selected.value);
 }
@@ -43,14 +71,14 @@ function btnClass(option) {
 <template>
     <div class="space-y-5">
         <div class="flex items-center justify-center gap-3">
-            <button type="button" @click="play('a')"
-                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-indigo-700">
-                <i class="fa-solid fa-play mr-2"></i> Audio A
-            </button>
-            <button type="button" @click="play('b')"
-                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-indigo-700">
-                <i class="fa-solid fa-play mr-2"></i> Audio B
-            </button>
+            <PrimaryButton type="button" @click="togglePlay('a')" class="flex items-center gap-2">
+                <i :class="['fa-solid', current === 'a' && isPlaying ? 'fa-pause' : 'fa-play']"></i>
+                {{ current === 'a' && isPlaying ? 'Pausar audio A' : 'Audio A' }}
+            </PrimaryButton>
+            <PrimaryButton type="button" @click="togglePlay('b')" class="flex items-center gap-2">
+                <i :class="['fa-solid', current === 'b' && isPlaying ? 'fa-pause' : 'fa-play']"></i>
+                {{ current === 'b' && isPlaying ? 'Pausar audio B' : 'Audio B' }}
+            </PrimaryButton>
         </div>
         <div class="space-y-3">
             <button @click="choose('Igual')" :disabled="showFeedback" :class="btnClass('Igual')">Igual</button>

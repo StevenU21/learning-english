@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -8,15 +9,31 @@ const props = defineProps({
 const emit = defineEmits(['answered']);
 
 const selected = ref(null);
+const isPlaying = ref(false);
+let audio = null;
 
 watch(() => props.showFeedback, (v) => {
     if (!v) selected.value = null;
 });
 
-function play() {
+// Initialize audio once and handle play/pause state
+onMounted(() => {
     if (props.exercise.file_url) {
-        const audio = new Audio(props.exercise.file_url);
+        audio = new Audio(props.exercise.file_url);
+        audio.addEventListener('ended', () => {
+            isPlaying.value = false;
+        });
+    }
+});
+
+function togglePlay() {
+    if (!audio) return;
+    if (isPlaying.value) {
+        audio.pause();
+        isPlaying.value = false;
+    } else {
         audio.play();
+        isPlaying.value = true;
     }
 }
 
@@ -27,6 +44,11 @@ function choose(opt) {
 
 function submit() {
     if (props.showFeedback || selected.value === null) return;
+    // Stop audio if still playing
+    if (audio && isPlaying.value) {
+        audio.pause();
+        isPlaying.value = false;
+    }
     const isCorrect = Array.isArray(props.exercise.solution) && props.exercise.solution.includes(selected.value);
     emit('answered', isCorrect, selected.value);
 }
@@ -46,10 +68,10 @@ function getButtonClass(opt) {
 <template>
     <div class="space-y-5">
         <div class="flex items-center justify-center gap-3">
-            <button type="button" @click="play"
-                class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-indigo-700">
-                <i class="fa-solid fa-play mr-2"></i> Reproducir audio
-            </button>
+            <PrimaryButton type="button" @click="togglePlay" class="flex items-center gap-2">
+                <i :class="['fa-solid', isPlaying ? 'fa-pause' : 'fa-play']"></i>
+                {{ isPlaying ? 'Pausar audio' : 'Reproducir audio' }}
+            </PrimaryButton>
         </div>
         <div class="space-y-3">
             <button v-for="opt in exercise.options" :key="opt" @click="choose(opt)" :disabled="showFeedback"
