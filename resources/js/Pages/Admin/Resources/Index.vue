@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -16,6 +17,12 @@ const resourceList = computed(() => {
     const u = props.resources;
     return Array.isArray(u) ? u : (u?.data ?? []);
 });
+const links = computed(() => Array.isArray(props.resources) ? [] : (props.resources?.links ?? []));
+const meta = computed(() => Array.isArray(props.resources) ? null : ({
+    from: props.resources?.from,
+    to: props.resources?.to,
+    total: props.resources?.total,
+}));
 
 const columns = [
     { key: 'id', label: 'ID', icon: 'fa-solid fa-id-badge', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
@@ -95,6 +102,9 @@ function deleteResource(id) {
                             </PrimaryButton>
                         </template>
                     </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
+                    </div>
                 </div>
             </div>
         </div>

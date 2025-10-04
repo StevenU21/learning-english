@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
 import { computed } from 'vue';
 
@@ -16,6 +17,13 @@ const lessonList = computed(() => {
     const u = props.lessons;
     return Array.isArray(u) ? u : (u?.data ?? []);
 });
+// Pagination links and meta
+const links = computed(() => Array.isArray(props.lessons) ? [] : (props.lessons?.links ?? []));
+const meta = computed(() => Array.isArray(props.lessons) ? null : ({
+    from: props.lessons?.from,
+    to: props.lessons?.to,
+    total: props.lessons?.total,
+}));
 
 // Responsive: on mobile show only Nombre, Unidad y Acciones
 const columns = [
@@ -55,12 +63,8 @@ function deleteLesson(id) {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <DataTable
-                        :items="lessonList"
-                        :columns="columns"
-                        :empty-text="'No se encontraron lecciones.'"
-                        show-actions
-                    >
+                    <DataTable :items="lessonList" :columns="columns" :empty-text="'No se encontraron lecciones.'"
+                        show-actions>
                         <!-- Descripción truncada -->
                         <template #cell-description="{ value }">
                             <span class="text-gray-600 dark:text-gray-400">
@@ -71,20 +75,23 @@ function deleteLesson(id) {
                         <!-- Acciones -->
                         <template #actions="{ row }">
                             <Link :href="route('lessons.show', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-eye mr-2"></i> Ver
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-eye mr-2"></i> Ver
+                            </PrimaryButton>
                             </Link>
                             <Link :href="route('lessons.edit', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                            </PrimaryButton>
                             </Link>
                             <PrimaryButton @click="deleteLesson(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
                             </PrimaryButton>
                         </template>
                     </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
+                    </div>
                 </div>
             </div>
         </div>

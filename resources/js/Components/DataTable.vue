@@ -21,6 +21,9 @@ const props = defineProps({
     showActions: { type: Boolean, default: false },
     actionsLabel: { type: String, default: 'Acciones' },
     actionsIcon: { type: String, default: 'fa-solid fa-cogs' },
+    // Pagination props
+    links: { type: Array, default: () => [] },
+    meta: { type: Object, default: null },
 });
 
 const colSpan = computed(() => (props.columns?.length || 0) + (props.showActions ? 1 : 0));
@@ -44,6 +47,7 @@ function getValue(row, key) {
     // Support nested keys like "level.name"
     return key.split('.').reduce((acc, k) => (acc == null ? undefined : acc[k]), row) ?? '';
 }
+import Pagination from '@/Components/Pagination.vue';
 </script>
 
 <template>
@@ -64,24 +68,20 @@ function getValue(row, key) {
             </thead>
             <tbody>
                 <tr v-if="!items || items.length === 0">
-                    <td :colspan="colSpan"
-                        class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <td :colspan="colSpan" class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
                         {{ emptyText }}
                     </td>
                 </tr>
-                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex"
-                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex" class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
                     <td v-for="col in columns" :key="col.key" :class="cellClasses(col)">
                         <slot :name="`cell-${col.key}`" :row="row" :index="rowIndex" :value="getValue(row, col.key)">
                             {{ getValue(row, col.key) }}
                         </slot>
                     </td>
                     <td v-if="showActions" class="px-4 py-2 text-center">
-                        <!-- Inline actions on desktop -->
                         <div class="hidden md:flex justify-center space-x-2">
                             <slot name="actions" :row="row" :index="rowIndex" />
                         </div>
-                        <!-- Dropdown actions on mobile -->
                         <div class="flex md:hidden justify-center">
                             <ActionDropdown>
                                 <slot name="actions" :row="row" :index="rowIndex" />
@@ -91,6 +91,10 @@ function getValue(row, key) {
                 </tr>
             </tbody>
         </table>
+    </div>
+    <!-- Pagination section -->
+    <div v-if="links && links.length > 0" class="border-t border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-6">
+        <Pagination :links="links" :meta="meta" />
     </div>
     <!-- Usage example:
   <DataTable :items="rows" :columns="cols" show-actions>

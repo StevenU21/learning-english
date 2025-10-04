@@ -1,13 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { computed } from 'vue';
+import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 
 const props = defineProps({
     units: Array,
     users: Array,
     lessons: Array,
-    progress: Array,
+    progress: { type: [Object, Array], required: true },
     selectedUnit: [String, Number],
     selectedUser: [String, Number],
     selectedLesson: [String, Number],
@@ -18,12 +22,20 @@ const {
     units,
     users,
     lessons,
-    progress: progressList,
+    progress: progressProp,
     selectedUnit,
     selectedUser,
     selectedLesson,
     selectedStatus,
 } = props;
+// Derive array of items and pagination props
+const progressList = computed(() => Array.isArray(progressProp) ? progressProp : (progressProp.data ?? []));
+const links = computed(() => Array.isArray(progressProp) ? [] : (progressProp.links ?? []));
+const meta = computed(() => Array.isArray(progressProp) ? null : ({
+    from: progressProp.from,
+    to: progressProp.to,
+    total: progressProp.total,
+}));
 
 const form = useForm({
     unit_id: selectedUnit || '',
@@ -35,6 +47,15 @@ const form = useForm({
 function applyFilters() {
     form.get(route('admin.progress.index'), { preserveState: true, replace: true });
 }
+
+// Columns for DataTable (similar style to Units)
+const columns = [
+    { key: 'user.name', label: 'Usuario', icon: 'fa-solid fa-user', align: 'left' },
+    { key: 'lesson.unit.name', label: 'Unidad', icon: 'fa-solid fa-layer-group', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
+    { key: 'lesson.name', label: 'Lección', icon: 'fa-solid fa-book-open', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
+    { key: 'progress', label: 'Progreso', icon: 'fa-solid fa-bars-progress', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
+    { key: 'status', label: 'Estado', icon: 'fa-solid fa-flag-checkered', align: 'left' },
+];
 </script>
 
 <template>
@@ -82,43 +103,22 @@ function applyFilters() {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-max">
-                            <thead class="bg-gray-200 dark:bg-gray-900">
-                                <tr>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Usuario</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Unidad</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Lección</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Progreso</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Estado</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="progressList.length === 0">
-                                    <td colspan="6"
-                                        class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                        No se encontraron registros de progreso.
-                                    </td>
-                                </tr>
-                                <tr v-for="item in progressList" :key="item.id"
-                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ item.user.name }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ item.lesson.unit.name }}
-                                    </td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ item.lesson.name }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ item.progress }}</td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2 capitalize">{{ item.status }}
-                                    </td>
-                                    <td class="px-4 py-2">
-                                        <Link :href="route('admin.progress.show', item.user.id)"
-                                            class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition">
-                                        Ver detalle
-                                        </Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <DataTable :items="progressList" :columns="columns"
+                        :empty-text="'No se encontraron registros de progreso.'" show-actions>
+                        <template #cell-status="{ value }">
+                            <span class="capitalize">{{ value }}</span>
+                        </template>
+                        <template #actions="{ row }">
+                            <Link :href="route('admin.progress.show', row.user.id)">
+                            <PrimaryButton>
+                                <i class="fa-solid fa-eye mr-2"></i>
+                                Ver detalle
+                            </PrimaryButton>
+                            </Link>
+                        </template>
+                    </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
                     </div>
                 </div>
             </div>

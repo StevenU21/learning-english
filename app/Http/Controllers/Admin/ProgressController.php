@@ -41,7 +41,8 @@ class ProgressController extends Controller
         if ($status) {
             $query->where('status', $status);
         }
-        $progress = $query->get();
+        // Paginate progress 10 per page with filters applied
+        $progress = $query->paginate(10)->appends($request->all());
 
         return Inertia::render('Admin/Progress/Index', [
             'units' => $units,

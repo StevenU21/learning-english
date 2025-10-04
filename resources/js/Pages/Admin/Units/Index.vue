@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ImageCell from '@/Components/ImageCell.vue';
 import DataTable from '@/Components/DataTable.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -17,6 +18,12 @@ const unitList = computed(() => {
     const u = props.units;
     return Array.isArray(u) ? u : (u?.data ?? []);
 });
+const links = computed(() => Array.isArray(props.units) ? [] : props.units?.links ?? []);
+const meta = computed(() => Array.isArray(props.units) ? null : ({
+    from: props.units.from,
+    to: props.units.to,
+    total: props.units.total,
+}));
 
 // Responsive: hide all but "Nivel" and "Acciones" on mobile using hidden md:table-cell
 const columns = [
@@ -82,20 +89,23 @@ function deleteUnit(id) {
                         <!-- Acciones -->
                         <template #actions="{ row }">
                             <Link :href="route('units.show', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-eye mr-2"></i> Ver
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-eye mr-2"></i> Ver
+                            </PrimaryButton>
                             </Link>
                             <Link :href="route('units.edit', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                            </PrimaryButton>
                             </Link>
                             <PrimaryButton @click="deleteUnit(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
                             </PrimaryButton>
                         </template>
                     </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
+                    </div>
                 </div>
             </div>
         </div>

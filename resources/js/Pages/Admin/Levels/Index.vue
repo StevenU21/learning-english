@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
+import Pagination from '@/Components/Pagination.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -16,6 +17,13 @@ const levelList = computed(() => {
     const u = props.levels;
     return Array.isArray(u) ? u : (u?.data ?? []);
 });
+// Pagination links and meta for paginated levels
+const links = computed(() => Array.isArray(props.levels) ? [] : (props.levels?.links ?? []));
+const meta = computed(() => Array.isArray(props.levels) ? null : ({
+    from: props.levels?.from,
+    to: props.levels?.to,
+    total: props.levels?.total,
+}));
 
 // Responsive: on mobile show only Nombre + Acciones
 const columns = [
@@ -84,6 +92,9 @@ function deleteLevel(id) {
                             </PrimaryButton>
                         </template>
                     </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
+                    </div>
                 </div>
             </div>
         </div>
