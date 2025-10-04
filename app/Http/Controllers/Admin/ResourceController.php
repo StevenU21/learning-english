@@ -10,6 +10,7 @@ use App\Models\Unit;
 use App\Services\FileService;
 use File;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ResourceController extends Controller
@@ -75,12 +76,15 @@ class ResourceController extends Controller
         $this->authorize('update', $resource);
         $data = $request->validated();
         if ($request->hasFile('file_path')) {
-            $fileService->updateLocal($resource, 'file_path', $request->file('file_path'), 'resources');
+            // Update file and persist returned path
+            $path = $fileService->updateLocal($resource, 'file_path', $request->file('file_path'), 'resources');
+            $resource->file_path = $path;
+            // Update other fields too
+            $resource->fill(collect($data)->except('file_path')->toArray());
+            $resource->save();
         } else {
             // Si no hay archivo nuevo, actualiza los demás campos
-            $resource->update(array_filter($data, function ($key) {
-                return $key !== 'file_path';
-            }, ARRAY_FILTER_USE_KEY));
+            $resource->update(collect($data)->except('file_path')->toArray());
         }
         return redirect()->route('resources.index')->with('success', 'Recurso actualizado correctamente');
     }
@@ -96,6 +100,11 @@ class ResourceController extends Controller
     public function download(Resource $resource)
     {
         $this->authorize('download', $resource);
-        return response()->download(storage_path('app/public/' . $resource->getAttribute('file_path')));
+        $path = $resource->getAttribute('file_path');
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            abort(404, 'Archivo no encontrado');
+        }
+        $absolutePath = Storage::disk('public')->path($path);
+        return response()->download($absolutePath, basename($path));
     }
 }

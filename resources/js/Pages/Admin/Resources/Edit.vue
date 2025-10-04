@@ -12,7 +12,15 @@ const form = useForm({
 });
 
 function submit() {
-    form.put(route('resources.update', props.resource.id));
+    form
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            if (!payload.file_path) delete payload.file_path; // don't send null file
+            return payload;
+        })
+        .post(route('resources.update', props.resource.id), {
+            forceFormData: true,
+        });
 }
 </script>
 
