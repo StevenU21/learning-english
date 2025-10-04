@@ -13,12 +13,22 @@ const form = useForm({
 });
 
 function submit() {
-    form.put(route('units.update', props.unit.id));
+    // Ensure multipart upload, spoof PUT, and avoid clearing image when not provided
+    form
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            if (!payload.image) delete payload.image; // don't send null image
+            return payload;
+        })
+        .post(route('units.update', props.unit.id), {
+            forceFormData: true,
+        });
 }
 </script>
 
 <template>
     <AuthenticatedLayout>
+
         <Head title="Editar Unidad" />
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">

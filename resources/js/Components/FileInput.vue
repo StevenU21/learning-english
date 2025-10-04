@@ -10,22 +10,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 
 const props = defineProps<{ modelValue?: File | null }>();
 const emit = defineEmits(['update:modelValue']);
 
 const previewUrl = ref<string | null>(null);
+let lastObjectUrl: string | null = null;
 
 watch(
     () => props.modelValue,
     (file) => {
+        if (lastObjectUrl) {
+            URL.revokeObjectURL(lastObjectUrl);
+            lastObjectUrl = null;
+        }
         if (file && file.type && file.type.startsWith('image/')) {
-            previewUrl.value = URL.createObjectURL(file);
+            lastObjectUrl = URL.createObjectURL(file);
+            previewUrl.value = lastObjectUrl;
         } else {
             previewUrl.value = null;
         }
     },
     { immediate: true }
 );
+
+onBeforeUnmount(() => {
+    if (lastObjectUrl) {
+        URL.revokeObjectURL(lastObjectUrl);
+        lastObjectUrl = null;
+    }
+});
 </script>

@@ -44,7 +44,7 @@ const props = defineProps({
         </div>
         <div>
             <InputLabel for="image" value="Imagen" />
-            <FileInput id="image" v-model="form.image" />
+            <FileInput id="image" v-model="form.image" accept="image/*" />
             <InputError :message="form.errors.image" class="mt-2" />
         </div>
         <div>
