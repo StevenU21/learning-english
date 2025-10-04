@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -79,9 +80,11 @@ function statusBadgeClasses(status) {
                             class="font-medium">{{ user.name }}</span></p>
                 </div>
                 <div class="flex space-x-2">
-                    <Link :href="route('admin.progress.index')"
-                        class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                    Volver
+                    <Link :href="route('admin.progress.index')">
+                    <PrimaryButton>
+                        <i class="fa-solid fa-arrow-left mr-2"></i>
+                        Volver
+                    </PrimaryButton>
                     </Link>
                 </div>
             </div>
@@ -91,21 +94,21 @@ function statusBadgeClasses(status) {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-10">
                 <!-- Resumen del usuario -->
                 <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Información del Estudiante
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                        <i class="fa-solid fa-user mr-2"></i>Información del Estudiante
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                            <p class="text-gray-500 dark:text-gray-400">Nombre</p>
+                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-user mr-1"></i>Nombre</p>
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.name }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 dark:text-gray-400">Email</p>
+                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-envelope mr-1"></i>Email</p>
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.email }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 dark:text-gray-400">Creado</p>
-                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ new
-                                Date(user.created_at).toLocaleDateString() }}</p>
+                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-calendar-days mr-1"></i>Creado</p>
+                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ new Date(user.created_at).toLocaleDateString() }}</p>
                         </div>
                     </div>
                 </div>
@@ -113,7 +116,9 @@ function statusBadgeClasses(status) {
                 <!-- Progreso por Unidad -->
                 <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Progreso por Unidad</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <i class="fa-solid fa-layer-group mr-2"></i>Progreso por Unidad
+                        </h3>
                         <div class="flex space-x-3 text-sm">
                             <select v-model="unitStatusFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -124,13 +129,30 @@ function statusBadgeClasses(status) {
                             </select>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    <!-- Mobile: cards -->
+                    <div class="md:hidden space-y-3">
+                        <div v-if="filteredUnitProgress.length === 0"
+                            class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin registros</div>
+                        <div v-for="up in filteredUnitProgress" :key="up.id"
+                            class="rounded-md border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+                            <div class="flex items-center justify-between">
+                                <div class="font-medium text-gray-800 dark:text-gray-200">{{ up.unit.name }}</div>
+                                <span
+                                    :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(up.status)]">{{
+                                        up.status }}</span>
+                            </div>
+                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">Progreso: {{ up.progress }}%
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Desktop: table -->
+                    <div class="overflow-x-auto hidden md:block">
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Estado</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -146,7 +168,7 @@ function statusBadgeClasses(status) {
                                     <td class="px-4 py-2">
                                         <span
                                             :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(up.status)]">{{
-                                            up.status }}</span>
+                                                up.status }}</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -157,7 +179,9 @@ function statusBadgeClasses(status) {
                 <!-- Progreso por Lección -->
                 <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Progreso por Lección</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <i class="fa-solid fa-book-open mr-2"></i>Progreso por Lección
+                        </h3>
                         <div class="flex flex-wrap gap-3 text-sm">
                             <select v-model="lessonUnitFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -173,14 +197,33 @@ function statusBadgeClasses(status) {
                             </select>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    <!-- Mobile: cards -->
+                    <div class="md:hidden space-y-3">
+                        <div v-if="filteredLessonProgress.length === 0"
+                            class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin registros</div>
+                        <div v-for="lp in filteredLessonProgress" :key="lp.id"
+                            class="rounded-md border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+                            <div class="flex items-center justify-between">
+                                <div class="font-medium text-gray-800 dark:text-gray-200">{{ lp.lesson.name }}</div>
+                                <span
+                                    :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(lp.status)]">{{
+                                        lp.status }}</span>
+                            </div>
+                            <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Unidad: {{ lp.lesson.unit.name }}
+                            </div>
+                            <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Progreso: {{ lp.progress }}%
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Desktop: table -->
+                    <div class="overflow-x-auto hidden md:block">
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Estado</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book-open mr-2"></i>Lección</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -198,7 +241,7 @@ function statusBadgeClasses(status) {
                                     <td class="px-4 py-2">
                                         <span
                                             :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(lp.status)]">{{
-                                            lp.status }}</span>
+                                                lp.status }}</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -209,7 +252,9 @@ function statusBadgeClasses(status) {
                 <!-- Intentos de Ejercicios -->
                 <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Intentos de Ejercicios</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <i class="fa-solid fa-pen-to-square mr-2"></i>Intentos de Ejercicios
+                        </h3>
                         <div class="flex flex-wrap gap-3 text-sm">
                             <select v-model="attemptUnitFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -231,15 +276,41 @@ function statusBadgeClasses(status) {
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    <!-- Mobile: cards -->
+                    <div class="md:hidden space-y-3">
+                        <div v-if="filteredAttempts.length === 0"
+                            class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin intentos registrados
+                        </div>
+                        <div v-for="att in filteredAttempts" :key="att.id"
+                            class="rounded-md border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+                            <div class="font-medium text-gray-800 dark:text-gray-200 truncate"
+                                :title="att.exercise?.prompt">{{
+                                    att.exercise?.prompt?.slice(0, 80) }}<span
+                                    v-if="att.exercise?.prompt?.length > 80">…</span>
+                            </div>
+                            <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Lección: {{ att.lesson?.name ||
+                                att.exercise?.lesson?.name }}</div>
+                            <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Intento: #{{ att.attempt_number
+                            }}</div>
+                            <div class="mt-2 flex items-center justify-between text-sm">
+                                <span
+                                    :class="['px-2 py-1 rounded text-xs font-medium', att.is_correct ? 'bg-green-100 text-green-700 dark:bg-green-600/20 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300']">{{
+                                        att.is_correct ? 'Sí' : 'No' }}</span>
+                                <span class="text-gray-500 dark:text-gray-400">{{ att.answered_at ? new
+                                    Date(att.answered_at).toLocaleString() : '-' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Desktop: table -->
+                    <div class="overflow-x-auto hidden md:block">
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Ejercicio</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Intento</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Correcto</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Respondido</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-file-lines mr-2"></i>Ejercicio</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book-open mr-2"></i>Lección</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-pen-to-square mr-2"></i>Intento</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-check mr-2"></i>Correcto</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-calendar-check mr-2"></i>Respondido</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -260,7 +331,7 @@ function statusBadgeClasses(status) {
                                     <td class="px-4 py-2">
                                         <span
                                             :class="['px-2 py-1 rounded text-xs font-medium', att.is_correct ? 'bg-green-100 text-green-700 dark:bg-green-600/20 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300']">{{
-                                            att.is_correct ? 'Sí' : 'No' }}</span>
+                                                att.is_correct ? 'Sí' : 'No' }}</span>
                                     </td>
                                     <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ att.answered_at ? new
                                         Date(att.answered_at).toLocaleString() : '-' }}</td>
