@@ -52,10 +52,10 @@ const hasResources = computed(() => props.resources.length > 0);
                         <p class="text-xs text-gray-600 dark:text-gray-400 flex-1 leading-relaxed line-clamp-4 mb-4">{{
                             r.description || 'Sin descripción' }}</p>
                         <div class="mt-auto flex flex-col gap-2">
-                            <a :href="route('student.resources.download', r.id)"
-                                class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                <i class="fa-solid fa-download mr-2"></i> Descargar
-                            </a>
+                            <Link :href="route('student.resources.download', r.id)"
+                                class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                            <i class="fa-solid fa-download mr-2"></i> Descargar
+                            </Link>
                         </div>
                     </div>
                 </div>
