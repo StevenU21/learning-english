@@ -9,6 +9,7 @@ import OrderElements from './components/OrderElements.vue';
 import MatchColumns from './components/MatchColumns.vue';
 import MatchDefinitions from './components/MatchDefinitions.vue';
 import CompleteDialog from './components/CompleteDialog.vue';
+import Badge from '@/Components/Badge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
@@ -158,10 +159,9 @@ const componentMap = {
                 <div v-if="!finished && !showSummary" class="space-y-4">
                     <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                         <span>Ejercicio {{ current + 1 }} / {{ total }}</span>
-                        <span v-if="answered[current] !== undefined"
-                            :class="answered[current] ? 'text-green-500' : 'text-red-500'">
+                        <Badge v-if="answered[current] !== undefined" :type="answered[current] ? 'success' : 'error'">
                             {{ answered[current] ? 'Correcto' : 'Incorrecto' }}
-                        </span>
+                        </Badge>
                     </div>
 
                     <div
@@ -178,10 +178,12 @@ const componentMap = {
                             @answered="handleAnswer" />
 
                         <div class="mt-5 flex flex-col sm:flex-row gap-3">
-                            <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise" class="flex-1">
+                            <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise"
+                                class="flex-1">
                                 <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
                             </PrimaryButton>
-                            <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise" class="flex-1">
+                            <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise"
+                                class="flex-1">
                                 <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
                             </PrimaryButton>
                         </div>
@@ -202,9 +204,9 @@ const componentMap = {
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
                                     }}</span>
-                                <span :class="answered[idx] ? 'text-green-500' : 'text-red-500'">
+                                <Badge :type="answered[idx] ? 'success' : 'error'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
-                                </span>
+                                </Badge>
                             </div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Tu respuesta: {{
                                 formatAnswer(userAnswers[idx]) }}</div>
