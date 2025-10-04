@@ -12,6 +12,8 @@ use Inertia\Inertia;
 use App\Models\Exercise;
 use App\Models\ExerciseType;
 use App\Classes\ExerciseTypeLogic;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ExerciseController extends Controller
 {
@@ -79,6 +81,11 @@ class ExerciseController extends Controller
     {
         $this->authorize('create', Exercise::class);
         $data = $request->validated();
+        // Keep UploadedFile objects for type validation
+        $uploadedA = $request->file('file');
+        $uploadedB = $request->file('file_b');
+        $data['file'] = $uploadedA;
+        $data['file_b'] = $uploadedB;
         $type = ExerciseType::find($data['exercise_type_id']);
         if (!$type instanceof ExerciseType) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
@@ -88,7 +95,27 @@ class ExerciseController extends Controller
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors']);
         }
-        Exercise::create($result['data']);
+        // If validation passed, persist files and replace with stored paths
+        if ($uploadedA) {
+            $storedA = $uploadedA->store('units', 'public');
+            $result['data']['file'] = $storedA;
+        }
+        if ($uploadedB) {
+            $storedB = $uploadedB->store('units', 'public');
+            $result['data']['file_b'] = $storedB;
+        }
+
+        Log::info('ExerciseController@store creating exercise', [
+            'type' => $type->name,
+            'stored_file' => $result['data']['file'] ?? null,
+            'stored_file_b' => $result['data']['file_b'] ?? null,
+        ]);
+        $exercise = Exercise::create($result['data']);
+        Log::info('ExerciseController@store created exercise', [
+            'id' => $exercise->id,
+            'file' => $exercise->file,
+            'file_b' => $exercise->file_b,
+        ]);
         return redirect()->route('exercises.index')->with('success', 'Ejercicio creado correctamente');
     }
 
@@ -119,6 +146,11 @@ class ExerciseController extends Controller
     {
         $this->authorize('update', $exercise);
         $data = $request->validated();
+        // Keep UploadedFile objects for type validation
+        $uploadedA = $request->file('file');
+        $uploadedB = $request->file('file_b');
+        $data['file'] = $uploadedA;
+        $data['file_b'] = $uploadedB;
         $type = ExerciseType::find($data['exercise_type_id']);
         if (!$type instanceof ExerciseType) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
@@ -128,7 +160,37 @@ class ExerciseController extends Controller
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors']);
         }
+        // Persist new files if any; delete old ones; keep existing paths otherwise
+        if ($uploadedA) {
+            if (!empty($exercise->file)) {
+                Storage::disk('public')->delete($exercise->file);
+            }
+            $result['data']['file'] = $uploadedA->store('units', 'public');
+        } else {
+            unset($result['data']['file']);
+        }
+        if ($uploadedB) {
+            if (!empty($exercise->file_b)) {
+                Storage::disk('public')->delete($exercise->file_b);
+            }
+            $result['data']['file_b'] = $uploadedB->store('units', 'public');
+        } else {
+            unset($result['data']['file_b']);
+        }
+
+        Log::info('ExerciseController@update updating exercise', [
+            'id' => $exercise->id,
+            'type' => $type->name,
+            'stored_file' => $result['data']['file'] ?? 'unchanged',
+            'stored_file_b' => $result['data']['file_b'] ?? 'unchanged',
+        ]);
         $exercise->update($result['data']);
+        $exercise->refresh();
+        Log::info('ExerciseController@update updated exercise', [
+            'id' => $exercise->id,
+            'file' => $exercise->file,
+            'file_b' => $exercise->file_b,
+        ]);
         return redirect()->route('exercises.index')->with('success', 'Ejercicio actualizado correctamente');
     }
 

@@ -15,7 +15,11 @@ const form = useForm({
     solution: props.exercise.solution || [],
     explanation: props.exercise.explanation || '',
     exercise_type_id: props.exercise.exercise_type_id || '',
-    lesson_id: props.exercise.lesson_id || ''
+    lesson_id: props.exercise.lesson_id || '',
+    file: null,
+    file_b: null,
+    file_url: props.exercise.file_url || null,
+    file_b_url: props.exercise.file_b_url || null
 });
 
 function submit() {

@@ -40,6 +40,7 @@ function progressBarColor(progress) {
     if (progress > 0) return 'bg-yellow-500';
     return 'bg-gray-600';
 }
+import UnitCard from './components/UnitCard.vue';
 </script>
 
 <template>
@@ -75,71 +76,8 @@ function progressBarColor(progress) {
                 </div>
 
                 <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <div v-for="unit in filteredUnits" :key="unit.id"
-                        class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition">
-                        <!-- Imagen -->
-                        <div class="relative h-40 w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                            <img v-if="unit.image_url || unit.image" :src="unit.image_url || unit.image"
-                                :alt="'Imagen de ' + unit.name"
-                                class="h-full w-full object-cover group-hover:scale-105 transition duration-300" />
-                            <div v-else class="h-full w-full flex items-center justify-center text-gray-400">
-                                <i class="fa-solid fa-image text-3xl"></i>
-                            </div>
-                            <!-- Progreso badge -->
-                            <div
-                                class="absolute top-2 right-2 text-xs px-2 py-1 rounded-md bg-black/50 backdrop-blur border border-white/10 text-gray-100 font-medium">
-                                {{ unit.progress || 0 }}%
-                            </div>
-                        </div>
-
-                        <!-- Contenido -->
-                        <div class="flex-1 p-4 flex flex-col gap-3">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="font-semibold text-gray-800 dark:text-gray-200 line-clamp-2 text-sm">{{
-                                    unit.name }}
-                                </h3>
-                            </div>
-
-                            <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                                {{ unit.description || 'Sin descripción' }}
-                            </p>
-
-                            <div class="flex flex-wrap gap-2 mt-auto">
-                                <span v-if="unit.level?.name"
-                                    class="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold">
-                                    <i class="fa-solid fa-signal"></i> {{ unit.level.name }}
-                                </span>
-                                <span :class="[
-                                    'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border',
-                                    statusConfig(unit.status).bg,
-                                    statusConfig(unit.status).border,
-                                    statusConfig(unit.status).color
-                                ]">
-                                    <i class="fa-solid fa-circle"></i> {{ statusConfig(unit.status).text }}
-                                </span>
-                            </div>
-
-                            <!-- Barra de progreso -->
-                            <div class="mt-2">
-                                <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div class="h-full transition-all duration-500"
-                                        :class="progressBarColor(unit.progress)"
-                                        :style="{ width: (unit.progress || 0) + '%' }"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Acciones -->
-                        <div class="p-4 pt-0 flex items-center justify-between">
-                            <Link :href="route('student.units.start', unit.id)"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                            <i class="fa-solid fa-play mr-2"></i> Ingresar
-                            </Link>
-                            <Link :href="route('student.units.resources', unit.id)"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                            <i class="fa-solid fa-book-open mr-2"></i> Recursos
-                            </Link>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <UnitCard v-for="unit in filteredUnits" :key="unit.id" :unit="unit" />
                     </div>
                 </div>
             </div>

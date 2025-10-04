@@ -6,9 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Exercise extends Model
 {
+    protected $appends = [
+        'file_url',
+        'file_b_url',
+    ];
     protected $fillable = [
         'prompt',
         'file',
@@ -42,9 +47,12 @@ class Exercise extends Model
     {
         if ($value instanceof UploadedFile) {
             if (!empty($this->attributes['file'])) {
-                Storage::disk('public')->delete($this->attributes['file']);
+                $deleted = Storage::disk('public')->delete($this->attributes['file']);
+                Log::info('Exercise file deleted', ['path' => $this->attributes['file'], 'deleted' => $deleted]);
             }
-            $this->attributes['file'] = $value->store('units', 'public');
+            $stored = $value->store('units', 'public');
+            Log::info('Exercise file stored', ['path' => $stored, 'original' => $value->getClientOriginalName()]);
+            $this->attributes['file'] = $stored;
         } elseif (is_string($value) || is_null($value)) {
             $this->attributes['file'] = $value;
         }
@@ -54,9 +62,12 @@ class Exercise extends Model
     {
         if ($value instanceof UploadedFile) {
             if (!empty($this->attributes['file_b'])) {
-                Storage::disk('public')->delete($this->attributes['file_b']);
+                $deleted = Storage::disk('public')->delete($this->attributes['file_b']);
+                Log::info('Exercise file_b deleted', ['path' => $this->attributes['file_b'], 'deleted' => $deleted]);
             }
-            $this->attributes['file_b'] = $value->store('units', 'public');
+            $stored = $value->store('units', 'public');
+            Log::info('Exercise file_b stored', ['path' => $stored, 'original' => $value->getClientOriginalName()]);
+            $this->attributes['file_b'] = $stored;
         } elseif (is_string($value) || is_null($value)) {
             $this->attributes['file_b'] = $value;
         }

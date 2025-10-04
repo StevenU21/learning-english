@@ -23,14 +23,18 @@ class UnitController extends Controller
             'unitUserProgress' => function ($q) {
                 $q->where('user_id', auth()->id());
             }
-        ])->get();
-
-        $units = $units->map(function ($unit) {
+        ])->get()->map(function ($unit) {
             $progress = $unit->unitUserProgress->first();
-            $unitArr = $unit->toArray();
-            $unitArr['progress'] = $progress ? $progress->progress : 0;
-            $unitArr['status'] = $progress ? $progress->status : 'no_comenzado';
-            return $unitArr;
+            return [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'description' => $unit->description,
+                'expected_time' => $unit->expected_time,
+                'image_url' => $unit->image_url,
+                'level' => $unit->level,
+                'progress' => $progress ? $progress->progress : 0,
+                'status' => $progress ? $progress->status : 'no_comenzado',
+            ];
         });
 
         return Inertia::render('Student/Units/Index', [

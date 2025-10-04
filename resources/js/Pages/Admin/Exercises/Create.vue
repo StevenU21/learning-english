@@ -14,7 +14,9 @@ const form = useForm({
   solution: [],
   explanation: '',
   exercise_type_id: '',
-  lesson_id: ''
+  lesson_id: '',
+  file: null,
+  file_b: null
 });
 
 function submit() {

@@ -9,6 +9,8 @@ import OrderElementsFields from './components/OrderElementsFields.vue';
 import CompleteSpacesFields from './components/CompleteSpacesFields.vue';
 import MatchDefinitionsFields from './components/MatchDefinitionsFields.vue';
 import CompleteDialogFields from './components/CompleteDialogFields.vue';
+import ChooseAudioFields from './components/ChooseAudioFields.vue';
+import ListenAndAnswerFields from './components/ListenAndAnswerFields.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextArea from '@/Components/TextArea.vue';
@@ -47,6 +49,10 @@ const componentMap = computed(() => {
             return MatchDefinitionsFields;
         case 'Completar diálogo':
             return CompleteDialogFields;
+        case 'Elige lo que escuchas':
+            return ChooseAudioFields;
+        case 'Escucha y responde':
+            return ListenAndAnswerFields;
         case 'Respuesta corta':
         case 'Ensayo':
             return ShortAnswerFields;
@@ -57,7 +63,7 @@ const componentMap = computed(() => {
 </script>
 
 <template>
-    <form @submit.prevent="onSubmit" class="space-y-8">
+    <form @submit.prevent="onSubmit" class="space-y-8" enctype="multipart/form-data">
         <!-- Campos básicos -->
         <div class="grid grid-cols-2 gap-6">
             <div class="md:col-span-2">

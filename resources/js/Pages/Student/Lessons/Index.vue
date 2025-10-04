@@ -1,15 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import LessonCard from './components/LessonCard.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     unit: { type: Object, required: true },
     lessons: { type: Array, required: true },
 });
 
-// Ordenar lecciones (opcional: primero en progreso, luego no comenzadas, luego completadas)
 const orderedLessons = computed(() => {
     const priority = { en_progreso: 0, no_comenzado: 1, completado: 2 };
     return [...props.lessons].sort((a, b) => {
@@ -55,7 +54,7 @@ function progressBarColor(progress) {
                 </div>
                 <Link :href="route('student.units.index')"
                     class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                <i class="fa-solid fa-arrow-left mr-2"></i>Volver
+                <i class="fa-solid fa-arrow-left mr-2"></i> Volver
                 </Link>
             </div>
         </template>
@@ -71,52 +70,11 @@ function progressBarColor(progress) {
                 </div>
 
                 <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <div v-for="lesson in orderedLessons" :key="lesson.id"
-                        class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition">
-                        <div class="flex-1 p-4 flex flex-col gap-3">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="font-semibold text-gray-800 dark:text-gray-200 line-clamp-2 text-sm">{{
-                                    lesson.name
-                                    }}</h3>
-                            </div>
-                            <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                                {{ lesson.description || 'Sin descripción' }}
-                            </p>
-
-                            <div class="flex flex-wrap gap-2 mt-auto">
-                                <span
-                                    :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border', statusConfig(lesson.status).bg, statusConfig(lesson.status).border, statusConfig(lesson.status).color]">
-                                    <i class="fa-solid fa-circle"></i> {{ statusConfig(lesson.status).text }}
-                                </span>
-                            </div>
-
-                            <div class="mt-2">
-                                <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div class="h-full transition-all duration-500"
-                                        :class="progressBarColor(lesson.progress)"
-                                        :style="{ width: (lesson.progress || 0) + '%' }"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 pt-0 flex items-center justify-between flex-wrap gap-2">
-                            <Link
-                                :href="route('student.lessons.start', lesson.id)"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300"
-                            >
-                                <i class="fa-solid fa-play mr-2"></i> Ingresar
-                            </Link>
-                            <Link
-                                :href="route('student.lessons.show', lesson.id)"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300"
-                            >
-                                <i class="fa-solid fa-book-open mr-2"></i> Contenido
-                            </Link>
-                        </div>
-                    </div>
+                    <LessonCard v-for="lesson in orderedLessons" :key="lesson.id" :lesson="lesson" />
                 </div>
             </div>
         </div>
+
     </AuthenticatedLayout>
 </template>
 

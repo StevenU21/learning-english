@@ -9,6 +9,8 @@ import OrderElements from './components/OrderElements.vue';
 import MatchColumns from './components/MatchColumns.vue';
 import MatchDefinitions from './components/MatchDefinitions.vue';
 import CompleteDialog from './components/CompleteDialog.vue';
+import ChooseAudio from './components/ChooseAudio.vue';
+import ListenAndAnswer from './components/ListenAndAnswer.vue';
 import Badge from '@/Components/Badge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -125,7 +127,9 @@ const componentMap = {
     'Ordenar elementos': OrderElements,
     'Relacionar columnas': MatchColumns,
     'Emparejar definiciones': MatchDefinitions,
-    'Completar diálogo': CompleteDialog
+    'Completar diálogo': CompleteDialog,
+    'Elige lo que escuchas': ChooseAudio,
+    'Escucha y responde': ListenAndAnswer
 };
 
 </script>
