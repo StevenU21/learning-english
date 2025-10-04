@@ -36,22 +36,42 @@ const { level } = props;
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-700">
                     <div class="overflow-x-auto">
-                        <table class="w-full min-w-max rounded-xl overflow-hidden border border-gray-600">
-                            <tbody>
-                                <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
-                                    <th class="text-left p-4 text-gray-200 w-48 align-top">
-                                        <i class="fa-solid fa-font mr-2"></i>Nombre
-                                    </th>
-                                    <td class="p-4 text-gray-300 font-semibold text-lg">{{ level.name }}</td>
-                                </tr>
-                                <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
-                                    <th class="text-left p-4 text-gray-200 align-top">
-                                        <i class="fa-solid fa-align-left mr-2"></i>Descripción
-                                    </th>
-                                    <td class="p-4 text-gray-300 italic">{{ level.description || '-' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <!-- Desktop/tablet layout -->
+                        <div class="hidden md:block">
+                            <table class="w-full min-w-max rounded-xl overflow-hidden border border-gray-600">
+                                <tbody>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
+                                        <th class="text-left p-4 text-gray-200 w-48 align-top">
+                                            <i class="fa-solid fa-font mr-2"></i>Nombre
+                                        </th>
+                                        <td class="p-4 text-gray-300 font-semibold text-lg">{{ level.name }}</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
+                                        <th class="text-left p-4 text-gray-200 align-top">
+                                            <i class="fa-solid fa-align-left mr-2"></i>Descripción
+                                        </th>
+                                        <td class="p-4 text-gray-300 italic">{{ level.description || '-' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile layout -->
+                        <div class="md:hidden p-4 space-y-4">
+                            <div class="bg-gray-700/40 border border-gray-600 rounded-lg p-4">
+                                <div class="text-gray-200 text-sm font-semibold mb-1">
+                                    <i class="fa-solid fa-font mr-2"></i>Nombre
+                                </div>
+                                <div class="text-gray-300 font-semibold text-base">{{ level.name }}</div>
+                            </div>
+
+                            <div class="bg-gray-700/40 border border-gray-600 rounded-lg p-4">
+                                <div class="text-gray-200 text-sm font-semibold mb-1">
+                                    <i class="fa-solid fa-align-left mr-2"></i>Descripción
+                                </div>
+                                <div class="text-gray-300 italic">{{ level.description || '-' }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
