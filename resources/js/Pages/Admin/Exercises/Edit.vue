@@ -23,7 +23,20 @@ const form = useForm({
 });
 
 function submit() {
-    form.put(route('exercises.update', props.exercise.id), { forceFormData: true });
+    form
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            // Do not send preview-only URL fields
+            delete payload.file_url;
+            delete payload.file_b_url;
+            // Avoid sending null file fields
+            if (!payload.file) delete payload.file;
+            if (!payload.file_b) delete payload.file_b;
+            return payload;
+        })
+        .post(route('exercises.update', props.exercise.id), {
+            forceFormData: true,
+        });
 }
 </script>
 <template>
