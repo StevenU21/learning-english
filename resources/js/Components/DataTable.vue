@@ -53,7 +53,7 @@ import Pagination from '@/Components/Pagination.vue';
 <template>
     <div class="overflow-x-auto">
         <table class="w-full min-w-max">
-            <thead class="bg-gray-200 dark:bg-gray-900">
+            <thead class="bg-gray-200 dark:bg-gray-700">
                 <tr>
                     <th v-for="col in columns" :key="col.key" :class="headerClasses(col)">
                         <slot :name="`header-${col.key}`">
@@ -68,11 +68,11 @@ import Pagination from '@/Components/Pagination.vue';
             </thead>
             <tbody>
                 <tr v-if="!items || items.length === 0">
-                    <td :colspan="colSpan" class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <td :colspan="colSpan" class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-800/40 rounded-lg">
                         {{ emptyText }}
                     </td>
                 </tr>
-                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex" class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex" class="transition-colors duration-150 hover:bg-gray-200 dark:hover:bg-gray-700/70">
                     <td v-for="col in columns" :key="col.key" :class="cellClasses(col)">
                         <slot :name="`cell-${col.key}`" :row="row" :index="rowIndex" :value="getValue(row, col.key)">
                             {{ getValue(row, col.key) }}
