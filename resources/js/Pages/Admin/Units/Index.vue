@@ -6,6 +6,7 @@ import ImageCell from '@/Components/ImageCell.vue';
 import DataTable from '@/Components/DataTable.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { computed } from 'vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     units: {
@@ -55,16 +56,20 @@ function deleteUnit(id) {
         <Head title="Unidades" />
 
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Unidades
-                </h2>
-                <Link :href="route('units.create')">
-                <PrimaryButton>
-                    <i class="fa-solid fa-plus mr-2"></i> Agregar Unidad
-                </PrimaryButton>
-                </Link>
-            </div>
+            <PageHeader title="Unidades" subtitle="Gestiona, filtra y organiza tus unidades."
+                icon="fa-solid fa-layer-group" :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Unidades' }
+                ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
+                    <Link :href="route('units.create')">
+                    <PrimaryButton>
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Agregar Unidad
+                    </PrimaryButton>
+                    </Link>
+                </template>
+            </PageHeader>
         </template>
 
         <div class="py-12">
@@ -111,3 +116,7 @@ function deleteUnit(id) {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+/* Estilos específicos de esta página (el header usa estilos encapsulados en PageHeader.vue) */
+</style>
