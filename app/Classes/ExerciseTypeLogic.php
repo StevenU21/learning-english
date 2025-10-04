@@ -70,6 +70,41 @@ class ExerciseTypeLogic
                     $errors['solution'] = 'Debes ingresar la(s) frase(s) correcta(s) para completar el diálogo.';
                 }
                 break;
+            case 'Elige lo que escuchas':
+                // Requiere un audio y entre 2 y 4 opciones. La solución es una sola y debe estar en las opciones
+                if (empty($data['file'])) {
+                    $errors['file'] = 'Debes subir un archivo de audio.';
+                }
+                if (!isset($data['options']) || !is_array($data['options']) || count($data['options']) < 2 || count($data['options']) > 4) {
+                    $errors['options'] = 'Debes agregar entre 2 y 4 opciones.';
+                }
+                $solution = $data['solution'] ?? [];
+                if (!is_array($solution)) {
+                    $solution = [$solution];
+                }
+                if (count($solution) !== 1) {
+                    $errors['solution'] = 'Debes elegir solo una opción como solución.';
+                } elseif (!in_array($solution[0], $data['options'] ?? [])) {
+                    $errors['solution'] = 'La solución debe estar entre las opciones.';
+                }
+                break;
+            case 'Escucha y responde':
+                // Requiere dos audios. Opciones forzadas: Igual/Distinto. La solución es una sola de esas opciones
+                if (empty($data['file'])) {
+                    $errors['file'] = 'Debes subir el primer audio.';
+                }
+                if (empty($data['file_b'])) {
+                    $errors['file_b'] = 'Debes subir el segundo audio.';
+                }
+                $data['options'] = ['Igual', 'Distinto'];
+                $solution = $data['solution'] ?? [];
+                if (!is_array($solution)) {
+                    $solution = [$solution];
+                }
+                if (count($solution) !== 1 || !in_array($solution[0], $data['options'])) {
+                    $errors['solution'] = 'La solución debe ser "Igual" o "Distinto".';
+                }
+                break;
         }
         return [
             'errors' => $errors,

@@ -12,6 +12,7 @@ class Exercise extends Model
     protected $fillable = [
         'prompt',
         'file',
+        'file_b',
         'options',
         'solution',
         'explanation',
@@ -32,6 +33,11 @@ class Exercise extends Model
         return $this->file ? asset('storage/' . $this->file) : null;
     }
 
+    public function getFileBUrlAttribute(): ?string
+    {
+        return $this->file_b ? asset('storage/' . $this->file_b) : null;
+    }
+
     public function setFileAttribute($value)
     {
         if ($value instanceof UploadedFile) {
@@ -41,6 +47,18 @@ class Exercise extends Model
             $this->attributes['file'] = $value->store('units', 'public');
         } elseif (is_string($value) || is_null($value)) {
             $this->attributes['file'] = $value;
+        }
+    }
+
+    public function setFileBAttribute($value)
+    {
+        if ($value instanceof UploadedFile) {
+            if (!empty($this->attributes['file_b'])) {
+                Storage::disk('public')->delete($this->attributes['file_b']);
+            }
+            $this->attributes['file_b'] = $value->store('units', 'public');
+        } elseif (is_string($value) || is_null($value)) {
+            $this->attributes['file_b'] = $value;
         }
     }
 

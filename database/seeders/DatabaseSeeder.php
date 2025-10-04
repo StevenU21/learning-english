@@ -38,7 +38,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Relacionar columnas', 'description' => 'Ejercicios para relacionar elementos de dos listas'],
             ['name' => 'Ordenar elementos', 'description' => 'Ejercicios para ordenar elementos en el orden correcto'],
             ['name' => 'Emparejar definiciones', 'description' => 'Ejercicios para emparejar conceptos con sus definiciones'],
-            ['name' => 'Completar diálogo', 'description' => 'Ejercicios para completar diálogos con frases faltantes']
+            ['name' => 'Completar diálogo', 'description' => 'Ejercicios para completar diálogos con frases faltantes'],
+            ['name' => 'Elige lo que escuchas', 'description' => 'Sube un audio y elige entre 2 y 4 opciones la correcta.'],
+            ['name' => 'Escucha y responde', 'description' => 'Compara dos audios y responde si son iguales o distintos.']
         ]);
 
         Level::insert([

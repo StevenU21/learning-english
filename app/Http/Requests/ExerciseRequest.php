@@ -31,6 +31,8 @@ class ExerciseRequest extends FormRequest
     {
         return [
             'prompt' => ['required', 'string', 'min:6', 'max:255'],
+            'file' => ['nullable', 'file', 'mimetypes:audio/mpeg,audio/wav,audio/ogg', 'max:20480'],
+            'file_b' => ['nullable', 'file', 'mimetypes:audio/mpeg,audio/wav,audio/ogg', 'max:20480'],
             'options' => ['array', 'max:4'],
             'solution' => ['array', 'max:4'],
             'explanation' => ['nullable', 'string', 'min:6', 'max:255'],
@@ -47,6 +49,8 @@ class ExerciseRequest extends FormRequest
     {
         return [
             'prompt' => 'enunciado',
+            'file' => 'audio',
+            'file_b' => 'segundo audio',
             'options' => 'opciones',
             'solution' => 'solución',
             'explanation' => 'explicación',
@@ -78,6 +82,13 @@ class ExerciseRequest extends FormRequest
             'exercise_type_id.exists'   => 'El tipo de ejercicio seleccionado no es válido.',
             'lesson_id.required' => 'La lección es obligatoria.',
             'lesson_id.exists'   => 'La lección seleccionada no es válida.',
+
+            'file.file' => 'El archivo debe ser un archivo válido.',
+            'file.mimetypes' => 'El audio debe ser MP3, WAV u OGG.',
+            'file.max' => 'El audio no debe superar los :max kilobytes.',
+            'file_b.file' => 'El segundo archivo debe ser un archivo válido.',
+            'file_b.mimetypes' => 'El segundo audio debe ser MP3, WAV u OGG.',
+            'file_b.max' => 'El segundo audio no debe superar los :max kilobytes.',
         ];
     }
 }
