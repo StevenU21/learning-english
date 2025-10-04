@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Pagination from '@/Components/Pagination.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import DataTable from '@/Components/DataTable.vue';
 
@@ -17,6 +18,12 @@ const exerciseList = computed(() => {
     const list = props.exercises;
     return Array.isArray(list) ? list : (list?.data ?? []);
 });
+const links = computed(() => Array.isArray(props.exercises) ? [] : (props.exercises?.links ?? []));
+const meta = computed(() => Array.isArray(props.exercises) ? null : ({
+    from: props.exercises?.from,
+    to: props.exercises?.to,
+    total: props.exercises?.total,
+}));
 const filters = props.filters;
 const types = props.types;
 const lessons = props.lessons;
@@ -91,7 +98,7 @@ const columns = [
                 </div>
             </div>
         </template>
-        
+
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -121,6 +128,9 @@ const columns = [
                             </PrimaryButton>
                         </template>
                     </DataTable>
+                    <div class="border-t border-gray-200 dark:border-gray-700">
+                        <Pagination :links="links" :meta="meta" />
+                    </div>
                 </div>
             </div>
         </div>

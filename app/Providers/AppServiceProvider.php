@@ -17,8 +17,7 @@ use App\Policies\UnitPolicy;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-
-
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        Paginator::useTailwind();
         Gate::policy(Level::class, LevelPolicy::class);
         Gate::policy(Unit::class, UnitPolicy::class);
         Gate::policy(Resource::class, ResourcePolicy::class);
