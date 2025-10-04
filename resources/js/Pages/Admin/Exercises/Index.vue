@@ -4,6 +4,7 @@ import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import DataTable from '@/Components/DataTable.vue';
 
 const props = defineProps({
     exercises: [Object, Array],
@@ -47,6 +48,14 @@ function deleteExercise(id) {
     if (!confirm('¿Estás seguro de eliminar este ejercicio?')) return;
     router.delete(route('exercises.destroy', id));
 }
+
+// Responsive columns for table: show Tipo, Lección y Acciones en móvil
+const columns = [
+    { key: 'id', label: 'ID', icon: 'fa-solid fa-id-badge', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
+    { key: 'exercise_type.name', label: 'Tipo', icon: 'fa-solid fa-tags', align: 'left' },
+    { key: 'lesson.name', label: 'Lección', icon: 'fa-solid fa-book', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
+    { key: 'prompt', label: 'Prompt', icon: 'fa-solid fa-align-left', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
+];
 </script>
 
 <template>
@@ -82,63 +91,36 @@ function deleteExercise(id) {
                 </div>
             </div>
         </template>
-
+        
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-max">
-                            <thead class="bg-gray-200 dark:bg-gray-900">
-                                <tr>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">ID</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Tipo</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Lección</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4 text-left">Prompt</th>
-                                    <th class="text-gray-800 dark:text-gray-200 p-4">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="exerciseList.length === 0">
-                                    <td colspan="5"
-                                        class="text-gray-500 dark:text-gray-400 px-4 py-8 text-center bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                        No se encontraron ejercicios.
-                                    </td>
-                                </tr>
-                                <tr v-for="exercise in exerciseList" :key="exercise.id"
-                                    class="transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                    <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{ exercise.id }}</td>
-                                    <td class="text-gray-800 dark:text-gray-200 px-4 py-2">{{
-                                        exercise.exercise_type?.name }}
-                                    </td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">{{ exercise.lesson?.name }}
-                                    </td>
-                                    <td class="text-gray-600 dark:text-gray-400 px-4 py-2">
-                                        {{ exercise.prompt && exercise.prompt.length > 20 ? exercise.prompt.slice(0, 20)
-                                            + '…' :
-                                            exercise.prompt }}
-                                    </td>
-                                    <td class="px-4 py-2 space-x-2 text-center">
-                                        <div class="flex justify-center space-x-2">
-                                            <Link :href="route('exercises.show', exercise.id)">
-                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                                <i class="fa-solid fa-eye mr-2"></i> Ver
-                                            </PrimaryButton>
-                                            </Link>
-                                            <Link :href="route('exercises.edit', exercise.id)">
-                                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                                            </PrimaryButton>
-                                            </Link>
-                                            <PrimaryButton @click="deleteExercise(exercise.id)"
-                                                class="bg-red-500 hover:bg-red-700 text-white">
-                                                <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                                            </PrimaryButton>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <DataTable :items="exerciseList" :columns="columns" :empty-text="'No se encontraron ejercicios.'"
+                        show-actions>
+                        <template #cell-prompt="{ value }">
+                            <span class="text-gray-600 dark:text-gray-400">
+                                {{ value && value.length > 20 ? value.slice(0, 20) + '…' : value }}
+                            </span>
+                        </template>
+
+                        <!-- Acciones -->
+                        <template #actions="{ row }">
+                            <Link :href="route('exercises.show', row.id)">
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-eye mr-2"></i> Ver
+                            </PrimaryButton>
+                            </Link>
+                            <Link :href="route('exercises.edit', row.id)">
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                            </PrimaryButton>
+                            </Link>
+                            <PrimaryButton @click="deleteExercise(row.id)"
+                                class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-trash mr-2"></i> Eliminar
+                            </PrimaryButton>
+                        </template>
+                    </DataTable>
                 </div>
             </div>
         </div>

@@ -65,8 +65,9 @@ const componentMap = computed(() => {
 <template>
     <div class="space-y-8">
         <!-- Campos básicos -->
-        <div class="grid grid-cols-2 gap-6">
-            <div class="md:col-span-2">
+        <div class="space-y-6">
+            <!-- Enunciado (toda la línea) -->
+            <div>
                 <div class="flex items-center gap-2 text-gray-300">
                     <i class="fa-solid fa-file-lines text-gray-400"></i>
                     <InputLabel for="prompt" value="Enunciado" />
@@ -75,32 +76,37 @@ const componentMap = computed(() => {
                 <InputError :message="errors.prompt" class="mt-2" />
             </div>
 
-            <div>
-                <div class="flex items-center gap-2 text-gray-300">
-                    <i class="fa-solid fa-book-open text-gray-400"></i>
-                    <InputLabel for="lesson_id" value="Lección" />
+            <!-- Lección y Tipo en la misma línea -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-book-open text-gray-400"></i>
+                        <InputLabel for="lesson_id" value="Lección" />
+                    </div>
+                    <select id="lesson_id" v-model="form.lesson_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        <option value="">Selecciona una lección</option>
+                        <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}</option>
+                    </select>
+                    <InputError :message="errors.lesson_id" class="mt-2" />
                 </div>
-                <select id="lesson_id" v-model="form.lesson_id"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                    <option value="">Selecciona una lección</option>
-                    <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}</option>
-                </select>
-                <InputError :message="errors.lesson_id" class="mt-2" />
+
+                <div>
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-list-check text-gray-400"></i>
+                        <InputLabel for="exercise_type_id" value="Tipo de Ejercicio" />
+                    </div>
+                    <select id="exercise_type_id" v-model="form.exercise_type_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        <option value="">Selecciona un tipo</option>
+                        <option v-for="type in types" :key="type.id" :value="type.id">{{ type.name }}</option>
+                    </select>
+                    <InputError :message="errors.exercise_type_id" class="mt-2" />
+                </div>
             </div>
 
+            <!-- Explicación (toda la línea) -->
             <div>
-                <div class="flex items-center gap-2 text-gray-300">
-                    <i class="fa-solid fa-list-check text-gray-400"></i>
-                    <InputLabel for="exercise_type_id" value="Tipo de Ejercicio" />
-                </div>
-                <select id="exercise_type_id" v-model="form.exercise_type_id"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                    <option value="">Selecciona un tipo</option>
-                    <option v-for="type in types" :key="type.id" :value="type.id">{{ type.name }}</option>
-                </select>
-                <InputError :message="errors.exercise_type_id" class="mt-2" />
-            </div>
-            <div class="md:col-span-2">
                 <div class="flex items-center gap-2 text-gray-300">
                     <i class="fa-solid fa-info-circle text-gray-400"></i>
                     <InputLabel for="explanation" value="Explicación (opcional)" />
