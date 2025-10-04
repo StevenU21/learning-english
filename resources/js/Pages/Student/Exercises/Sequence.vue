@@ -173,13 +173,13 @@ const componentMap = {
                             :exercise="exercises[current]" :showFeedback="showFeedback" :lastAnswer="lastAnswer"
                             @answered="handleAnswer" />
 
-                        <div class="mt-5 flex flex-col sm:flex-row gap-3">
+                        <div class="mt-5 flex flex-col sm:flex-row gap-3 sm:justify-center text-center">
                             <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise"
-                                class="flex-1">
+                                class="w-full sm:flex-1">
                                 <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
                             </PrimaryButton>
                             <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise"
-                                class="flex-1">
+                                class="w-full sm:flex-1">
                                 <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
                             </PrimaryButton>
                         </div>
@@ -199,7 +199,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                    }}</span>
+                                }}</span>
                                 <Badge :type="answered[idx] ? 'success' : 'error'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </Badge>
@@ -209,7 +209,7 @@ const componentMap = {
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <PrimaryButton @click="saveSummary" :disabled="saving" class="flex-1">
+                        <PrimaryButton @click="saveSummary" :disabled="saving" class="w-full sm:flex-1">
                             <i class="fa-solid fa-flag-checkered mr-2"></i> Finalizar
                         </PrimaryButton>
                     </div>
