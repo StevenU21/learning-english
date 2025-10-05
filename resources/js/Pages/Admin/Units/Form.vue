@@ -53,12 +53,7 @@ const props = defineProps({
                 autocomplete="description-input" />
             <InputError :message="form.errors.description" class="mt-2" />
         </div>
-        <div class="mt-8 flex justify-between gap-2">
-            <Link :href="route('units.index')">
-            <PrimaryButton class="bg-gray-500 hover:bg-gray-700 text-white">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Volver
-            </PrimaryButton>
-            </Link>
+        <div class="mt-8 flex justify-end">
             <PrimaryButton type="submit" :disabled="form.processing">
                 <i class="fas fa-save mr-2"></i> {{ submitText }}
             </PrimaryButton>
