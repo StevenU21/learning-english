@@ -1,11 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     units: Array,
@@ -45,8 +46,26 @@ const form = useForm({
 });
 
 function applyFilters() {
-    form.get(route('admin.progress.index'), { preserveState: true, replace: true });
+    // Usamos router.get directamente para mantener el mismo patrón que en Exercises
+    router.get(route('admin.progress.index'), {
+        unit_id: form.unit_id || '',
+        user_id: form.user_id || '',
+        lesson_id: form.lesson_id || '',
+        status: form.status || '',
+    }, {
+        replace: true,
+        preserveScroll: true,
+        preserveState: true,
+    });
 }
+
+// Watch reactivo para disparar filtrado automáticamente
+watch(() => [form.unit_id, form.user_id, form.lesson_id, form.status],
+    ([nu, nuu, nl, ns], [ou, ouu, ol, os]) => {
+        if (nu === ou && nuu === ouu && nl === ol && ns === os) return;
+        applyFilters();
+    }
+);
 
 // Columns for DataTable (similar style to Units)
 const columns = [
@@ -64,45 +83,50 @@ const columns = [
         <Head title="Progreso" />
 
         <template #header>
-            <div class="flex flex-col space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Progreso</h2>
-                </div>
-                <div class="flex space-x-4">
-                    <div>
-                        <SelectInput v-model="form.unit_id" @change="applyFilters" class="w-60">
-                            <option value="">Todas las Unidades</option>
-                            <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
-                        </SelectInput>
+            <PageHeader title="Progreso" subtitle="Consulta, filtra y gestiona el progreso de los usuarios."
+                icon="fa-solid fa-bars-progress" :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Progreso' }
+                ]" gradient-classes="from-indigo-600 to-cyan-600">
+                <template #filters>
+                    <div class="flex flex-wrap gap-4">
+                        <div>
+                            <SelectInput v-model="form.unit_id" class="w-60">
+                                <option value="">Todas las Unidades</option>
+                                <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                            </SelectInput>
+                        </div>
+                        <div>
+                            <SelectInput v-model="form.user_id" class="w-60">
+                                <option value="">Todos los Usuarios</option>
+                                <option v-for="user in users" :key="user.id" :value="user.id">{{ user.first_name }}
+                                </option>
+                            </SelectInput>
+                        </div>
+                        <div>
+                            <SelectInput v-model="form.lesson_id" class="w-60">
+                                <option value="">Todas las Lecciones</option>
+                                <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}
+                                </option>
+                            </SelectInput>
+                        </div>
+                        <div>
+                            <SelectInput v-model="form.status" class="w-60">
+                                <option value="">Todos los Estados</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="en_progreso">En Progreso</option>
+                                <option value="completado">Completado</option>
+                            </SelectInput>
+                        </div>
                     </div>
-                    <div>
-                        <SelectInput v-model="form.user_id" @change="applyFilters" class="w-60">
-                            <option value="">Todos los Usuarios</option>
-                            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.first_name }}</option>
-                        </SelectInput>
-                    </div>
-                    <div>
-                        <SelectInput v-model="form.lesson_id" @change="applyFilters" class="w-60">
-                            <option value="">Todas las Lecciones</option>
-                            <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}
-                            </option>
-                        </SelectInput>
-                    </div>
-                    <div>
-                        <SelectInput v-model="form.status" @change="applyFilters" class="w-60">
-                            <option value="">Todos los Estados</option>
-                            <option value="pendiente">Pendiente</option>
-                            <option value="en_progreso">En Progreso</option>
-                            <option value="completado">Completado</option>
-                        </SelectInput>
-                    </div>
-                </div>
-            </div>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <DataTable :items="progressList" :columns="columns"
                         :empty-text="'No se encontraron registros de progreso.'" show-actions>
                         <template #cell-status="{ value }">
