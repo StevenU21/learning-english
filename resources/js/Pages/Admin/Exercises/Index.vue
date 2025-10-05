@@ -6,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import DataTable from '@/Components/DataTable.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     exercises: [Object, Array],
@@ -71,37 +72,43 @@ const columns = [
         <Head title="Ejercicios" />
 
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Ejercicios
-                </h2>
-                <div>
+            <PageHeader title="Ejercicios" subtitle="Gestiona, filtra y organiza tus ejercicios."
+                icon="fa-solid fa-pencil" :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Ejercicios' }
+                ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
                     <Link :href="route('exercises.create')">
                     <PrimaryButton>
-                        <i class="fa-solid fa-plus mr-2"></i> Agregar Ejercicio
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Agregar Ejercicio
                     </PrimaryButton>
                     </Link>
-                </div>
-            </div>
-            <div class="mt-4 flex space-x-4">
-                <div>
-                    <SelectInput v-model="form.type" class="w-60">
-                        <option value="">Todos los tipos de ejercicio</option>
-                        <option v-for="type in types" :value="type.id" :key="type.id">{{ type.name }}</option>
-                    </SelectInput>
-                </div>
-                <div>
-                    <SelectInput v-model="form.lesson" class="w-56">
-                        <option value="">Todas las lecciones</option>
-                        <option v-for="lesson in lessons" :value="lesson.id" :key="lesson.id">{{ lesson.name }}</option>
-                    </SelectInput>
-                </div>
-            </div>
+                </template>
+                <template #filters>
+                    <div class="flex flex-wrap gap-4">
+                        <div>
+                            <SelectInput v-model="form.type" class="w-60">
+                                <option value="">Todos los tipos de ejercicio</option>
+                                <option v-for="type in types" :value="type.id" :key="type.id">{{ type.name }}</option>
+                            </SelectInput>
+                        </div>
+                        <div>
+                            <SelectInput v-model="form.lesson" class="w-56">
+                                <option value="">Todas las lecciones</option>
+                                <option v-for="lesson in lessons" :value="lesson.id" :key="lesson.id">{{ lesson.name }}
+                                </option>
+                            </SelectInput>
+                        </div>
+                    </div>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <DataTable :items="exerciseList" :columns="columns" :empty-text="'No se encontraron ejercicios.'"
                         show-actions>
                         <template #cell-prompt="{ value }">

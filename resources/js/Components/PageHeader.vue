@@ -56,6 +56,10 @@ const props = defineProps({
                     <slot name="actions" />
                 </div>
             </div>
+                <!-- Optional filters area -->
+                <div v-if="$slots.filters" class="mt-4">
+                    <slot name="filters" />
+                </div>
         </div>
     </section>
 </template>

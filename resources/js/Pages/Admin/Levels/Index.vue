@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
 import Pagination from '@/Components/Pagination.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -47,27 +48,28 @@ function deleteLevel(id) {
         <Head title="Niveles" />
 
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Niveles
-                </h2>
-                <Link :href="route('levels.create')">
-                <PrimaryButton>
-                    <i class="fa-solid fa-plus mr-2"></i> Agregar Nivel
-                </PrimaryButton>
-                </Link>
-            </div>
+            <PageHeader title="Niveles" subtitle="Gestiona, filtra y organiza tus niveles." icon="fa-solid fa-list"
+                :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Niveles' }
+                ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
+                    <Link :href="route('levels.create')">
+                    <PrimaryButton>
+                        <i class="fa-solid fa-plus mr-2"></i>
+                        Agregar Nivel
+                    </PrimaryButton>
+                    </Link>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <DataTable
-                        :items="levelList"
-                        :columns="columns"
-                        :empty-text="'No se encontraron niveles.'"
-                        show-actions
-                    >
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
+                    <DataTable :items="levelList" :columns="columns" :empty-text="'No se encontraron niveles.'"
+                        show-actions>
                         <!-- Descripción truncada -->
                         <template #cell-description="{ value }">
                             <span class="text-gray-600 dark:text-gray-400">
@@ -78,14 +80,14 @@ function deleteLevel(id) {
                         <!-- Acciones -->
                         <template #actions="{ row }">
                             <Link :href="route('levels.show', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-eye mr-2"></i> Ver
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-eye mr-2"></i> Ver
+                            </PrimaryButton>
                             </Link>
                             <Link :href="route('levels.edit', row.id)">
-                                <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                    <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                                </PrimaryButton>
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                            </PrimaryButton>
                             </Link>
                             <PrimaryButton @click="deleteLevel(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
