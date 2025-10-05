@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({ lesson: Object });
 const { lesson } = props;
@@ -13,28 +14,35 @@ const { lesson } = props;
         <Head title="Detalles de Lección" />
 
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    {{ lesson.name }}
-                </h2>
-                <div class="space-x-2 flex">
-                    <Link :href="route('lessons.index')">
-                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver
-                    </PrimaryButton>
-                    </Link>
-                    <Link :href="route('lessons.edit', lesson.id)">
-                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                        <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                    </PrimaryButton>
-                    </Link>
-                </div>
-            </div>
+            <PageHeader :title="lesson.name" subtitle="Detalles de la lección." icon="fa-solid fa-book-open"
+                :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Lecciones', href: route('lessons.index') },
+                    { label: 'Detalle' }
+                ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
+                    <div class="space-x-2 flex">
+                        <Link :href="route('lessons.index')">
+                        <PrimaryButton>
+                            <i class="fa-solid fa-arrow-left mr-2"></i>
+                            Volver a la lista
+                        </PrimaryButton>
+                        </Link>
+                        <Link :href="route('lessons.edit', lesson.id)">
+                        <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                            <i class="fa-solid fa-pen-to-square mr-2"></i>
+                            Editar
+                        </PrimaryButton>
+                        </Link>
+                    </div>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-700">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <div class="overflow-x-auto">
                         <table class="w-full min-w-max rounded-xl overflow-hidden border border-gray-600">
                             <tbody>
@@ -49,7 +57,8 @@ const { lesson } = props;
                                         <i class="fa-solid fa-layer-group mr-2"></i>Unidad
                                     </th>
                                     <td class="p-4">
-                                        <span v-if="lesson.unit?.name" class="inline-block bg-gray-600/80 text-gray-300 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
+                                        <span v-if="lesson.unit?.name"
+                                            class="inline-block bg-gray-600/80 text-gray-300 px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                                             {{ lesson.unit.name }}
                                         </span>
                                         <span v-else class="text-gray-400">-</span>
