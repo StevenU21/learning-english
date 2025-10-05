@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onBeforeUnmount } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
@@ -11,20 +11,44 @@ const emit = defineEmits(['answered']);
 const selected = ref(null);
 const isPlaying = ref(false);
 let audio = null;
+const onEnded = () => {
+    isPlaying.value = false;
+};
 
 watch(() => props.showFeedback, (v) => {
     if (!v) selected.value = null;
 });
 
 // Initialize audio once and handle play/pause state
-onMounted(() => {
-    if (props.exercise.file_url) {
-        audio = new Audio(props.exercise.file_url);
-        audio.addEventListener('ended', () => {
-            isPlaying.value = false;
-        });
+function cleanupAudio() {
+    if (audio) {
+        try {
+            audio.pause();
+        } catch (_) { }
+        audio.removeEventListener?.('ended', onEnded);
+        audio = null;
     }
-});
+}
+
+function initAudio(url) {
+    cleanupAudio();
+    if (!url) return;
+    audio = new Audio(url);
+    audio.addEventListener('ended', onEnded);
+}
+
+// Reinitialize state and audio whenever the exercise changes
+watch(
+    () => props.exercise,
+    (ex) => {
+        // reset state
+        selected.value = null;
+        isPlaying.value = false;
+        // re-init audio
+        initAudio(ex?.file_url);
+    },
+    { immediate: true }
+);
 
 function togglePlay() {
     if (!audio) return;
@@ -63,6 +87,10 @@ function getButtonClass(opt) {
     if (selected.value === opt) return 'bg-indigo-100 dark:bg-indigo-900 border-indigo-500 text-indigo-700 dark:text-indigo-300';
     return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700';
 }
+
+onBeforeUnmount(() => {
+    cleanupAudio();
+});
 </script>
 
 <template>
