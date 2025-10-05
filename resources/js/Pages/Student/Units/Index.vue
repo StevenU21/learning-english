@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -48,21 +49,28 @@ import UnitCard from './components/UnitCard.vue';
 
         <Head title="Unidades" />
         <template #header>
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-layer-group text-gray-400"></i>
-                    Unidades
-                </h2>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="flex-1 md:flex-initial">
-                        <select v-model="levelFilter" @change="applyFilter"
-                            class="w-full md:w-56 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
-                            <option value="">Todos los niveles</option>
-                            <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}</option>
-                        </select>
+            <PageHeader
+                title="Unidades"
+                subtitle="Explora las unidades disponibles."
+                icon="fa-solid fa-layer-group"
+                :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Unidades' }
+                ]"
+                gradient-classes="from-purple-600 to-indigo-600"
+            >
+                <template #filters>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="w-full md:w-auto">
+                            <select v-model="levelFilter" @change="applyFilter"
+                                class="w-56 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                                <option value="">Todos los niveles</option>
+                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </template>
+            </PageHeader>
         </template>
 
         <div class="py-10">

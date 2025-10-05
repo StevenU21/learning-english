@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
+import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
 import MultipleChoice from './components/MultipleChoice.vue';
 import TrueFalse from './components/TrueFalse.vue';
@@ -139,18 +140,20 @@ const componentMap = {
 
         <Head :title="`Ejercicios - ${lesson.name}`" />
         <template #header>
-            <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-pencil text-gray-400"></i>
-                    Ejercicios de {{ lesson.name }}
-                </h2>
-                <div class="flex gap-2">
-                    <button @click="goToLessons"
-                        class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Lecciones
-                    </button>
-                </div>
-            </div>
+            <PageHeader :title="`Ejercicios de ${lesson.name}`" :subtitle="`${exercises.length} ejercicios`"
+                icon="fa-solid fa-pencil" :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Unidades', href: route('student.units.index') },
+                    { label: 'Lección' },
+                    { label: 'Ejercicios' }
+                ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
+                    <Link :href="route('student.units.start', lesson.unit_id)"
+                        class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                        <i class="fa-solid fa-arrow-left mr-2"></i>Volver
+                    </Link>
+                </template>
+            </PageHeader>
         </template>
 
         <div class="py-6">
