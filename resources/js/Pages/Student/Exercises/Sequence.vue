@@ -28,15 +28,37 @@ const finished = ref(false);
 const showSummary = ref(false);
 const lastAnswer = ref(null);
 const saving = ref(false);
+// Track currently playing feedback audios so we can stop them on navigation
+const activeAudios = ref([]);
 
 const total = computed(() => props.exercises.length);
 
 function playSound(type) {
-    let src = '/sounds/success.mp3';
-    if (type === 'error') src = '/sounds/error.mp3';
-    else if (type === 'finish') src = '/sounds/finish.mp3';
+    const srcMap = {
+        success: '/sounds/success.mp3',
+        error: '/sounds/error.mp3',
+        finish: '/sounds/finish.mp3'
+    };
+    const src = type === 'error' ? srcMap.error : type === 'finish' ? srcMap.finish : srcMap.success;
     const audio = new Audio(src);
+    // When the audio ends, remove it from the tracking list
+    audio.addEventListener('ended', () => {
+        const idx = activeAudios.value.indexOf(audio);
+        if (idx !== -1) activeAudios.value.splice(idx, 1);
+    });
+    activeAudios.value.push(audio);
     audio.play();
+}
+
+function stopAllSounds() {
+    // Pause and reset any feedback audio we started
+    activeAudios.value.forEach(a => {
+        try {
+            a.pause();
+            a.currentTime = 0;
+        } catch (_) { /* no-op */ }
+    });
+    activeAudios.value.length = 0;
 }
 
 function handleAnswer(result, userValue = null) {
@@ -48,6 +70,8 @@ function handleAnswer(result, userValue = null) {
 }
 
 function nextExercise() {
+    // Stop any ongoing feedback sounds (success/error) before moving on
+    stopAllSounds();
     showFeedback.value = false;
     lastAnswer.value = null;
     if (current.value < total.value - 1) {
@@ -103,6 +127,8 @@ function formatAnswer(answer) {
 }
 
 async function saveSummary() {
+    // If the finish sound is playing on the summary screen, stop it when finalizing
+    stopAllSounds();
     saving.value = true;
     const attempts = props.exercises.map((exercise, idx) => ({
         exercise_id: exercise.id,
