@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import PageHeader from '@/Components/PageHeader.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -19,35 +20,45 @@ function prettyJSON(val) { try { return JSON.stringify(val, null, 2); } catch { 
 
         <Head :title="`Ejercicio #${exercise.id}`" />
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2
-                    class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight flex items-center gap-2">
-                    <i class="fa-solid fa-dumbbell text-gray-400"></i>
-                    Ejercicio #{{ exercise.id }}
-                </h2>
-                <div class="space-x-2 flex">
-                    <Link :href="route('exercises.index')">
-                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver
-                    </PrimaryButton>
-                    </Link>
-                    <Link v-if="permissions?.update" :href="route('exercises.edit', exercise.id)">
-                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                        <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                    </PrimaryButton>
-                    </Link>
-                    <PrimaryButton v-if="permissions?.destroy"
-                        @click="confirm('¿Estás seguro de eliminar este ejercicio?') && $inertia.delete(route('exercises.destroy', exercise.id))"
-                        class="bg-red-500 hover:bg-red-700 text-white">
-                        <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                    </PrimaryButton>
-                </div>
-            </div>
+            <PageHeader
+                :title="`Ejercicio #${exercise.id}`"
+                subtitle="Detalles del ejercicio."
+                icon="fa-solid fa-pencil"
+                :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Ejercicios', href: route('exercises.index') },
+                    { label: 'Detalle' }
+                ]"
+                gradient-classes="from-purple-600 to-indigo-600"
+            >
+                <template #actions>
+                    <div class="space-x-2 flex">
+                        <Link :href="route('exercises.index')">
+                            <PrimaryButton>
+                                <i class="fa-solid fa-arrow-left mr-2"></i>
+                                Volver a la lista
+                            </PrimaryButton>
+                        </Link>
+                        <Link v-if="permissions?.update" :href="route('exercises.edit', exercise.id)">
+                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i>
+                                Editar
+                            </PrimaryButton>
+                        </Link>
+                        <PrimaryButton v-if="permissions?.destroy"
+                            @click="confirm('¿Estás seguro de eliminar este ejercicio?') && $inertia.delete(route('exercises.destroy', exercise.id))"
+                            class="bg-red-500 hover:bg-red-700 text-white">
+                            <i class="fa-solid fa-trash mr-2"></i>
+                            Eliminar
+                        </PrimaryButton>
+                    </div>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-700">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <div class="overflow-x-auto">
                         <table class="w-full min-w-max rounded-xl overflow-hidden border border-gray-600">
                             <tbody>

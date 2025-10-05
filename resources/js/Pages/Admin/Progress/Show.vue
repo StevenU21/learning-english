@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -72,28 +73,28 @@ function statusBadgeClasses(status) {
 
         <Head :title="`Progreso - ${user.name}`" />
         <template #header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Progreso del
-                        Estudiante</h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Detalle completo del avance de <span
-                            class="font-medium">{{ user.name }}</span></p>
-                </div>
-                <div class="flex space-x-2">
+            <PageHeader title="Progreso del Estudiante" :subtitle="`Detalle completo del avance de ${user.name}`"
+                icon="fa-solid fa-bars-progress" :breadcrumbs="[
+                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                    { label: 'Progreso', href: route('admin.progress.index') },
+                    { label: 'Detalle' }
+                ]" gradient-classes="from-indigo-600 to-cyan-600">
+                <template #actions>
                     <Link :href="route('admin.progress.index')">
                     <PrimaryButton>
                         <i class="fa-solid fa-arrow-left mr-2"></i>
-                        Volver
+                        Volver a la lista
                     </PrimaryButton>
                     </Link>
-                </div>
-            </div>
+                </template>
+            </PageHeader>
         </template>
 
-        <div class="py-10">
+        <div class="py-0">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-10">
                 <!-- Resumen del usuario -->
-                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 p-6">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
                         <i class="fa-solid fa-user mr-2"></i>Información del Estudiante
                     </h3>
@@ -103,18 +104,22 @@ function statusBadgeClasses(status) {
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.name }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-envelope mr-1"></i>Email</p>
+                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-envelope mr-1"></i>Email
+                            </p>
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.email }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-calendar-days mr-1"></i>Creado</p>
-                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ new Date(user.created_at).toLocaleDateString() }}</p>
+                            <p class="text-gray-500 dark:text-gray-400"><i
+                                    class="fa-solid fa-calendar-days mr-1"></i>Creado</p>
+                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ new
+                                Date(user.created_at).toLocaleDateString() }}</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Progreso por Unidad -->
-                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                             <i class="fa-solid fa-layer-group mr-2"></i>Progreso por Unidad
@@ -150,9 +155,12 @@ function statusBadgeClasses(status) {
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -177,7 +185,8 @@ function statusBadgeClasses(status) {
                 </div>
 
                 <!-- Progreso por Lección -->
-                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                             <i class="fa-solid fa-book-open mr-2"></i>Progreso por Lección
@@ -220,10 +229,14 @@ function statusBadgeClasses(status) {
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book-open mr-2"></i>Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-book-open mr-2"></i>Lección</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -250,7 +263,8 @@ function statusBadgeClasses(status) {
                 </div>
 
                 <!-- Intentos de Ejercicios -->
-                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
+                <div
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                             <i class="fa-solid fa-pen-to-square mr-2"></i>Intentos de Ejercicios
@@ -291,7 +305,7 @@ function statusBadgeClasses(status) {
                             <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Lección: {{ att.lesson?.name ||
                                 att.exercise?.lesson?.name }}</div>
                             <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Intento: #{{ att.attempt_number
-                            }}</div>
+                                }}</div>
                             <div class="mt-2 flex items-center justify-between text-sm">
                                 <span
                                     :class="['px-2 py-1 rounded text-xs font-medium', att.is_correct ? 'bg-green-100 text-green-700 dark:bg-green-600/20 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300']">{{
@@ -306,11 +320,16 @@ function statusBadgeClasses(status) {
                         <table class="w-full min-w-max text-sm">
                             <thead class="bg-gray-100 dark:bg-gray-900/70">
                                 <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-file-lines mr-2"></i>Ejercicio</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book-open mr-2"></i>Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-pen-to-square mr-2"></i>Intento</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-check mr-2"></i>Correcto</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-calendar-check mr-2"></i>Respondido</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-file-lines mr-2"></i>Ejercicio</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-book-open mr-2"></i>Lección</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-pen-to-square mr-2"></i>Intento</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-check mr-2"></i>Correcto</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
+                                            class="fa-solid fa-calendar-check mr-2"></i>Respondido</th>
                                 </tr>
                             </thead>
                             <tbody>
