@@ -4,6 +4,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
+import ImageCell from '@/Components/ImageCell.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed } from 'vue';
 
@@ -29,6 +30,7 @@ const meta = computed(() => Array.isArray(props.lessons) ? null : ({
 // Responsive: on mobile show only Nombre, Unidad y Acciones
 const columns = [
     { key: 'id', label: 'ID', icon: 'fa-solid fa-id-badge', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
+    { key: 'image', label: 'Imagen', icon: 'fa-solid fa-image', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
     { key: 'name', label: 'Nombre', icon: 'fa-solid fa-font', align: 'left' },
     { key: 'unit.name', label: 'Unidad', icon: 'fa-solid fa-layer-group', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
     { key: 'description', label: 'Descripción', icon: 'fa-solid fa-align-left', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
@@ -71,6 +73,13 @@ function deleteLesson(id) {
                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <DataTable :items="lessonList" :columns="columns" :empty-text="'No se encontraron lecciones.'"
                         show-actions>
+                        <!-- Imagen -->
+                        <template #cell-image="{ row }">
+                            <div class="px-0 py-0">
+                                <ImageCell :src="row.image_url || row.image" alt="Imagen de la unidad" />
+                            </div>
+                        </template>
+                        
                         <!-- Descripción truncada -->
                         <template #cell-description="{ value }">
                             <span class="text-gray-600 dark:text-gray-400">

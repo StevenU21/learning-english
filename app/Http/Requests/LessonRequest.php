@@ -32,6 +32,12 @@ class LessonRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,png,jpeg,webp',
+                'max:4096',
+            ],
             'description' => ['nullable', 'string'],
             'unit_id' => ['required', 'exists:units,id'],
         ];
@@ -60,11 +66,15 @@ class LessonRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es obligatorio.',
-            'name.string'   => 'El nombre debe ser una cadena de texto.',
-            'name.max'      => 'El nombre no debe exceder de :max caracteres.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'image.required' => 'La imagen es obligatoria.',
+            'image.image' => 'El archivo debe ser una imagen.',
+            'image.mimes' => 'La imagen debe ser de tipo: :values.',
+            'image.max' => 'La imagen no debe exceder de :max kilobytes.',
             'description.string' => 'La descripción debe ser una cadena de texto.',
             'unit_id.required' => 'La unidad es obligatoria.',
-            'unit_id.exists'   => 'La unidad seleccionada no es válida.',
+            'unit_id.exists' => 'La unidad seleccionada no es válida.',
         ];
     }
 }

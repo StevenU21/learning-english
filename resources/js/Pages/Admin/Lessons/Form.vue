@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextArea from '@/Components/TextArea.vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import FileInput from '@/Components/FileInput.vue';
 
 const props = defineProps({
     form: Object,
@@ -30,6 +31,11 @@ const props = defineProps({
                 <option v-for="unit in units" :value="unit.id" :key="unit.id">{{ unit.name }}</option>
             </SelectInput>
             <InputError :message="form.errors.unit_id" class="mt-2" />
+        </div>
+        <div>
+            <InputLabel for="image" value="Imagen" />
+            <FileInput id="image" v-model="form.image" accept="image/*" />
+            <InputError :message="form.errors.image" class="mt-2" />
         </div>
         <div>
             <InputLabel for="description" value="Descripción" />

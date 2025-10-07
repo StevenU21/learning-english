@@ -19,7 +19,7 @@ class UnitController extends Controller
     {
         $this->authorize('viewAny', Unit::class);
 
-    $units = Unit::with('level')->paginate(10);
+        $units = Unit::with('level')->paginate(10);
 
         $units->getCollection()->transform(function ($unit) {
             return [

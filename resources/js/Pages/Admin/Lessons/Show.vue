@@ -70,6 +70,14 @@ const { lesson } = props;
                                     </th>
                                     <td class="p-4 text-gray-300 italic">{{ lesson.description || '-' }}</td>
                                 </tr>
+                                <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
+                                    <th class="text-left p-4 text-gray-200 align-top">
+                                        <i class="fa-solid fa-image mr-2"></i>Imagen
+                                    </th>
+                                    <td class="p-4">
+                                        <ImageCell :src="lesson.image_url || lesson.image" alt="Imagen de la lección" />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

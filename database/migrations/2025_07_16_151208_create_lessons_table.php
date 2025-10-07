@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('lessons', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('image')->nullable();
             $table->text('description')->nullable();
 
             $table->integer('unit_id')->unsigned();

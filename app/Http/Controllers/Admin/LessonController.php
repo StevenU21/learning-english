@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Classes\PermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LessonRequest;
+use Illuminate\Http\Request;
 use App\Models\Lesson;
 use App\Models\Unit;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,6 +20,17 @@ class LessonController extends Controller
         $this->authorize('viewAny', Lesson::class);
         PermissionHelper::getPermissions('lessons');
         $lessons = Lesson::with('unit')->paginate(10);
+
+        $lessons->getCollection()->transform(function ($lesson) {
+            return [
+                'id' => $lesson->id,
+                'name' => $lesson->name,
+                'description' => $lesson->description,
+                'image_url' => $lesson->image_url,
+                'unit' => $lesson->unit
+            ];
+        });
+
         return Inertia::render('Admin/Lessons/Index', [
             'lessons' => $lessons
         ]);
@@ -28,8 +40,16 @@ class LessonController extends Controller
     {
         $this->authorize('view', $lesson);
         $lesson->load('unit');
+        $lessonData = [
+            'id' => $lesson->id,
+            'name' => $lesson->name,
+            'description' => $lesson->description,
+            'image_url' => $lesson->image_url,
+            'unit' => $lesson->unit,
+            'created_at' => $lesson->created_at,
+        ];
         return Inertia::render('Admin/Lessons/Show', [
-            'lesson' => $lesson
+            'lesson' => $lessonData
         ]);
     }
 
@@ -45,7 +65,8 @@ class LessonController extends Controller
     public function store(LessonRequest $request)
     {
         $this->authorize('create', Lesson::class);
-        Lesson::create($request->validated());
+        $data = $request->validated();
+        Lesson::create($data);
         return redirect()->route('lessons.index')->with('success', 'Lección creada correctamente');
     }
 
@@ -62,7 +83,8 @@ class LessonController extends Controller
     public function update(LessonRequest $request, Lesson $lesson)
     {
         $this->authorize('update', $lesson);
-        $lesson->update($request->validated());
+        $data = $request->validated();
+        $lesson->update($data);
         return redirect()->route('lessons.index')->with('success', 'Lección actualizada correctamente');
     }
 

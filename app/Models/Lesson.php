@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class Lesson extends Model
 {
@@ -12,9 +14,27 @@ class Lesson extends Model
 
     protected $fillable = [
         'name',
+        'image',
         'description',
         'unit_id'
     ];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    public function setImageAttribute($value)
+    {
+        if ($value instanceof UploadedFile) {
+            if (!empty($this->attributes['image'])) {
+                Storage::disk('public')->delete($this->attributes['image']);
+            }
+            $this->attributes['image'] = $value->store('lessons', 'public');
+        } elseif (is_string($value) || is_null($value)) {
+            $this->attributes['image'] = $value;
+        }
+    }
 
     public function unit(): BelongsTo
     {
