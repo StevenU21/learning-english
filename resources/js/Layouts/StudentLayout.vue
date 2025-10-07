@@ -18,10 +18,8 @@ const page = usePage();
                     <div class="flex h-16 items-center justify-between">
                         <!-- Left: Brand + desktop nav links -->
                         <div class="flex items-center gap-6">
-                            <Link :href="route('student.units.index')" class="flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-xl text-gray-800 dark:text-gray-100"></i>
-                            <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">Learning <span
-                                    class="text-[#FF2D20]">English</span></h1>
+                            <Link :href="route('student.units.index')" class="flex items-center">
+                            <img src="/img/logo03.png" alt="Nativo logo" class="h-10 w-auto" />
                             </Link>
                             <!-- Desktop nav -->
                             <div class="hidden md:flex items-center gap-6">
