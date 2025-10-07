@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { usePage, Link } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -15,6 +15,25 @@ const roles = computed(() => page.props.auth.user?.roles || []);
 function hasRole(role) {
     return roles.value.includes(role);
 }
+
+// Persist sidebar state across navigation
+onMounted(() => {
+    try {
+        const storedOpen = localStorage.getItem('le.sidebar.open');
+        const storedCollapsed = localStorage.getItem('le.sidebar.collapsed');
+        if (storedOpen !== null) sidebarOpen.value = storedOpen === 'true';
+        if (storedCollapsed !== null) sidebarCollapsed.value = storedCollapsed === 'true';
+    } catch (e) {
+        // ignore storage errors (private mode, etc.)
+    }
+});
+
+watch(sidebarOpen, (val) => {
+    try { localStorage.setItem('le.sidebar.open', String(val)); } catch {}
+});
+watch(sidebarCollapsed, (val) => {
+    try { localStorage.setItem('le.sidebar.collapsed', String(val)); } catch {}
+});
 </script>
 
 <template>
@@ -36,12 +55,10 @@ function hasRole(role) {
                                 <i class="fa-solid fa-bars text-lg"></i>
                             </button>
 
-                            <!-- Logo -->
+                            <!-- Logo placeholder to keep spacing (no app name here) -->
                             <div class="flex shrink-0 items-center">
-                                <Link :href="hasRole('admin') ? route('units.index') : route('student.units.index')">
-                                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                                    Learning <span class="text-[#FF2D20]">English</span>
-                                </h1>
+                                <Link :href="hasRole('admin') ? route('units.index') : route('student.units.index')" class="text-gray-700 dark:text-gray-300">
+                                    <i class="fa-solid fa-layer-group text-xl"></i>
                                 </Link>
                             </div>
                         </div>
@@ -121,15 +138,15 @@ function hasRole(role) {
             </nav>
 
             <!-- Page Heading -->
-            <header :class="['bg-white shadow dark:bg-gray-800', sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64']"
+            <header :class="['bg-white shadow dark:bg-gray-800', sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64']"
                 v-if="$slots.header">
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="w-full px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main :class="[sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64']">
+            <main :class="[sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64']">
                 <slot />
             </main>
         </div>

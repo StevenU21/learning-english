@@ -31,7 +31,7 @@ const props = defineProps({
         </template>
 
         <div class="py-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="w-full px-4 sm:px-6 lg:px-8">
                 <div v-if="exercises.length" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <div v-for="ex in exercises" :key="ex.id"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition border border-gray-200 dark:border-gray-700">

@@ -74,7 +74,7 @@ import UnitCard from './components/UnitCard.vue';
         </template>
 
         <div class="py-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="w-full px-4 sm:px-6 lg:px-8">
                 <div v-if="filteredUnits.length === 0"
                     class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-400/40 dark:border-gray-600">
                     <p class="text-gray-500 dark:text-gray-400 text-sm flex flex-col items-center gap-3">

@@ -36,7 +36,7 @@ defineProps({
         </template>
 
         <div class="py-10">
-            <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div class="w-full space-y-6 px-4 sm:px-6 lg:px-8">
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
                     <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status"

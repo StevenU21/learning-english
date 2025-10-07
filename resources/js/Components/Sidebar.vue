@@ -8,11 +8,14 @@
   <aside :class="[
       'fixed inset-y-0 left-0 z-50 transform bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transition-all duration-200 ease-in-out',
       modelValue ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-      collapsed ? 'w-64 lg:w-16' : 'w-64 lg:w-64'
+      collapsed ? 'w-64 lg:w-14' : 'w-64 lg:w-64'
     ]">
     <div class="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
       <Link :href="homeHref" class="flex items-center gap-2 overflow-hidden">
         <i class="fa-solid fa-layer-group text-xl text-gray-800 dark:text-gray-100"></i>
+        <h1 v-show="!collapsed" class="text-xl font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+          Learning <span class="text-[#FF2D20]">English</span>
+        </h1>
       </Link>
       <div class="flex items-center gap-2">
         <!-- Desktop collapse toggle -->
