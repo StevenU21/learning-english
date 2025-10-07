@@ -57,7 +57,7 @@ defineProps({
                     <div
                         class="mt-4 sm:mt-8 text-center text-xs sm:text-base uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wide">
                         <div>Creado por:</div>
-                        <div>Arelis Antonia Ortiz Bucardo</div>
+                        <div>Arelis Antonia Ortez Bucardo</div>
                         <div>Madeling Haidee Perez Moreno</div>
                         <div>Andy Ruppert Ulloa Gutierrez</div>
                     </div>

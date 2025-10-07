@@ -20,6 +20,8 @@ const page = usePage();
                         <div class="flex items-center gap-6">
                             <Link :href="route('student.units.index')" class="flex items-center">
                             <img src="/img/logo03.png" alt="Nativo logo" class="h-10 w-auto" />
+                            <span
+                                class="ml-2 brand-font text-2xl leading-none text-gray-900 dark:text-white">NATIVO</span>
                             </Link>
                             <!-- Desktop nav -->
                             <div class="hidden md:flex items-center gap-6">
@@ -152,4 +154,18 @@ const page = usePage();
 
 <style scoped>
 /* Tab bar leaves 56px of bottom space; add padding if your pages need it */
+
+/* Brand font */
+@font-face {
+    font-family: 'SuezOne';
+    src: url('/fonts/SuezOne-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.brand-font {
+    font-family: 'SuezOne', serif;
+    letter-spacing: 0.5px;
+}
 </style>
