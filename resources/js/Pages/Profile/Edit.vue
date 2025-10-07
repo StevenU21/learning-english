@@ -1,5 +1,8 @@
 <script setup>
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
@@ -14,13 +17,19 @@ defineProps({
         type: String,
     },
 });
+
+// Choose layout based on role: students use StudentLayout (no sidebar), admins use AuthenticatedLayout
+const page = usePage();
+const roles = computed(() => page.props.auth.user?.roles || []);
+const isAdmin = computed(() => roles.value.includes('admin'));
+const layoutComponent = computed(() => (isAdmin.value ? AuthenticatedLayout : StudentLayout));
 </script>
 
 <template>
 
     <Head title="Perfil" />
 
-    <AuthenticatedLayout>
+    <component :is="layoutComponent">
         <template #header>
             <PageHeader title="Perfil" subtitle="Configuración de tu cuenta" icon="fa-solid fa-user" :breadcrumbs="[
                 { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
@@ -54,5 +63,5 @@ defineProps({
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </component>
 </template>
