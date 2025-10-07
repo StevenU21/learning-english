@@ -45,66 +45,66 @@ watch(sidebarCollapsed, (val) => {
             <!-- Top bar -->
             <nav
                 class="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-gray-700 dark:bg-gray-800/80">
-                <div :class="[
-                    sidebarCollapsed ? 'lg:ml-14 px-4 sm:px-6 lg:px-8' : 'lg:ml-64 px-4 sm:px-6 lg:px-8',
-                    'w-full'
-                ]">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex items-center gap-3">
-                            <!-- Mobile hamburger -->
-                            <button @click="sidebarOpen = true"
-                                class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400"
-                                aria-label="Abrir menú">
-                                <i class="fa-solid fa-bars text-lg"></i>
-                            </button>
-                        </div>
-
-                        <div class="hidden sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
-                                                <i class="fa-solid fa-user mr-2"></i>{{ $page.props.auth.user.full_name
-                                                }}
-                                                <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-                                    <template #content>
-                                        <DropdownLink :href="route('profile.edit')">
-                                            <i class="fa-solid fa-user mr-2"></i>Perfil
-                                        </DropdownLink>
-                                        <DropdownLink :href="route('logout')" method="post" as="button">
-                                            <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar sesión
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
+                <div :class="[sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64']">
+                    <div class="w-full px-4 sm:px-6 lg:px-8">
+                        <div class="flex h-16 justify-between">
+                            <div class="flex items-center gap-3">
+                                <!-- Mobile hamburger -->
+                                <button @click="sidebarOpen = true"
+                                    class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                    aria-label="Abrir menú">
+                                    <i class="fa-solid fa-bars text-lg"></i>
+                                </button>
                             </div>
-                        </div>
 
-                        <!-- Hamburger for user dropdown on small screens (optional) -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button @click="showingNavigationDropdown = !showingNavigationDropdown"
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400">
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path
-                                        :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                    <path
-                                        :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                            <div class="hidden sm:flex sm:items-center">
+                                <!-- Settings Dropdown -->
+                                <div class="relative">
+                                    <Dropdown align="right" width="48">
+                                        <template #trigger>
+                                            <span class="inline-flex rounded-md">
+                                                <button type="button"
+                                                    class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
+                                                    <i class="fa-solid fa-user mr-2"></i>{{
+                                                        $page.props.auth.user.full_name
+                                                    }}
+                                                    <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </template>
+                                        <template #content>
+                                            <DropdownLink :href="route('profile.edit')">
+                                                <i class="fa-solid fa-user mr-2"></i>Perfil
+                                            </DropdownLink>
+                                            <DropdownLink :href="route('logout')" method="post" as="button">
+                                                <i class="fa-solid fa-right-from-bracket mr-2"></i>Cerrar sesión
+                                            </DropdownLink>
+                                        </template>
+                                    </Dropdown>
+                                </div>
+                            </div>
+
+                            <!-- Hamburger for user dropdown on small screens (optional) -->
+                            <div class="-me-2 flex items-center sm:hidden">
+                                <button @click="showingNavigationDropdown = !showingNavigationDropdown"
+                                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400">
+                                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                        <path
+                                            :class="{ hidden: showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown }"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16" />
+                                        <path
+                                            :class="{ hidden: !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown }"
+                                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ watch(sidebarCollapsed, (val) => {
             </nav>
 
             <!-- Page Heading -->
-            <header :class="['bg-white shadow dark:bg-gray-800', sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64']"
+            <header :class="['bg-white shadow dark:bg-gray-800', sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64']"
                 v-if="$slots.header">
                 <div class="w-full px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
@@ -142,7 +142,7 @@ watch(sidebarCollapsed, (val) => {
             </header>
 
             <!-- Page Content -->
-            <main :class="[sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64']">
+            <main :class="[sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64']">
                 <slot />
             </main>
         </div>
