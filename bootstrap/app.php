@@ -28,8 +28,15 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'You do not have the required authorization to perform this action.'], 403);
             }
-            // Si hay página previa, vuelve atrás, si no, redirige a dashboard
-            return redirect()->back()->with('error', 'No tienes autorización para realizar esta acción.')
-                ?: redirect()->route('dashboard')->with('error', 'No tienes autorización para realizar esta acción.');
+            // Si hay página previa, vuelve atrás, si no, redirige según el rol
+            $user = auth()->user();
+            if ($user) {
+                if ($user->hasRole('student')) {
+                    return redirect()->intended(route('student.units.index'))->with('error', 'No tienes autorización para realizar esta acción.');
+                }
+                // Puedes agregar más roles aquí si lo necesitas
+                return redirect()->intended(route('units.index'))->with('error', 'No tienes autorización para realizar esta acción.');
+            }
+            return redirect()->back()->with('error', 'No tienes autorización para realizar esta acción.');
         });
     })->create();

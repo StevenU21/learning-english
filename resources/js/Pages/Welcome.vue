@@ -21,8 +21,7 @@ defineProps({
                 <div
                     class="rounded-2xl bg-white/80 dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 shadow-xl p-4 sm:p-8 text-center backdrop-blur flex flex-col items-center gap-2">
                     <h2 class="text-2xl sm:text-3xl font-nativo text-gray-900 dark:text-white tracking-wide mb-1">
-                        Bienvenidos a<br>
-                        <span class="block text-3xl sm:text-4xl font-nativo mt-1">N A T I V O</span>
+                        Bienvenidos
                     </h2>
                     <img src="/img/logo01.png" alt="NATIVO Logo" class="w-40 h-40 sm:w-50 sm:h-50 mb-2 mx-auto" />
                     <p
