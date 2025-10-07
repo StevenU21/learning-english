@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed } from 'vue';
@@ -13,7 +13,7 @@ const hasResources = computed(() => props.resources.length > 0);
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <StudentLayout>
 
         <Head :title="'Recursos - ' + unit.name" />
         <template #header>
@@ -68,7 +68,7 @@ const hasResources = computed(() => props.resources.length > 0);
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StudentLayout>
 </template>
 
 <style scoped>

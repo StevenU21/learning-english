@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 
@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <StudentLayout>
 
         <Head :title="`Resumen de ${lesson.name}`" />
 
@@ -48,5 +48,5 @@ const props = defineProps({
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StudentLayout>
 </template>

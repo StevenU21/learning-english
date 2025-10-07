@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import LessonCard from './components/LessonCard.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
@@ -40,7 +40,7 @@ function progressBarColor(progress) {
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <StudentLayout>
 
         <Head :title="'Lecciones - ' + unit.name" />
 
@@ -81,7 +81,7 @@ function progressBarColor(progress) {
             </div>
         </div>
 
-    </AuthenticatedLayout>
+    </StudentLayout>
 </template>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref } from 'vue';
@@ -45,27 +45,23 @@ import UnitCard from './components/UnitCard.vue';
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <StudentLayout>
 
         <Head title="Unidades" />
         <template #header>
-            <PageHeader
-                title="Unidades"
-                subtitle="Explora las unidades disponibles."
-                icon="fa-solid fa-layer-group"
+            <PageHeader title="Unidades" subtitle="Explora las unidades disponibles." icon="fa-solid fa-layer-group"
                 :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
                     { label: 'Unidades' }
-                ]"
-                gradient-classes="from-purple-600 to-indigo-600"
-            >
+                ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
                         <div class="w-full md:w-auto">
                             <select v-model="levelFilter" @change="applyFilter"
                                 class="w-56 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                                 <option value="">Todos los niveles</option>
-                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}</option>
+                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -88,7 +84,7 @@ import UnitCard from './components/UnitCard.vue';
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StudentLayout>
 </template>
 
 <style scoped>

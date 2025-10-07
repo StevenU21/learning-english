@@ -1,5 +1,5 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
@@ -162,7 +162,7 @@ const componentMap = {
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <StudentLayout>
 
         <Head :title="`Ejercicios - ${lesson.name}`" />
         <template #header>
@@ -263,5 +263,5 @@ const componentMap = {
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </StudentLayout>
 </template>
