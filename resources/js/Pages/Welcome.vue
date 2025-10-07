@@ -21,9 +21,9 @@ defineProps({
                 <div
                     class="rounded-2xl bg-white/80 dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 shadow-xl p-4 sm:p-8 text-center backdrop-blur flex flex-col items-center gap-2">
                     <h2 class="text-2xl sm:text-3xl font-nativo text-gray-900 dark:text-white tracking-wide mb-1">
-                        Bienvenidos
+                        Bienvenidos a
                     </h2>
-                    <img src="/img/logo03.png" alt="NATIVO Logo" class="w-40 h-40 sm:w-50 sm:h-50 mb-2 mx-auto" />
+                    <img src="/img/logo01.png" alt="NATIVO Logo" class="w-40 h-40 sm:w-50 sm:h-50 mb-2 mx-auto" />
                     <p
                         class="mt-1 text-sm sm:text-lg leading-relaxed text-gray-600 dark:text-gray-300 max-w-xs sm:max-w-xl mx-auto">
                         Plataforma interactiva para el aprendizaje del inglés, donde puedes avanzar a tu ritmo y mejorar
