@@ -42,6 +42,7 @@ function progressBarColor(progress) {
     return 'bg-gray-600';
 }
 import UnitCard from './components/UnitCard.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 </script>
 
 <template>
@@ -57,12 +58,14 @@ import UnitCard from './components/UnitCard.vue';
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
                         <div class="w-full md:w-auto">
-                            <select v-model="levelFilter" @change="applyFilter"
-                                class="w-56 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                            <SelectInput
+                                v-model="levelFilter"
+                                @change="applyFilter"
+                                class="w-56"
+                            >
                                 <option value="">Todos los niveles</option>
-                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}
-                                </option>
-                            </select>
+                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}</option>
+                            </SelectInput>
                         </div>
                     </div>
                 </template>
