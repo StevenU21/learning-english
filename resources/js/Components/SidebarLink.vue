@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const classes = computed(() => [
-  'flex items-center rounded-md text-sm font-medium',
+  'flex items-center w-full rounded-md text-sm font-medium',
   props.compact ? 'justify-center p-2' : 'gap-2 px-3 py-2',
   'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
   'dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white',

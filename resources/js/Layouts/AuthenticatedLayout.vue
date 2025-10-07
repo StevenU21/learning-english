@@ -29,10 +29,10 @@ onMounted(() => {
 });
 
 watch(sidebarOpen, (val) => {
-    try { localStorage.setItem('le.sidebar.open', String(val)); } catch {}
+    try { localStorage.setItem('le.sidebar.open', String(val)); } catch { }
 });
 watch(sidebarCollapsed, (val) => {
-    try { localStorage.setItem('le.sidebar.collapsed', String(val)); } catch {}
+    try { localStorage.setItem('le.sidebar.collapsed', String(val)); } catch { }
 });
 </script>
 
@@ -45,7 +45,10 @@ watch(sidebarCollapsed, (val) => {
             <!-- Top bar -->
             <nav
                 class="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-gray-700 dark:bg-gray-800/80">
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div :class="[
+                    sidebarCollapsed ? 'lg:ml-14 px-4 sm:px-6 lg:px-8' : 'lg:ml-64 px-4 sm:px-6 lg:px-8',
+                    'w-full'
+                ]">
                     <div class="flex h-16 justify-between">
                         <div class="flex items-center gap-3">
                             <!-- Mobile hamburger -->
@@ -54,18 +57,11 @@ watch(sidebarCollapsed, (val) => {
                                 aria-label="Abrir menú">
                                 <i class="fa-solid fa-bars text-lg"></i>
                             </button>
-
-                            <!-- Logo placeholder to keep spacing (no app name here) -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="hasRole('admin') ? route('units.index') : route('student.units.index')" class="text-gray-700 dark:text-gray-300">
-                                    <i class="fa-solid fa-layer-group text-xl"></i>
-                                </Link>
-                            </div>
                         </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div class="hidden sm:flex sm:items-center">
                             <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
+                            <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
