@@ -66,18 +66,7 @@ function applyFilter() {
                 :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
                     { label: 'Lecciones' }
-                ]" gradient-classes="from-purple-600 to-indigo-600">
-                <template #filters>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="w-full md:w-auto">
-                            <SelectInput v-model="unitFilter" @change="applyFilter" class="w-56">
-                                <option value="">Todas las unidades</option>
-                                <option v-for="unit in props.units" :key="unit.id" :value="unit.id">{{ unit.name }}
-                                </option>
-                            </SelectInput>
-                        </div>
-                    </div>
-                </template>
+                ]" gradient-classes="from-purple-600 to-indigo-600">    
                 <template #actions>
                     <Link :href="route('student.units.index')">
                     <PrimaryButton>

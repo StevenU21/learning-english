@@ -20,8 +20,8 @@ const page = usePage();
                         <div class="flex items-center gap-6">
                             <Link :href="route('student.units.index')" class="flex items-center">
                             <img src="/img/logo03.png" alt="Nativo logo" class="h-10 w-auto" />
-                            <span
-                                class="ml-2 brand-font text-2xl leading-none text-gray-900 dark:text-white">NATIVO</span>
+                            <span class="ml-2 brand-font text-2xl leading-none text-gray-900 dark:text-white">N A T I V
+                                O</span>
                             </Link>
                             <!-- Desktop nav -->
                             <div class="hidden md:flex items-center gap-6">
