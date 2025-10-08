@@ -6,6 +6,7 @@ import StudentLayout from '@/Layouts/StudentLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
+import UpdateUserForm from './Partials/UpdateUserForm.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 
@@ -48,18 +49,21 @@ const layoutComponent = computed(() => (isAdmin.value ? AuthenticatedLayout : St
             <div class="w-full space-y-6 px-4 sm:px-6 lg:px-8">
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status"
-                        class="max-w-xl" />
+                    <UpdateUserForm />
+                </div>
+                <div
+                    class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
+                    <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status="status" />
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <UpdatePasswordForm class="max-w-xl" />
+                    <UpdatePasswordForm />
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700">
-                    <DeleteUserForm class="max-w-xl" />
+                    <DeleteUserForm />
                 </div>
             </div>
         </div>

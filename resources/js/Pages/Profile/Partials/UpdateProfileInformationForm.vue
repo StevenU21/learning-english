@@ -3,108 +3,117 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
+import FileInput from '@/Components/FileInput.vue';
 
-defineProps({
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
+// This component is for PROFILE data only (avatar, nickname, birthdate, academic_level, gender)
+// User main data (first_name, last_name, email) is handled in UpdateUserForm.vue
 
-const user = usePage().props.auth.user;
+const page = usePage();
+const profile = computed(() => page.props.profile ?? {});
+
+
+const avatarFile = ref(null);
+
+// If there is an avatar_url, fetch and convert to File for FileInput preview
+if (profile.value?.avatar_url) {
+    fetch(profile.value.avatar_url)
+        .then(res => res.blob())
+        .then(blob => {
+            const file = new File([blob], 'avatar.jpg', { type: blob.type });
+            avatarFile.value = file;
+        })
+        .catch(() => { });
+}
 
 const form = useForm({
-    name: user.name,
-    email: user.email,
+    avatar: null,
+    nickname: profile.value?.nickname || '',
+    birthdate: profile.value?.birthdate || '',
+    academic_level: profile.value?.academic_level || '',
+    gender: profile.value?.gender || '',
 });
+
+watch(avatarFile, (f) => {
+    if (f instanceof File) {
+        form.avatar = f;
+    }
+});
+
+const submit = () => {
+    form.post(route('profile.profile.update'), {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => { },
+    });
+};
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                Información del perfil
+                Datos del perfil
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Actualiza la información de tu perfil y correo electrónico.
+                Actualiza tu foto y datos personales visibles en tu perfil.
             </p>
         </header>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
-            <div>
-                <InputLabel for="name" value="Nombre" />
-
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-
-                <InputError class="mt-2" :message="form.errors.name" />
+        <form @submit.prevent="submit" class="mt-6 space-y-6">
+            <div class="flex items-center gap-4">
+                <FileInput id="avatar" name="avatar" accept="image/*" v-model="avatarFile" :class="'w-40'"
+                    :preview-url="profile?.avatar_url || '/img/logo03.png'" />
+                <div class="flex-1">
+                    <InputLabel for="avatar" value="Avatar" />
+                    <InputError class="mt-2" :message="form.errors.avatar" />
+                </div>
             </div>
 
-            <div>
-                <InputLabel for="email" value="Correo electrónico" />
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                    <InputLabel for="nickname" value="Apodo" />
+                    <TextInput id="nickname" type="text" class="mt-1 block w-full" v-model="form.nickname" />
+                    <InputError class="mt-2" :message="form.errors.nickname" />
+                </div>
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+                <div>
+                    <InputLabel for="birthdate" value="Fecha de nacimiento" />
+                    <TextInput id="birthdate" type="date" class="mt-1 block w-full" v-model="form.birthdate" />
+                    <InputError class="mt-2" :message="form.errors.birthdate" />
+                </div>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+                <div>
+                    <InputLabel for="academic_level" value="Nivel académico" />
+                    <select id="academic_level" v-model="form.academic_level"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:text-gray-100">
+                        <option value="">Selecciona una opción</option>
+                        <option value="primary">Primaria</option>
+                        <option value="secondary">Secundaria</option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.academic_level" />
+                </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800 dark:text-gray-200">
-                    Tu correo electrónico no está verificado.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                    >
-                        Haz clic aquí para reenviar el correo de verificación.
-                    </Link>
-                </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600 dark:text-green-400"
-                >
-                    Se ha enviado un nuevo enlace de verificación a tu correo electrónico.
+                <div>
+                    <InputLabel for="gender" value="Género" />
+                    <select id="gender" v-model="form.gender"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:text-gray-100">
+                        <option value="">Selecciona una opción</option>
+                        <option value="male">Masculino</option>
+                        <option value="female">Femenino</option>
+                        <option value="other">Otro</option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.gender" />
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">Guardar</PrimaryButton>
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600 dark:text-gray-400"
-                    >
-                        Guardado.
-                    </p>
+                <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
+                    leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
+                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Guardado.</p>
                 </Transition>
             </div>
         </form>
