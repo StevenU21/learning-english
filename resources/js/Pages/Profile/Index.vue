@@ -14,6 +14,26 @@ const stats = computed(() => page.props.stats ?? {});
 const roles = computed(() => page.props.auth.user?.roles || []);
 const isAdmin = computed(() => roles.value.includes('admin'));
 const Layout = computed(() => (isAdmin.value ? AuthenticatedLayout : StudentLayout));
+
+// Map roles to Spanish labels
+const roleLabels = { student: 'Estudiante', admin: 'Administrador' };
+const displayRoles = computed(() => Array.isArray(roles.value) ? roles.value.map(r => roleLabels[r] ?? r) : []);
+
+// Helpers for formatting and labels
+const formatDate = (d) => {
+    if (!d) return null;
+    const date = new Date(d);
+    if (Number.isNaN(date.getTime())) return d;
+    return new Intl.DateTimeFormat('es-ES', { year: 'numeric', month: 'long', day: '2-digit' }).format(date);
+};
+const birthdateFormatted = computed(() => formatDate(profile.value?.birthdate));
+const genderLabels = { male: 'Masculino', female: 'Femenino', other: 'Otro' };
+const genderLabel = computed(() => {
+    const g = profile.value?.gender;
+    if (!g) return null;
+    const key = String(g).toLowerCase();
+    return genderLabels[key] ?? g;
+});
 </script>
 
 <template>
@@ -40,37 +60,75 @@ const Layout = computed(() => (isAdmin.value ? AuthenticatedLayout : StudentLayo
             <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="flex flex-col sm:flex-row gap-6 items-start">
+                        <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
                             <img :src="profile?.avatar_url || '/img/logo03.png'" alt="Avatar"
                                 class="h-28 w-28 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
-                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Nombre completo</div>
-                                    <div class="text-base">{{ user.full_name }}</div>
+
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        {{ user.full_name }}
+                                    </h3>
+                                    <div class="flex gap-2">
+                                        <span v-for="r in displayRoles" :key="r"
+                                            class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-700/50">
+                                            <i class="fa-solid fa-user-shield" v-if="r === 'Administrador'"></i>
+                                            <i class="fa-solid fa-graduation-cap" v-else></i>
+                                            {{ r }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Correo</div>
-                                    <div class="text-base">{{ user.email }}</div>
-                                </div>
-                                <div v-if="profile?.nickname">
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Apodo</div>
-                                    <div class="text-base">{{ profile.nickname }}</div>
-                                </div>
-                                <div v-if="profile?.birthdate">
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Fecha de nacimiento</div>
-                                    <div class="text-base">{{ profile.birthdate }}</div>
-                                </div>
-                                <div v-if="profile?.academic_level">
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Nivel académico</div>
-                                    <div class="text-base">{{ profile.academic_level }}</div>
-                                </div>
-                                <div v-if="profile?.gender">
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Género</div>
-                                    <div class="text-base">{{ profile.gender }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Rol(es)</div>
-                                    <div class="text-base">{{ roles?.join(', ') }}</div>
+
+                                <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fa-solid fa-envelope mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Correo
+                                            </div>
+                                            <div class="text-sm">{{ user.email }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="profile?.nickname" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-signature mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Apodo
+                                            </div>
+                                            <div class="text-sm">{{ profile.nickname }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="birthdateFormatted" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-cake-candles mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Nacimiento</div>
+                                            <div class="text-sm">{{ birthdateFormatted }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="profile?.academic_level" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-school mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Nivel
+                                                académico</div>
+                                            <div class="text-sm">{{ profile.academic_level }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="genderLabel" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-venus-mars mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Género
+                                            </div>
+                                            <div class="text-sm">{{ genderLabel }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -157,7 +215,7 @@ const Layout = computed(() => (isAdmin.value ? AuthenticatedLayout : StudentLayo
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{
-                                        stats.exercises?.correct ?? 0
+                                            stats.exercises?.correct ?? 0
                                         }}</span> / {{ stats.exercises?.attempts ?? 0 }}</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-pink-500"
