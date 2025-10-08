@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasResolveModelBinding;
+use App\Traits\HasRouteKeyName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Lesson extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlug, HasResolveModelBinding, HasRouteKeyName;
 
     protected $fillable = [
         'name',
@@ -18,6 +22,14 @@ class Lesson extends Model
         'description',
         'unit_id'
     ];
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug')
+            ->doNotGenerateSlugsOnUpdate();
+    }
 
     public function getImageUrlAttribute(): ?string
     {

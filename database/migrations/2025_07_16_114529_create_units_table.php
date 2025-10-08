@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->integer('expected_time');
             $table->string('description')->nullable();
             $table->string('image')->nullable();
+            $table->string('slug');
 
             $table->integer('level_id')->unsigned();
             $table->foreign('level_id')->references('id')->on('levels')->onDelete('cascade')->onUpdate('cascade');
