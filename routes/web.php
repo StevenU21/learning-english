@@ -27,6 +27,8 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
 
     Route::prefix('/profile')->name('profile.')->controller(ProfileController::class)->group(function () {
+        // Profile views
+        Route::get('/view', 'index')->name('index');
         Route::get('/', 'edit')->name('edit');
         Route::patch('/user', 'updateUser')->name('user.update');
         Route::post('/profile', 'updateProfile')->name('profile.update');

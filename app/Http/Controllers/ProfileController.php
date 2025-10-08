@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Services\FileService;
+use App\Models\Lesson;
+use App\Models\Unit;
+use App\Models\LessonUserProgress;
+use App\Models\UnitUserProgress;
+use App\Models\UserExerciseAttempt;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +20,86 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    /**
+     * Show a read-only profile page for the current user.
+     */
+    public function index(Request $request): Response
+    {
+        $user = $request->user()->load(['profile', 'roles']);
+
+        // Compute progress stats
+        $userId = $user->id;
+
+        // Lessons stats
+        $lessonsWorked = LessonUserProgress::where('user_id', $userId)->count();
+        $lessonsCompleted = LessonUserProgress::where('user_id', $userId)
+            ->where(function ($q) {
+                $q->where('progress', '>=', 100)->orWhere('status', 'completed');
+            })
+            ->count();
+        $avgLessonProgress = (float) (LessonUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
+        $lessonsTotal = (int) Lesson::count();
+
+        // Units stats
+        $unitsWorked = UnitUserProgress::where('user_id', $userId)->count();
+        $unitsCompleted = UnitUserProgress::where('user_id', $userId)
+            ->where(function ($q) {
+                $q->where('progress', '>=', 100)->orWhere('status', 'completed');
+            })
+            ->count();
+        $avgUnitProgress = (float) (UnitUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
+        $unitsTotal = (int) Unit::count();
+
+        // Exercises attempts
+        $totalAttempts = UserExerciseAttempt::where('user_id', $userId)->count();
+        $correctAttempts = UserExerciseAttempt::where('user_id', $userId)->where('is_correct', true)->count();
+        $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100, 1) : 0.0;
+        $lastActivity = UserExerciseAttempt::where('user_id', $userId)->max('answered_at');
+
+        // Overall progress (use lesson avg as main indicator if available, else unit avg)
+        $overallProgress = $avgLessonProgress > 0 ? $avgLessonProgress : $avgUnitProgress;
+
+        return Inertia::render('Profile/Index', [
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'roles' => $user->getRoleNames(),
+            ],
+            'profile' => $user->profile ? [
+                'nickname' => $user->profile->nickname,
+                'birthdate' => $user->profile->birthdate,
+                'academic_level' => $user->profile->academic_level,
+                'gender' => $user->profile->gender,
+                'avatar_url' => $user->profile->avatar_url,
+            ] : null,
+            'stats' => [
+                'overall' => [
+                    'progress' => round($overallProgress, 1),
+                    'last_activity' => optional($lastActivity)->toDateTimeString(),
+                ],
+                'units' => [
+                    'total' => $unitsTotal,
+                    'worked' => $unitsWorked,
+                    'completed' => $unitsCompleted,
+                    'avg_progress' => round($avgUnitProgress, 1),
+                ],
+                'lessons' => [
+                    'total' => $lessonsTotal,
+                    'worked' => $lessonsWorked,
+                    'completed' => $lessonsCompleted,
+                    'avg_progress' => round($avgLessonProgress, 1),
+                ],
+                'exercises' => [
+                    'attempts' => $totalAttempts,
+                    'correct' => $correctAttempts,
+                    'accuracy' => $accuracy,
+                ],
+            ],
+        ]);
+    }
     /**
      * Display the user's profile form.
      */

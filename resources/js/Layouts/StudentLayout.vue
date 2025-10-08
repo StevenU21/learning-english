@@ -57,7 +57,7 @@ const page = usePage();
                                         </span>
                                     </template>
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')">
+                                        <DropdownLink :href="route('profile.index')">
                                             <i class="fa-solid fa-user mr-2"></i>Perfil
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
@@ -102,7 +102,7 @@ const page = usePage();
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
                             <i class="fa-solid fa-layer-group mr-2"></i>Unidades
                             </Link>
-                            <Link :href="route('profile.edit')"
+                            <Link :href="route('profile.index')"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
                             <i class="fa-solid fa-user mr-2"></i>Perfil
                             </Link>
@@ -136,7 +136,7 @@ const page = usePage();
                     <i class="fa-solid fa-layer-group"></i>
                     <div class="text-[11px]">Unidades</div>
                     </Link>
-                    <Link :href="route('profile.edit')"
+                    <Link :href="route('profile.index')"
                         class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                     <i class="fa-solid fa-user"></i>
                     <div class="text-[11px]">Perfil</div>

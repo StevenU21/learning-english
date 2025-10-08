@@ -1,0 +1,189 @@
+<script setup>
+import { computed } from 'vue';
+import { usePage, Head, Link } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import StudentLayout from '@/Layouts/StudentLayout.vue';
+import PageHeader from '@/Components/PageHeader.vue';
+
+const page = usePage();
+const user = computed(() => page.props.user ?? page.props.auth?.user ?? {});
+const profile = computed(() => page.props.profile ?? user.value.profile ?? null);
+const stats = computed(() => page.props.stats ?? {});
+
+// Roles y layout (igual que en Edit.vue): admin -> AuthenticatedLayout, otros -> StudentLayout
+const roles = computed(() => page.props.auth.user?.roles || []);
+const isAdmin = computed(() => roles.value.includes('admin'));
+const Layout = computed(() => (isAdmin.value ? AuthenticatedLayout : StudentLayout));
+</script>
+
+<template>
+    <component :is="Layout">
+
+        <Head title="Perfil" />
+
+        <template #header>
+            <PageHeader title="Perfil" subtitle="Resumen de tu cuenta" icon="fa-solid fa-user" :breadcrumbs="[
+                { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
+                { label: 'Perfil' }
+            ]" gradient-classes="from-purple-600 to-indigo-600">
+                <template #actions>
+                    <Link :href="route('profile.edit')"
+                        class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-500 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus:bg-indigo-400 dark:focus:ring-offset-gray-800 dark:active:bg-indigo-600">
+                    <i class="fa-solid fa-pen mr-2"></i>
+                    Editar perfil
+                    </Link>
+                </template>
+            </PageHeader>
+        </template>
+
+        <div class="py-6">
+            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
+                <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <div class="flex flex-col sm:flex-row gap-6 items-start">
+                            <img :src="profile?.avatar_url || '/img/logo03.png'" alt="Avatar"
+                                class="h-28 w-28 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Nombre completo</div>
+                                    <div class="text-base">{{ user.full_name }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Correo</div>
+                                    <div class="text-base">{{ user.email }}</div>
+                                </div>
+                                <div v-if="profile?.nickname">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Apodo</div>
+                                    <div class="text-base">{{ profile.nickname }}</div>
+                                </div>
+                                <div v-if="profile?.birthdate">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Fecha de nacimiento</div>
+                                    <div class="text-base">{{ profile.birthdate }}</div>
+                                </div>
+                                <div v-if="profile?.academic_level">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Nivel académico</div>
+                                    <div class="text-base">{{ profile.academic_level }}</div>
+                                </div>
+                                <div v-if="profile?.gender">
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Género</div>
+                                    <div class="text-base">{{ profile.gender }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Rol(es)</div>
+                                    <div class="text-base">{{ roles?.join(', ') }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats overview cards -->
+                        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                            <!-- Overall progress -->
+                            <div
+                                class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Progreso general
+                                    </div>
+                                    <i class="fa-solid fa-chart-line text-indigo-500"></i>
+                                </div>
+                                <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
+                                    }}%</div>
+                                <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-2 rounded bg-indigo-600"
+                                        :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    Última actividad: {{ stats.overall?.last_activity || '—' }}
+                                </div>
+                            </div>
+
+                            <!-- Units -->
+                            <div
+                                class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Unidades</div>
+                                    <i class="fa-solid fa-layer-group text-emerald-500"></i>
+                                </div>
+                                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Trabajadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
+                                    Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.units?.completed ?? 0
+                                        }}</span>
+                                </div>
+                                <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-2 rounded bg-emerald-500"
+                                        :style="{ width: Math.min(100, Math.max(0, stats.units?.avg_progress ?? 0)) + '%' }">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Promedio de avance: {{
+                                    (stats.units?.avg_progress ?? 0).toFixed(1) }}%</div>
+                            </div>
+
+                            <!-- Lessons -->
+                            <div
+                                class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Lecciones</div>
+                                    <i class="fa-solid fa-book-open text-amber-500"></i>
+                                </div>
+                                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Trabajadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.lessons?.worked ?? 0 }}</span> / {{ stats.lessons?.total ?? 0 }} ·
+                                    Completadas:
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.lessons?.completed ??
+                                        0 }}</span>
+                                </div>
+                                <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-2 rounded bg-amber-500"
+                                        :style="{ width: Math.min(100, Math.max(0, stats.lessons?.avg_progress ?? 0)) + '%' }">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">Promedio de avance: {{
+                                    (stats.lessons?.avg_progress ?? 0).toFixed(1) }}%</div>
+                            </div>
+
+                            <!-- Exercises accuracy -->
+                            <div
+                                class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Precisión
+                                        ejercicios</div>
+                                    <i class="fa-solid fa-bullseye text-pink-500"></i>
+                                </div>
+                                <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
+                                    }}%
+                                </div>
+                                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
+                                        class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.exercises?.correct ?? 0
+                                        }}</span> / {{ stats.exercises?.attempts ?? 0 }}</div>
+                                <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-2 rounded bg-pink-500"
+                                        :style="{ width: Math.min(100, Math.max(0, stats.exercises?.accuracy ?? 0)) + '%' }">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick actions -->
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <Link v-if="!isAdmin" :href="route('student.units.index')"
+                                class="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            Continuar aprendiendo
+                            </Link>
+                            <Link v-else :href="route('admin.progress.index')"
+                                class="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800">
+                            <i class="fa-solid fa-chart-column"></i>
+                            Ver progreso de estudiantes
+                            </Link>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </component>
+</template>
