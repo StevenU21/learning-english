@@ -14,12 +14,17 @@ const levelFilter = ref(props.selectedLevel || '');
 
 const filteredUnits = computed(() => {
     if (!levelFilter.value) return props.units;
-    return props.units.filter(u => String(u.level_id) === String(levelFilter.value));
+    // match either by level slug or id for backward compatibility
+    return props.units.filter(u => String(u.level?.slug) === String(levelFilter.value) || String(u.level_id) === String(levelFilter.value));
 });
 
 function applyFilter() {
-    router.get(route('student.units.index'), { level_id: levelFilter.value || '' }, {
+    // Normalize and only send when set to avoid trailing empty param
+    const params = {};
+    if (levelFilter.value) params.level = levelFilter.value;
+    router.get(route('student.units.index'), params, {
         preserveScroll: true,
+        preserveState: true,
         replace: true,
     });
 }
@@ -58,9 +63,9 @@ import SelectInput from '@/Components/SelectInput.vue';
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
                         <div class="w-full md:w-auto">
-                            <SelectInput v-model="levelFilter" @change="applyFilter" class="w-56">
+                            <SelectInput v-model="levelFilter" @update:modelValue="applyFilter" class="w-56">
                                 <option value="">Todos los niveles</option>
-                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}
+                                <option v-for="level in levels" :key="level.id" :value="level.slug || level.id">{{ level.name }}
                                 </option>
                             </SelectInput>
                         </div>

@@ -12,11 +12,18 @@ class UnitController extends Controller
 {
     public function index(Request $request)
     {
-        $levelId = $request->input('level_id');
+        // Accept either a numeric id or a slug for level filtering
+        $levelParam = $request->input('level') ?? $request->input('level_id');
         $levels = Level::all();
         $unitsQuery = Unit::query();
-        if ($levelId) {
-            $unitsQuery->where('level_id', $levelId);
+        if ($levelParam) {
+            if (is_numeric($levelParam)) {
+                $unitsQuery->where('level_id', $levelParam);
+            } else {
+                $unitsQuery->whereHas('level', function ($q) use ($levelParam) {
+                    $q->where('slug', $levelParam);
+                });
+            }
         }
         $units = $unitsQuery->with([
             'level',
@@ -42,7 +49,7 @@ class UnitController extends Controller
         return Inertia::render('Student/Units/Index', [
             'levels' => $levels,
             'units' => $units,
-            'selectedLevel' => $levelId
+            'selectedLevel' => $levelParam
         ]);
     }
 }
