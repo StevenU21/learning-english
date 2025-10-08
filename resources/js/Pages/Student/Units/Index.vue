@@ -58,13 +58,10 @@ import SelectInput from '@/Components/SelectInput.vue';
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
                         <div class="w-full md:w-auto">
-                            <SelectInput
-                                v-model="levelFilter"
-                                @change="applyFilter"
-                                class="w-56"
-                            >
+                            <SelectInput v-model="levelFilter" @change="applyFilter" class="w-56">
                                 <option value="">Todos los niveles</option>
-                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}</option>
+                                <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.name }}
+                                </option>
                             </SelectInput>
                         </div>
                     </div>

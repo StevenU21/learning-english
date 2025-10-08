@@ -27,6 +27,7 @@ class UnitController extends Controller
             $progress = $unit->unitUserProgress->first();
             return [
                 'id' => $unit->id,
+                'slug' => $unit->slug,
                 'level_id' => $unit->level_id,
                 'name' => $unit->name,
                 'description' => $unit->description,
