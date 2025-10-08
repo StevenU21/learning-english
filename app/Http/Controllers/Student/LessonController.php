@@ -17,7 +17,8 @@ class LessonController extends Controller
         $unit->load([
             'lessons.lessonUserProgress' => function ($q) {
                 $q->where('user_id', auth()->id());
-            }
+            },
+            'lessons.unit:id,slug'
         ]);
         $lessons = $unit->lessons->map(function ($lesson) {
             $progress = $lesson->lessonUserProgress->first();
@@ -25,6 +26,7 @@ class LessonController extends Controller
                 'id' => $lesson->id,
                 'slug' => $lesson->slug,
                 'unit_id' => $lesson->unit_id,
+                'unit_slug' => optional($lesson->unit)->slug,
                 'name' => $lesson->name,
                 'description' => $lesson->description,
                 'image_url' => $lesson->image_url,
@@ -44,8 +46,12 @@ class LessonController extends Controller
     /**
      * Display the specified lesson summary with exercises.
      */
-    public function show(Lesson $lesson)
+    public function show(Unit $unit, Lesson $lesson)
     {
+        // Ensure the lesson belongs to the provided unit to avoid cross-access
+        if ($lesson->unit_id !== $unit->id) {
+            abort(404);
+        }
         $lesson->load(['exercises.exerciseType', 'unit']);
         $exercises = $lesson->exercises->map(function ($exercise) {
             $exerciseArr = $exercise->toArray();

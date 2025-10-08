@@ -36,13 +36,15 @@ Route::middleware('auth')->group(function () {
     // Rutas para estudiantes - Unidades
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('units', [\App\Http\Controllers\Student\UnitController::class, 'index'])->name('units.index');
-        Route::get('units/{unit}/start', [\App\Http\Controllers\Student\LessonController::class, 'index'])->name('units.start');
-        // Student resources for a unit
-        Route::get('units/{unit}/resources', [\App\Http\Controllers\Student\ResourceController::class, 'index'])->name('units.resources');
+        // Lessons listing for a Unit
+        Route::get('units/{unit}/lessons', [\App\Http\Controllers\Student\LessonController::class, 'index'])->name('units.lessons.index');
+        // Resources for a Unit
+        Route::get('units/{unit}/resources', [\App\Http\Controllers\Student\ResourceController::class, 'index'])->name('units.resources.index');
         Route::get('resources/{resource}/download', [\App\Http\Controllers\Student\ResourceController::class, 'download'])->name('resources.download');
-        Route::get('lessons/{lesson}/start', [\App\Http\Controllers\Student\ExerciseController::class, 'showSequence'])->name('lessons.start');
-        // Route for lesson summary
-        Route::get('lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('lessons.show');
+        // Exercise sequence for a Lesson within a Unit
+        Route::get('units/{unit}/lessons/{lesson}/exercise', [\App\Http\Controllers\Student\ExerciseController::class, 'showSequence'])->name('units.lessons.sequence');
+        // Lesson summary within a Unit
+        Route::get('units/{unit}/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
         Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
     });
 

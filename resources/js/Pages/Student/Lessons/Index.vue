@@ -43,7 +43,7 @@ const orderedLessons = computed(() => {
 function applyFilter() {
     // Si hay unidad seleccionada, navegar a la ruta con parámetro
     if (unitFilter.value) {
-        router.get(route('student.units.start', { unit: unitFilter.value }), {}, {
+        router.get(route('student.units.lessons.index', { unit: unitFilter.value }), {}, {
             preserveScroll: true,
             replace: true,
         });

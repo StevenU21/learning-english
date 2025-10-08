@@ -12,8 +12,12 @@ use Inertia\Inertia;
 
 class ExerciseController extends Controller
 {
-    public function showSequence(Lesson $lesson)
+    public function showSequence(\App\Models\Unit $unit, Lesson $lesson)
     {
+        // Ensure the lesson belongs to the provided unit
+        if ($lesson->unit_id !== $unit->id) {
+            abort(404);
+        }
         $lesson->load(['exercises.exerciseType', 'unit']);
 
         $exercises = $lesson->exercises->map(function ($exercise) {
@@ -102,7 +106,7 @@ class ExerciseController extends Controller
         if ($unitId) {
             // Find Unit model to leverage slug route binding on redirect
             $unit = \App\Models\Unit::find($unitId);
-            return redirect()->route('student.units.start', $unit);
+            return redirect()->route('student.units.lessons.index', $unit);
         }
         return redirect()->route('student.units.index');
     }
