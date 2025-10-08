@@ -39,9 +39,11 @@ class HandleInertiaRequests extends Middleware
                         $user->only(['id', 'first_name', 'last_name', 'email']),
                         [
                             'full_name' => $user->full_name,
-                            // Array of role names (Spatie getRoleNames returns a collection)
+                            // Profile image URL
+                            'avatar_url' => optional($user->profile)->avatar_url,
+                            // Array of role names
                             'roles' => $user->getRoleNames()->toArray(),
-                            // Array of permission names (can be useful later if needed)
+                            // Array of permission names
                             'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
                         ]
                     )

@@ -45,8 +45,14 @@ const page = usePage();
                                         <span class="inline-flex rounded-md">
                                             <button type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
-                                                <i class="fa-solid fa-user mr-2"></i>{{ $page.props.auth.user.full_name
-                                                }}
+                                                <img
+                                                    v-if="$page.props.auth.user.avatar_url"
+                                                    :src="$page.props.auth.user.avatar_url"
+                                                    alt="Avatar"
+                                                    class="h-6 w-6 rounded-full object-cover mr-2"
+                                                />
+                                                <i v-else class="fa-solid fa-user mr-2"></i>
+                                                {{ $page.props.auth.user.full_name }}
                                                 <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd"
