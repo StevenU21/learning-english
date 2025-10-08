@@ -12,9 +12,9 @@ use Inertia\Inertia;
 
 class ExerciseController extends Controller
 {
-    public function showSequence($lessonId)
+    public function showSequence(Lesson $lesson)
     {
-        $lesson = Lesson::with('exercises.exerciseType')->findOrFail($lessonId);
+        $lesson->load(['exercises.exerciseType', 'unit']);
 
         $exercises = $lesson->exercises->map(function ($exercise) {
             $exerciseArr = $exercise->toArray();
@@ -48,8 +48,8 @@ class ExerciseController extends Controller
             );
         }
 
-        $lessonId = $attempts[0]['lesson_id'] ?? null;
-        $unitId = $attempts[0]['unit_id'] ?? null;
+    $lessonId = $attempts[0]['lesson_id'] ?? null;
+    $unitId = $attempts[0]['unit_id'] ?? null;
 
         // Guardar progreso de la lección
         if ($lessonId) {
@@ -90,7 +90,7 @@ class ExerciseController extends Controller
                     [
                         'user_id' => $userId,
                         'unit_id' => $unitId,
-                    ],  
+                    ],
                     [
                         'progress' => $unitProgress,
                         'status' => $unitStatus,
@@ -100,7 +100,9 @@ class ExerciseController extends Controller
         }
 
         if ($unitId) {
-            return redirect()->route('student.units.start', $unitId);
+            // Find Unit model to leverage slug route binding on redirect
+            $unit = \App\Models\Unit::find($unitId);
+            return redirect()->route('student.units.start', $unit);
         }
         return redirect()->route('student.units.index');
     }

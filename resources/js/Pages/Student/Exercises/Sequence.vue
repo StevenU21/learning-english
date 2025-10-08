@@ -93,7 +93,7 @@ function goToUnits() {
 }
 
 function goToLessons() {
-    router.get(route('student.units.start', props.lesson.unit_id));
+    router.get(route('student.units.start', { unit: props.lesson.unit?.slug || props.lesson.unit_slug || props.lesson.unit_id }));
 }
 
 function formatAnswer(answer) {
@@ -174,7 +174,7 @@ const componentMap = {
                     { label: 'Ejercicios' }
                 ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
-                    <Link :href="route('student.units.start', lesson.unit_id)"
+                    <Link :href="route('student.units.start', { unit: lesson.unit?.slug || lesson.unit_slug || lesson.unit_id })"
                         class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                         <i class="fa-solid fa-arrow-left mr-2"></i>Volver
                     </Link>

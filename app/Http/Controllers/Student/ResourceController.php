@@ -15,7 +15,7 @@ class ResourceController extends Controller
         // Load resources for the unit
         $resources = Resource::where('unit_id', $unit->id)->get();
         return Inertia::render('Student/Units/Resources', [
-            'unit' => $unit->only(['id','name','description']),
+            'unit' => $unit->only(['id', 'name', 'description']),
             'resources' => $resources->map(fn($r) => [
                 'id' => $r->id,
                 'name' => $r->name,

@@ -18,7 +18,8 @@ const unitFilter = ref(props.selectedUnit || '');
 
 // Unidad seleccionada (para mostrar nombre en el título/encabezado)
 const selectedUnit = computed(() => {
-    return props.units.find(u => String(u.id) === String(unitFilter.value)) || null;
+    // Match by slug primarily; fall back to id for backward compatibility
+    return props.units.find(u => String(u.slug) === String(unitFilter.value) || String(u.id) === String(unitFilter.value)) || null;
 });
 
 // Lecciones filtradas según unidad seleccionada
@@ -42,7 +43,7 @@ const orderedLessons = computed(() => {
 function applyFilter() {
     // Si hay unidad seleccionada, navegar a la ruta con parámetro
     if (unitFilter.value) {
-        router.get(route('student.units.start', unitFilter.value), {}, {
+        router.get(route('student.units.start', { unit: unitFilter.value }), {}, {
             preserveScroll: true,
             replace: true,
         });
@@ -66,7 +67,7 @@ function applyFilter() {
                 :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
                     { label: 'Lecciones' }
-                ]" gradient-classes="from-purple-600 to-indigo-600">    
+                ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
                     <Link :href="route('student.units.index')">
                     <PrimaryButton>
