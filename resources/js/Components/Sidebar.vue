@@ -13,7 +13,7 @@
         effectiveCollapsed ? 'lg:w-16' : 'lg:w-64'
     ]">
         <div
-            :class="['h-16 flex items-center border-b border-gray-200 dark:border-gray-700 px-4 justify-between', effectiveCollapsed ? 'lg:px-2 lg:justify-start lg:gap-1' : '']">
+            :class="['h-16 flex items-center border-b border-gray-200 dark:border-gray-700 px-4 justify-between', effectiveCollapsed ? 'lg:px-2' : '']">
             <Link :href="homeHref" class="flex items-center gap-2 overflow-hidden flex-shrink-0">
             <img src="/img/logo03.png" alt="Learning English logo" class="w-10 h-10 object-contain" />
             <h1 v-show="!effectiveCollapsed"
@@ -26,9 +26,12 @@
                 <button class="hidden lg:inline-flex"
                     :class="[effectiveCollapsed ? 'p-1.5' : 'p-2', 'text-gray-500 hover:text-gray-700 dark:text-gray-400']"
                     @click="toggleCollapsed" :title="effectiveCollapsed ? 'Expandir' : 'Contraer'">
-                    <i :class="effectiveCollapsed ? 'fa-solid fa-angles-right' : 'fa-solid fa-angles-left'"></i>
+                    <i :class="[
+                        effectiveCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left',
+                        'w-5 text-center text-gray-500'
+                    ]"></i>
                 </button>
-                <!-- Mobile close -->w
+                <!-- Mobile close -->
                 <button class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400"
                     @click="$emit('update:modelValue', false)">
                     <i class="fa-solid fa-xmark text-lg"></i>
