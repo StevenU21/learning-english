@@ -58,7 +58,8 @@ class ProgressController extends Controller
 
     public function show($userId)
     {
-        $user = User::findOrFail($userId);
+        // Cargar relación profile para obtener avatar
+        $user = User::with('profile')->findOrFail($userId);
         $units = Unit::all();
         $lessons = Lesson::with('unit')->get();
         $lessonProgress = LessonUserProgress::with(['lesson.unit'])
@@ -73,7 +74,9 @@ class ProgressController extends Controller
             ->get();
 
         return Inertia::render('Admin/Progress/Show', [
-            'user' => $user,
+            'user' => array_merge($user->toArray(), [
+                'avatar_url' => optional($user->profile)->avatar_url,
+            ]),
             'units' => $units,
             'lessons' => $lessons,
             'lessonProgress' => $lessonProgress,

@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     user: Object,
@@ -15,6 +16,7 @@ const props = defineProps({
 });
 
 const { user, lessonProgress, unitProgress, attempts, units, lessons } = props;
+const page = usePage();
 
 // Filtros
 const unitStatusFilter = ref('');
@@ -99,7 +101,9 @@ function statusBadgeClasses(status) {
                         <i class="fa-solid fa-user mr-2"></i>Información del Estudiante
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
+                        <div class="flex flex-col items-center justify-center">
+                            <img :src="user.avatar_url || '/img/logo03.png'" alt="Avatar"
+                                class="w-20 h-20 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700 mb-2" />
                             <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-user mr-1"></i>Nombre</p>
                             <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.name }}</p>
                         </div>
