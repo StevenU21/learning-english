@@ -100,23 +100,15 @@ function statusBadgeClasses(status) {
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
                         <i class="fa-solid fa-user mr-2"></i>Información del Estudiante
                     </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div class="flex flex-col items-center justify-center">
-                            <img :src="user.avatar_url || '/img/logo03.png'" alt="Avatar"
-                                class="w-20 h-20 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700 mb-2" />
-                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-user mr-1"></i>Nombre</p>
-                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400"><i class="fa-solid fa-envelope mr-1"></i>Email
-                            </p>
-                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ user.email }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400"><i
-                                    class="fa-solid fa-calendar-days mr-1"></i>Creado</p>
-                            <p class="font-medium text-gray-800 dark:text-gray-200">{{ new
-                                Date(user.created_at).toLocaleDateString() }}</p>
+                    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                        <img :src="user.avatar_url || '/img/logo03.png'" alt="Avatar"
+                            class="w-24 h-24 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
+                        <div class="flex-1 space-y-2 text-sm">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ user.name }}</h4>
+                            <div class="flex flex-wrap items-center space-x-4 text-gray-500 dark:text-gray-400">
+                                <span><i class="fa-solid fa-envelope mr-1"></i>{{ user.email }}</span>
+                                <span><i class="fa-solid fa-calendar-days mr-1"></i>{{ new Date(user.created_at).toLocaleDateString() }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
