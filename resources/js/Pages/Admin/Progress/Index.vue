@@ -54,8 +54,7 @@ function applyFilters() {
         status: form.status || '',
     }, {
         replace: true,
-        preserveScroll: true,
-        preserveState: true,
+        preserveScroll: true
     });
 }
 
@@ -113,7 +112,7 @@ const columns = [
                         <div>
                             <SelectInput v-model="form.status" class="w-60">
                                 <option value="">Todos los Estados</option>
-                                <option value="pendiente">Pendiente</option>
+                                <option value="no_comenzado">Pendiente</option>
                                 <option value="en_progreso">En Progreso</option>
                                 <option value="completado">Completado</option>
                             </SelectInput>
