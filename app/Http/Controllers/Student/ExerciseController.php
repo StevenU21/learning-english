@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Models\LessonUserProgress;
+use App\Models\Unit;
 use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
 use App\Http\Requests\UserExerciseAttemptRequest;
@@ -37,11 +38,18 @@ class ExerciseController extends Controller
         $attempts = $request->input('attempts');
 
         foreach ($attempts as $attempt) {
+            // Calcular el siguiente número de intento para este usuario y ejercicio
+            $lastAttempt = UserExerciseAttempt::where('user_id', $userId)
+                ->where('exercise_id', $attempt['exercise_id'])
+                ->orderByDesc('attempt_number')
+                ->first();
+            $nextAttemptNumber = $lastAttempt ? $lastAttempt->attempt_number + 1 : 1;
+
             UserExerciseAttempt::updateOrCreate(
                 [
                     'user_id' => $userId,
                     'exercise_id' => $attempt['exercise_id'],
-                    'attempt_number' => $attempt['attempt_number'],
+                    'attempt_number' => $nextAttemptNumber,
                 ],
                 [
                     'answer_given' => $attempt['answer_given'],
@@ -105,7 +113,7 @@ class ExerciseController extends Controller
 
         if ($unitId) {
             // Find Unit model to leverage slug route binding on redirect
-            $unit = \App\Models\Unit::find($unitId);
+            $unit = Unit::find($unitId);
             return redirect()->route('student.units.lessons.index', $unit);
         }
         return redirect()->route('student.units.index');
