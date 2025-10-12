@@ -47,6 +47,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     /**
      * Get the user's full name.
      */
@@ -54,6 +55,7 @@ class User extends Authenticatable
     {
         return trim("{$this->first_name} {$this->last_name}");
     }
+
     /**
      * Append name attribute for JSON serialization.
      *
@@ -69,6 +71,17 @@ class User extends Authenticatable
     public function getNameAttribute(): string
     {
         return $this->full_name;
+    }
+
+    /**
+     * Get the user's short name (first name and first last name).
+     */
+    public function getShortNameAttribute(): string
+    {
+        $firstName = $this->first_name;
+        $lastName = $this->last_name;
+        $firstLastName = $lastName ? explode(' ', trim($lastName))[0] : '';
+        return trim("$firstName $firstLastName");
     }
 
     public function profile(): HasOne

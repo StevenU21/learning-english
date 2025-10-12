@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
                         $user->only(['id', 'first_name', 'last_name', 'email']),
                         [
                             'full_name' => $user->full_name,
+                            'short_name' => $user->short_name,
                             // Profile image URL
                             'avatar_url' => optional($user->profile)->avatar_url,
                             // Array of role names
