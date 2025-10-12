@@ -100,15 +100,26 @@ function statusBadgeClasses(status) {
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
                         <i class="fa-solid fa-user mr-2"></i>Información del Estudiante
                     </h3>
-                    <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                        <img :src="user.avatar_url || '/img/logo03.png'" alt="Avatar"
-                            class="w-24 h-24 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
+                    <div class="md:flex md:items-start md:space-x-8">
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <img :src="user.avatar_url || '/img/logo03.png'" alt="Avatar"
+                                class="w-24 h-24 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
+                        </div>
+                        <!-- Datos básicos -->
                         <div class="flex-1 space-y-2 text-sm">
-                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ user.name }}</h4>
-                            <div class="flex flex-wrap items-center space-x-4 text-gray-500 dark:text-gray-400">
-                                <span><i class="fa-solid fa-envelope mr-1"></i>{{ user.email }}</span>
-                                <span><i class="fa-solid fa-calendar-days mr-1"></i>{{ new Date(user.created_at).toLocaleDateString() }}</span>
+                            <h4 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ user.name }}</h4>
+                            <div class="flex items-center space-x-6 text-gray-500 dark:text-gray-400">
+                                <span class="flex items-center"><i class="fa-solid fa-envelope mr-2"></i>{{ user.email }}</span>
+                                <span class="flex items-center"><i class="fa-solid fa-calendar-days mr-2"></i>{{ new Date(user.created_at).toLocaleDateString() }}</span>
                             </div>
+                        </div>
+                        <!-- Datos personales detallados -->
+                        <div class="w-full md:w-1/3 grid grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div class="flex items-center"><i class="fa-solid fa-user-tag mr-2"></i><span>{{ user.profile?.nickname || 'Sin datos' }}</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-cake-candles mr-2"></i><span>{{ user.profile?.birthdate ? new Date(user.profile.birthdate).toLocaleDateString() : 'Sin datos' }}</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-graduation-cap mr-2"></i><span>{{ user.profile?.academic_level || 'Sin datos' }}</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-venus-mars mr-2"></i><span>{{ user.profile?.gender || 'Sin datos' }}</span></div>
                         </div>
                     </div>
                 </div>

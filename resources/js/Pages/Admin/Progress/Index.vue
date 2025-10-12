@@ -69,7 +69,7 @@ watch(() => [form.unit_id, form.user_id, form.lesson_id, form.status],
 // Columns for DataTable (similar style to Units)
 const columns = [
     {
-        key: 'avatar_url', label: 'Imagen', icon: 'fa-solid fa-image', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400',
+        key: 'avatar_url', label: 'Imagen', icon: 'fa-solid fa-image', align: 'left', thClass: 'w-18', tdClass: 'text-gray-600 dark:text-gray-400',
     },
     { key: 'user.name', label: 'Usuario', icon: 'fa-solid fa-user', align: 'left' },
     { key: 'lesson.unit.name', label: 'Unidad', icon: 'fa-solid fa-layer-group', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
@@ -144,7 +144,7 @@ const columns = [
                         </template>
                         <template #cell-avatar_url="{ row }">
                             <img :src="row.avatar_url || '/img/logo03.png'" alt="Avatar"
-                                class="w-8 h-8 rounded-full object-cover" />
+                                class="w-12 h-12 rounded-full object-cover" />
                         </template>
                     </DataTable>
                     <div class="border-t border-gray-200 dark:border-gray-700">
