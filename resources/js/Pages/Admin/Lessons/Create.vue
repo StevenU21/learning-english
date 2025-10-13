@@ -9,6 +9,7 @@ const props = defineProps({ units: Array });
 const form = useForm({
     name: '',
     description: '',
+    duration: '',
     image: null,
     unit_id: props.units.length ? props.units[0].id : null,
 });

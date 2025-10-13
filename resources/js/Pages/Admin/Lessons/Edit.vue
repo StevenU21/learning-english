@@ -9,6 +9,7 @@ const props = defineProps({ lesson: Object, units: Array });
 const form = useForm({
     name: props.lesson.name || '',
     description: props.lesson.description || '',
+    duration: props.lesson.duration || '',
     unit_id: props.lesson.unit_id || null,
     image: null,
 });

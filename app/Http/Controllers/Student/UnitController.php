@@ -30,7 +30,9 @@ class UnitController extends Controller
             'unitUserProgress' => function ($q) {
                 $q->where('user_id', auth()->id());
             }
-        ])->get()->map(function ($unit) {
+        ])
+        ->withSum('lessons as lessons_sum_duration', 'duration')
+        ->get()->map(function ($unit) {
             $progress = $unit->unitUserProgress->first();
             return [
                 'id' => $unit->id,
@@ -38,7 +40,7 @@ class UnitController extends Controller
                 'level_id' => $unit->level_id,
                 'name' => $unit->name,
                 'description' => $unit->description,
-                'expected_time' => $unit->expected_time,
+                'expected_time' => (int) $unit->expected_time,
                 'image_url' => $unit->image_url,
                 'level' => $unit->level,
                 'progress' => $progress ? $progress->progress : 0,

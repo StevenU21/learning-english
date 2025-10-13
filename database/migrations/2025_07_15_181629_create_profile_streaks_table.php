@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->unsignedInteger('profile_id');
             $table->date('activity_date');
-            $table->integer('minutes')->default(0); // minutos estudiados ese día
             $table->timestamps();
 
             $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('cascade');

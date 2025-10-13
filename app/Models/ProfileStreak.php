@@ -9,7 +9,6 @@ class ProfileStreak extends Model
     protected $fillable = [
         'profile_id',
         'activity_date',
-        'minutes',
     ];
 
     protected $casts = [

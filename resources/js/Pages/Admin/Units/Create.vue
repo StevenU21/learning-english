@@ -9,7 +9,6 @@ const props = defineProps({ levels: Array });
 const form = useForm({
     name: '',
     description: '',
-    expected_time: '',
     level_id: props.levels.length ? props.levels[0].id : null,
     image: null,
 });

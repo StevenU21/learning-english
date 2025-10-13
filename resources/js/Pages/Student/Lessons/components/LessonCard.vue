@@ -23,6 +23,9 @@
             <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
                 {{ lesson.description || 'Sin descripción' }}
             </p>
+            <div class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                <i class="fa-solid fa-clock"></i> {{ lesson.duration ? `${lesson.duration} min` : '—' }}
+            </div>
             <div class="flex flex-wrap gap-2 mt-auto">
                 <span :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border',

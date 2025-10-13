@@ -29,12 +29,6 @@ const props = defineProps({
         </div>
         <div class="flex flex-col md:flex-row md:items-end gap-4">
             <div class="flex-1">
-                <InputLabel for="expected_time" value="Tiempo Esperado" />
-                <TextInput id="expected_time" v-model="form.expected_time" type="number" class="block w-full"
-                    autocomplete="expected-time-input" />
-                <InputError :message="form.errors.expected_time" class="mt-2" />
-            </div>
-            <div class="flex-1">
                 <InputLabel for="level_id" value="Nivel" />
                 <SelectInput id="level_id" v-model="form.level_id">
                     <option v-for="level in levels" :value="level.id" :key="level.id">{{ level.name }}</option>

@@ -34,7 +34,6 @@ class UnitRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:4', 'max:50', Rule::unique('units')->ignore($this->unit)],
             'description' => ['nullable', 'string', 'max:255'],
-            'expected_time' => ['required', 'integer', 'min:1'],
             'image' => [
                 'nullable',
                 'image',
@@ -55,7 +54,6 @@ class UnitRequest extends FormRequest
         return [
             'name' => 'nombre',
             'description' => 'descripción',
-            'expected_time' => 'tiempo estimado',
             'image' => 'imagen',
             'level_id' => 'nivel',
         ];
@@ -76,9 +74,6 @@ class UnitRequest extends FormRequest
             'name.unique'   => 'El nombre ya está en uso.',
             'description.string' => 'La descripción debe ser una cadena de texto.',
             'description.max'    => 'La descripción no debe exceder de :max caracteres.',
-            'expected_time.required' => 'El tiempo estimado es obligatorio.',
-            'expected_time.integer'  => 'El tiempo estimado debe ser un número entero.',
-            'expected_time.min'      => 'El tiempo estimado debe ser al menos :min.',
             'image.image'            => 'La imagen debe ser un archivo de imagen válido.',
             'image.mimes'            => 'La imagen debe ser de tipo: :values.',
             'image.max'              => 'La imagen no debe exceder de :max kilobytes.',

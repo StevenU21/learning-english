@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserExerciseAttempt;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class StreakService
 {
@@ -28,29 +29,18 @@ class StreakService
             ->exists();
 
         if ($didToday) {
-            // Aggregate minutes from today's attempts
-            $attemptsToday = UserExerciseAttempt::where('user_id', $user->id)
-                ->whereDate('answered_at', $today->toDateString())
-                ->get(['started_at', 'answered_at']);
-
-            $minutes = $attemptsToday->reduce(function (int $carry, $a) {
-                $started = $a->started_at ? Carbon::parse($a->started_at) : Carbon::parse($a->answered_at);
-                $answered = Carbon::parse($a->answered_at);
-                // Guard against negatives
-                $diff = max(0, $started->diffInMinutes($answered));
-                return $carry + $diff;
-            }, 0);
-
-            // Upsert today's streak row
-            ProfileStreak::updateOrCreate(
-                [
-                    'profile_id' => $profile->id,
-                    'activity_date' => $today->toDateString(),
-                ],
-                [
-                    'minutes' => $minutes,
-                ]
-            );
+            // Ensure today's streak row exists only once (ignore if already present)
+            $key = [
+                'profile_id' => $profile->id,
+                'activity_date' => $today->toDateString(),
+            ];
+            $exists = ProfileStreak::where($key)->exists();
+            if (!$exists) {
+                DB::table('profile_streaks')->insertOrIgnore(array_merge($key, [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]));
+            }
         }
 
         return $this->getCurrentStreak($user);

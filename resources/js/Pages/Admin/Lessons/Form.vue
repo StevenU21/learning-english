@@ -33,6 +33,11 @@ const props = defineProps({
             <InputError :message="form.errors.unit_id" class="mt-2" />
         </div>
         <div>
+            <InputLabel for="duration" value="Duración (minutos)" />
+            <TextInput id="duration" v-model="form.duration" type="number" min="1" class="block w-full" autocomplete="duration-input" />
+            <InputError :message="form.errors.duration" class="mt-2" />
+        </div>
+        <div>
             <InputLabel for="image" value="Imagen" />
             <FileInput id="image" v-model="form.image" accept="image/*" />
             <InputError :message="form.errors.image" class="mt-2" />

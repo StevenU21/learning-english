@@ -25,6 +25,7 @@ class LessonController extends Controller
             return [
                 'id' => $lesson->id,
                 'name' => $lesson->name,
+                'duration' => (int) $lesson->duration,
                 'description' => $lesson->description,
                 'image_url' => $lesson->image_url,
                 'unit' => $lesson->unit
@@ -43,6 +44,7 @@ class LessonController extends Controller
         $lessonData = [
             'id' => $lesson->id,
             'name' => $lesson->name,
+            'duration' => (int) $lesson->duration,
             'description' => $lesson->description,
             'image_url' => $lesson->image_url,
             'unit' => $lesson->unit,

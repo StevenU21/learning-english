@@ -53,6 +53,12 @@ const { lesson } = props;
                                     <td class="p-4 text-gray-300 font-semibold text-lg">{{ lesson.name }}</td>
                                 </tr>
                                 <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
+                                        <th class="text-left p-4 text-gray-200 align-top">
+                                            <i class="fa-solid fa-clock mr-2"></i>Duración (min)
+                                        </th>
+                                        <td class="p-4 text-gray-300">{{ lesson.duration ?? '-' }}</td>
+                                    </tr>
+                                    <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
                                     <th class="text-left p-4 text-gray-200 align-top">
                                         <i class="fa-solid fa-layer-group mr-2"></i>Unidad
                                     </th>

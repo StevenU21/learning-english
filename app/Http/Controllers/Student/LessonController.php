@@ -28,6 +28,7 @@ class LessonController extends Controller
                 'unit_id' => $lesson->unit_id,
                 'unit_slug' => optional($lesson->unit)->slug,
                 'name' => $lesson->name,
+                'duration' => (int) $lesson->duration,
                 'description' => $lesson->description,
                 'image_url' => $lesson->image_url,
                 'progress' => $progress ? $progress->progress : 0,

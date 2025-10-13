@@ -19,14 +19,16 @@ class UnitController extends Controller
     {
         $this->authorize('viewAny', Unit::class);
 
-        $units = Unit::with('level')->paginate(10);
+        $units = Unit::with('level')
+            ->withSum('lessons as lessons_sum_duration', 'duration')
+            ->paginate(10);
 
         $units->getCollection()->transform(function ($unit) {
             return [
                 'id' => $unit->id,
                 'name' => $unit->name,
                 'description' => $unit->description,
-                'expected_time' => $unit->expected_time,
+                'expected_time' => (int) $unit->expected_time,
                 'image_url' => $unit->image_url,
                 'level' => $unit->level
             ];
@@ -57,12 +59,13 @@ class UnitController extends Controller
     public function show(Unit $unit)
     {
         $this->authorize('view', $unit);
-        $unit->load('level');
+        $unit->load('level')
+            ->loadSum('lessons as lessons_sum_duration', 'duration');
         $unitData = [
             'id' => $unit->id,
             'name' => $unit->name,
             'description' => $unit->description,
-            'expected_time' => $unit->expected_time,
+            'expected_time' => (int) $unit->expected_time,
             'image_url' => $unit->image_url,
             'level' => $unit->level,
             'created_at' => $unit->created_at,

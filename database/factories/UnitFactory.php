@@ -18,7 +18,6 @@ class UnitFactory extends Factory
     {
         return [
             'name' => fake()->unique()->word(),
-            'expected_time' => fake()->randomElement([5, 10, 15, 20, 25, 30, 45, 60, 120]),
             'description' => fake()->sentence(),
             'level_id' => null,
         ];

@@ -9,7 +9,6 @@ const props = defineProps({ unit: Object, levels: Array });
 const form = useForm({
     name: props.unit.name || '',
     description: props.unit.description || '',
-    expected_time: props.unit.expected_time || '',
     level_id: props.unit.level_id || null,
     image: null,
 });

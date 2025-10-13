@@ -32,6 +32,7 @@ class LessonRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'duration' => ['required', 'integer', 'min:1'],
             'image' => [
                 'nullable',
                 'image',
@@ -52,6 +53,7 @@ class LessonRequest extends FormRequest
     {
         return [
             'name' => 'nombre',
+            'duration' => 'duración',
             'description' => 'descripción',
             'unit_id' => 'unidad',
         ];
@@ -68,6 +70,9 @@ class LessonRequest extends FormRequest
             'name.required' => 'El nombre es obligatorio.',
             'name.string' => 'El nombre debe ser una cadena de texto.',
             'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'duration.required' => 'La duración es obligatoria.',
+            'duration.integer' => 'La duración debe ser un número entero (minutos).',
+            'duration.min' => 'La duración debe ser al menos :min minuto.',
             'image.required' => 'La imagen es obligatoria.',
             'image.image' => 'El archivo debe ser una imagen.',
             'image.mimes' => 'La imagen debe ser de tipo: :values.',

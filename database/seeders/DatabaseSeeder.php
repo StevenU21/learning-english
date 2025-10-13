@@ -53,20 +53,21 @@ class DatabaseSeeder extends Seeder
         $unit = Unit::create([
             'name' => 'Introducción al Inglés',
             'description' => 'Fundamentos iniciales para comenzar a comunicarse en inglés: saludos, presentaciones, números y colores.',
-            'expected_time' => 90,
             'level_id' => Level::where('name', 'Básico')->value('id') ?? 1,
         ]);
 
         $lessonGreetings = Lesson::create([
             'unit_id' => $unit->id,
             'name' => 'Saludos y Presentaciones',
-            'description' => 'Aprende saludos básicos y cómo presentarte.'
+            'description' => 'Aprende saludos básicos y cómo presentarte.',
+            'duration' => 45,
         ]);
 
         $lessonNumbersColors = Lesson::create([
             'unit_id' => $unit->id,
             'name' => 'Números y Colores',
-            'description' => 'Aprende los números básicos y los colores más comunes.'
+            'description' => 'Aprende los números básicos y los colores más comunes.',
+            'duration' => 45,
         ]);
 
         // Obtener tipos de ejercicio

@@ -8,9 +8,12 @@ use App\Models\LessonUserProgress;
 use App\Models\Unit;
 use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
+use App\Models\ProfileStreak;
 use App\Http\Requests\UserExerciseAttemptRequest;
 use Inertia\Inertia;
 use App\Services\StreakService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
@@ -38,6 +41,8 @@ class ExerciseController extends Controller
         $userId = $request->user()->id;
         $attempts = $request->input('attempts');
 
+
+
         foreach ($attempts as $attempt) {
             // Calcular el siguiente número de intento para este usuario y ejercicio
             $lastAttempt = UserExerciseAttempt::where('user_id', $userId)
@@ -59,9 +64,10 @@ class ExerciseController extends Controller
                     'answered_at' => now(),
                 ]
             );
+
         }
-    // Actualizar la racha del usuario tras los ejercicios del día (usa profile_streaks)
-    (new StreakService())->updateStreak($request->user());
+        // Actualizar la racha del usuario tras los ejercicios del día (asegura la fila de hoy)
+        $streakDays = (new StreakService())->updateStreak($request->user());
 
         $lessonId = $attempts[0]['lesson_id'] ?? null;
         $unitId = $attempts[0]['unit_id'] ?? null;
@@ -74,6 +80,12 @@ class ExerciseController extends Controller
             $progress = $total > 0 ? intval(($correct / $total) * 100) : 0;
             $status = $progress === 100 ? 'completado' : 'en_progreso';
 
+            // Verificar estado previo para evitar doble conteo de minutos
+            $existing = LessonUserProgress::where('user_id', $userId)
+                ->where('lesson_id', $lessonId)
+                ->first();
+            $justCompleted = ($status === 'completado') && (!$existing || $existing->status !== 'completado');
+
             LessonUserProgress::updateOrCreate(
                 [
                     'user_id' => $userId,
@@ -84,6 +96,30 @@ class ExerciseController extends Controller
                     'status' => $status,
                 ]
             );
+
+
+
+            // Si la lección acaba de completarse, sumar su duración a minutos del día y totales del perfil
+            if ($justCompleted) {
+                $duration = (int) ($lesson->duration ?? 0);
+                $profile = $request->user()->profile;
+                if ($profile && $duration > 0) {
+                    // Incrementar minutos totales del perfil
+                    $profile->increment('total_minutes', $duration);
+
+
+
+                    // Asegurar fila de racha del día (sin minutos)
+                    $today = now()->toDateString();
+                    DB::table('profile_streaks')->insertOrIgnore([
+                        'profile_id' => $profile->id,
+                        'activity_date' => $today,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                }
+            }
 
             // Guardar progreso de la unidad
             if ($unitId) {

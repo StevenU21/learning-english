@@ -32,6 +32,7 @@ const columns = [
     { key: 'id', label: 'ID', icon: 'fa-solid fa-id-badge', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
     { key: 'image', label: 'Imagen', icon: 'fa-solid fa-image', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'hidden md:table-cell' },
     { key: 'name', label: 'Nombre', icon: 'fa-solid fa-font', align: 'left' },
+    { key: 'duration', label: 'Duración (min)', icon: 'fa-solid fa-clock', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
     { key: 'unit.name', label: 'Unidad', icon: 'fa-solid fa-layer-group', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
     { key: 'description', label: 'Descripción', icon: 'fa-solid fa-align-left', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
 ];
@@ -79,7 +80,7 @@ function deleteLesson(id) {
                                 <ImageCell :src="row.image_url || row.image" alt="Imagen de la unidad" />
                             </div>
                         </template>
-                        
+
                         <!-- Descripción truncada -->
                         <template #cell-description="{ value }">
                             <span class="text-gray-600 dark:text-gray-400">
