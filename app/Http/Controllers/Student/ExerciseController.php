@@ -11,6 +11,9 @@ use App\Models\UserExerciseAttempt;
 use App\Http\Requests\UserExerciseAttemptRequest;
 use Inertia\Inertia;
 use App\Services\StreakService;
+use App\Services\ActivityService;
+use App\Services\LessonProgressService;
+use App\Services\UnitProgressService;
 use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
@@ -67,69 +70,16 @@ class ExerciseController extends Controller
 
             if ($lessonId) {
                 $lesson = Lesson::with('exercises')->find($lessonId);
-                $total = $lesson->exercises->count();
-                $correct = collect($attempts)->where('is_correct', true)->count();
-                $progress = $total > 0 ? intval(($correct / $total) * 100) : 0;
-                $status = $progress === 100 ? 'completado' : 'en_progreso';
 
-                $existing = LessonUserProgress::where('user_id', $userId)
-                    ->where('lesson_id', $lessonId)
-                    ->first();
-                $justCompleted = ($status === 'completado') && (!$existing || $existing->status !== 'completado');
+                // Update lesson progress from attempts
+                app(LessonProgressService::class)->updateFromAttempts($userId, $lesson, $attempts);
 
-                $progressRow = LessonUserProgress::firstOrNew([
-                    'user_id' => $userId,
-                    'lesson_id' => $lessonId,
-                ]);
-                $wasCompletedBefore = ($progressRow->exists && $progressRow->status === 'completado');
-                $progressRow->progress = $progress;
-                $progressRow->status = $status;
-                $progressRow->attempts_count = (int) ($progressRow->attempts_count ?? 0) + 1; // count every session
-                if ($status === 'completado') {
-                    $progressRow->last_completed_at = now();
-                }
-                $progressRow->save();
+                // Add activity time and ensure today's streak via service
+                app(ActivityService::class)->addLessonActivity($request->user(), $lesson);
 
-                // always add duration to profile total minutes when the user completes a session for this lesson
-                $duration = (int) ($lesson->duration ?? 0);
-                $profile = $request->user()->profile;
-                if ($profile && $duration > 0) {
-                    $profile->increment('total_minutes', $duration);
-
-                    $today = now()->toDateString();
-                    DB::table('profile_streaks')->insertOrIgnore([
-                        'profile_id' => $profile->id,
-                        'activity_date' => $today,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-
+                // Recalculate unit progress
                 if ($unitId) {
-                    $unitLessons = Lesson::where('unit_id', $unitId)->pluck('id');
-                    $userLessonProgress = LessonUserProgress::where('user_id', $userId)
-                        ->whereIn('lesson_id', $unitLessons)
-                        ->get();
-
-                    $totalLessons = count($unitLessons);
-                    $sumProgress = $userLessonProgress->sum('progress');
-                    $completedCount = $userLessonProgress->where('status', 'completado')->count();
-
-                    $unitProgress = $totalLessons > 0 ? intval($sumProgress / $totalLessons) : 0;
-                    $unitStatus = $completedCount === $totalLessons && $totalLessons > 0
-                        ? 'completado'
-                        : ($sumProgress > 0 ? 'en_progreso' : 'no_comenzado');
-
-                    UnitUserProgress::updateOrCreate(
-                        [
-                            'user_id' => $userId,
-                            'unit_id' => $unitId,
-                        ],
-                        [
-                            'progress' => $unitProgress,
-                            'status' => $unitStatus,
-                        ]
-                    );
+                    app(UnitProgressService::class)->recalc($userId, (int) $unitId);
                 }
             }
 
