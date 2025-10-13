@@ -62,10 +62,11 @@ const genderLabel = computed(() => {
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
                             <img :src="profile?.avatar_url || '/img/logo03.png'" alt="Avatar"
-                                class="h-28 w-28 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700" />
+                                class="h-28 w-28 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700 mx-auto sm:mx-0" />
 
                             <div class="flex-1">
-                                <div class="flex flex-wrap items-center gap-2">
+                                <div
+                                    class="flex flex-wrap items-center gap-2 items-center justify-center text-center sm:justify-start sm:text-left">
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                         {{ user.full_name }}
                                     </h3>
@@ -79,7 +80,7 @@ const genderLabel = computed(() => {
                                     </div>
                                 </div>
 
-                                <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
                                     <div class="flex items-start gap-3">
                                         <i class="fa-solid fa-envelope mt-1 text-gray-400"></i>
                                         <div>
@@ -164,7 +165,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                }}%</div>
+                                    }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -187,7 +188,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -231,7 +232,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                }}%
+                                    }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{
@@ -246,7 +247,7 @@ const genderLabel = computed(() => {
                         </div>
 
                         <!-- Quick actions -->
-                        <div class="mt-6 flex flex-wrap gap-3">
+                        <div class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-start">
                             <Link v-if="!isAdmin" :href="route('student.units.index')"
                                 class="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800">
                             <i class="fa-solid fa-arrow-right"></i>

@@ -39,6 +39,11 @@ const page = usePage();
 
                         <!-- Desktop: user dropdown -->
                         <div class="hidden sm:flex sm:items-center">
+                            <span v-if="$page.props.auth.user.streak_days"
+                                class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 me-4">
+                                <i class="fa-solid fa-fire mr-1 text-red-500"></i>
+                                {{ $page.props.auth.user.streak_days }}
+                            </span>
                             <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -50,11 +55,6 @@ const page = usePage();
                                                     class="h-6 w-6 rounded-full object-cover mr-2" />
                                                 <i v-else class="fa-solid fa-user mr-2"></i>
                                                 {{ $page.props.auth.user.full_name }}
-                                                <span
-                                                    class="ml-2 inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400">
-                                                    <i class="fa-solid fa-fire mr-1 text-red-500"></i>
-                                                    {{ $page.props.auth.user.streak_days }}
-                                                </span>
                                                 <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd"
@@ -78,6 +78,11 @@ const page = usePage();
 
                         <!-- Mobile toggle (opens actions) -->
                         <div class="-me-2 flex items-center sm:hidden">
+                            <span v-if="$page.props.auth.user.streak_days"
+                                class="inline-flex items-center text-lg font-bold text-gray-700 dark:text-gray-300 me-4">
+                                <i class="fa-solid fa-fire mr-2 text-red-500 text-2xl"></i>
+                                {{ $page.props.auth.user.streak_days }}
+                            </span>
                             <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                                 class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

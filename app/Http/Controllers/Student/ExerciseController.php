@@ -10,10 +10,11 @@ use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
 use App\Http\Requests\UserExerciseAttemptRequest;
 use Inertia\Inertia;
+use App\Services\StreakService;
 
 class ExerciseController extends Controller
 {
-    public function showSequence(\App\Models\Unit $unit, Lesson $lesson)
+    public function showSequence(Unit $unit, Lesson $lesson)
     {
         // Ensure the lesson belongs to the provided unit
         if ($lesson->unit_id !== $unit->id) {
@@ -59,9 +60,11 @@ class ExerciseController extends Controller
                 ]
             );
         }
+        // Actualizar la racha del usuario tras los ejercicios del día
+        (new StreakService())->updateStreak($request->user());
 
-    $lessonId = $attempts[0]['lesson_id'] ?? null;
-    $unitId = $attempts[0]['unit_id'] ?? null;
+        $lessonId = $attempts[0]['lesson_id'] ?? null;
+        $unitId = $attempts[0]['unit_id'] ?? null;
 
         // Guardar progreso de la lección
         if ($lessonId) {
