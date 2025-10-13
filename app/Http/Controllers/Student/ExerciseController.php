@@ -84,26 +84,25 @@ class ExerciseController extends Controller
                 $wasCompletedBefore = ($progressRow->exists && $progressRow->status === 'completado');
                 $progressRow->progress = $progress;
                 $progressRow->status = $status;
+                $progressRow->attempts_count = (int) ($progressRow->attempts_count ?? 0) + 1; // count every session
                 if ($status === 'completado') {
-                    $progressRow->attempts_count = (int) ($progressRow->attempts_count ?? 0) + 1;
                     $progressRow->last_completed_at = now();
                 }
                 $progressRow->save();
 
-                if ($justCompleted) {
-                    $duration = (int) ($lesson->duration ?? 0);
-                    $profile = $request->user()->profile;
-                    if ($profile && $duration > 0) {
-                        $profile->increment('total_minutes', $duration);
+                // always add duration to profile total minutes when the user completes a session for this lesson
+                $duration = (int) ($lesson->duration ?? 0);
+                $profile = $request->user()->profile;
+                if ($profile && $duration > 0) {
+                    $profile->increment('total_minutes', $duration);
 
-                        $today = now()->toDateString();
-                        DB::table('profile_streaks')->insertOrIgnore([
-                            'profile_id' => $profile->id,
-                            'activity_date' => $today,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    }
+                    $today = now()->toDateString();
+                    DB::table('profile_streaks')->insertOrIgnore([
+                        'profile_id' => $profile->id,
+                        'activity_date' => $today,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
 
                 if ($unitId) {
