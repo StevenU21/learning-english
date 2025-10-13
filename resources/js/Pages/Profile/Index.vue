@@ -48,7 +48,7 @@ const genderLabel = computed(() => {
             ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
                     <Link :href="route('profile.edit')"
-                        class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-500 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus:bg-indigo-400 dark:focus:ring-offset-gray-800 dark:active:bg-indigo-600">
+                        class="inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                     <i class="fa-solid fa-pen mr-2"></i>
                     Editar perfil
                     </Link>
@@ -110,16 +110,6 @@ const genderLabel = computed(() => {
                                             <div class="text-sm">{{ birthdateFormatted }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3">
-                                        <i class="fa-solid fa-school mt-1 text-gray-400"></i>
-                                        <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Meta diaria (minutos)
-                                            </div>
-                                            <div class="text-sm">{{ profile.daily_goal_minutes ?? '—' }}</div>
-                                        </div>
-                                    </div>
                                     <div v-if="genderLabel" class="flex items-start gap-3">
                                         <i class="fa-solid fa-venus-mars mt-1 text-gray-400"></i>
                                         <div>
@@ -130,6 +120,17 @@ const genderLabel = computed(() => {
                                             <div class="text-sm">{{ genderLabel }}</div>
                                         </div>
                                     </div>
+                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-school mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Meta diaria (minutos)
+                                            </div>
+                                            <div class="text-sm">{{ profile.daily_goal_minutes ?? '—' }}</div>
+                                        </div>
+                                    </div>
+
                                     <div v-if="profile?.total_minutes != null" class="flex items-start gap-3">
                                         <i class="fa-solid fa-clock mt-1 text-gray-400"></i>
                                         <div>
@@ -165,7 +166,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                }}%</div>
+                                    }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -188,7 +189,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -232,7 +233,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                }}%
+                                    }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{
@@ -249,12 +250,12 @@ const genderLabel = computed(() => {
                         <!-- Quick actions -->
                         <div class="mt-6 flex flex-wrap gap-3 justify-center sm:justify-start">
                             <Link v-if="!isAdmin" :href="route('student.units.index')"
-                                class="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800">
+                                class="inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                             <i class="fa-solid fa-arrow-right"></i>
                             Continuar aprendiendo
                             </Link>
                             <Link v-else :href="route('admin.progress.index')"
-                                class="inline-flex items-center gap-2 rounded-md bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-800">
+                                class="inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                             <i class="fa-solid fa-chart-column"></i>
                             Ver progreso de estudiantes
                             </Link>
