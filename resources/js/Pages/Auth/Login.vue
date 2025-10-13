@@ -82,12 +82,18 @@ const submit = () => {
                     <span class="mx-4 text-gray-500 text-sm">o continúa con</span>
                     <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
                 </div>
-                <div class="mt-2 flex justify-center">
+                <div class="mt-2 flex justify-center gap-4">
                     <a :href="route('auth.google.redirect')"
                         class="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow ring-1 ring-inset ring-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-700">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
                             class="h-5 w-5" />
                         Iniciar con Google
+                    </a>
+                    <a :href="route('auth.github.redirect')"
+                        class="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow ring-1 ring-inset ring-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-700">
+                        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                            alt="GitHub" class="h-5 w-5" />
+                        Iniciar con GitHub
                     </a>
                 </div>
             </div>
