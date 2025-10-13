@@ -10,10 +10,59 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const close = () => emit('close')
 
+function isPairList(arr, keyA, keyB) {
+    return Array.isArray(arr) && arr.length > 0 && arr.every(
+        (o) => o && typeof o === 'object' && keyA in o && keyB in o
+    )
+}
+
 function fmt(val) {
     if (val === null || val === undefined) return '-'
-    if (Array.isArray(val)) return val.join(', ')
-    if (typeof val === 'object') return JSON.stringify(val)
+
+    // Arrays
+    if (Array.isArray(val)) {
+        // Emparejar definiciones: [{ concepto, definicion }]
+        if (isPairList(val, 'concepto', 'definicion')) {
+            return val.map((o) => `${o.concepto} — ${o.definicion}`).join('; ')
+        }
+        // Relacionar columnas: [{ left, right }]
+        if (isPairList(val, 'left', 'right')) {
+            return val.map((o) => `${o.left} = ${o.right}`).join('; ')
+        }
+        // Array de primitivos u otros objetos
+        return val
+            .map((item) => {
+                if (item && typeof item === 'object') {
+                    if ('concepto' in item && 'definicion' in item) {
+                        return `${item.concepto} — ${item.definicion}`
+                    }
+                    if ('left' in item && 'right' in item) {
+                        return `${item.left} = ${item.right}`
+                    }
+                    return JSON.stringify(item)
+                }
+                return String(item)
+            })
+            .join(', ')
+    }
+
+    // Objetos
+    if (typeof val === 'object') {
+        if ('concepto' in val && 'definicion' in val) {
+            return `${val.concepto} — ${val.definicion}`
+        }
+        if ('left' in val && 'right' in val) {
+            return `${val.left} = ${val.right}`
+        }
+        // Map genérico clave:valor
+        const entries = Object.entries(val)
+        if (entries.length) {
+            return entries.map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : String(v)}`).join('; ')
+        }
+        return '-'
+    }
+
+    // Primitivos
     return String(val)
 }
 </script>
@@ -37,7 +86,7 @@ function fmt(val) {
                         <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Ejercicio</th>
                         <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Intento</th>
                         <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Solución</th>
-                        <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Respuesta usuario</th>
+                        <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Respuesta del usuario</th>
                         <th class="px-4 py-3 text-gray-700 dark:text-gray-300">Respondido</th>
                     </tr>
                 </thead>
