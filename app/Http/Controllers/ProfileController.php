@@ -172,15 +172,28 @@ class ProfileController extends Controller
         $user = $request->user();
         if ($user) {
             $profile = $user->profile()->firstOrNew([]);
-            $profile->fill($request->only([
+            // Normalize optional fields: convert empty strings to null to avoid DB unique/date issues
+            $data = $request->only([
                 'nickname',
                 'birthdate',
                 'daily_goal_minutes',
                 'gender',
-            ]));
+            ]);
+            foreach (['nickname', 'birthdate', 'gender'] as $key) {
+                if (array_key_exists($key, $data) && ($data[$key] === '' || $data[$key] === "\0")) {
+                    $data[$key] = null;
+                }
+            }
+            if (array_key_exists('daily_goal_minutes', $data) && ($data['daily_goal_minutes'] === '' || $data['daily_goal_minutes'] === null)) {
+                $data['daily_goal_minutes'] = null;
+            }
+            $profile->fill($data);
 
             if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-                $profile->avatar = $fileService->updateLocal($profile, 'avatar', $request->file('avatar'));
+                $stored = $fileService->updateLocal($profile, 'avatar', $request->file('avatar'));
+                if (is_string($stored) && $stored !== '') {
+                    $profile->avatar = $stored;
+                }
             }
 
             $profile->user()->associate($user);

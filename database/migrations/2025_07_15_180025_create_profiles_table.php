@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->string('nickname')->nullable()->unique();
             $table->date('birthdate')->nullable();
-            $table->integer('daily_goal_minutes')->default(0);
+            $table->integer('daily_goal_minutes')->default(5);
             $table->integer('total_minutes')->default(0);
             // $table->integer('streak_days')->default(0); // Eliminado: la racha se maneja en profile_streaks
             $table->enum('gender', ['male', 'female'])->nullable();

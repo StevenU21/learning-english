@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -10,24 +10,36 @@ import FileInput from '@/Components/FileInput.vue';
 // This component is for PROFILE data only (avatar, nickname, birthdate, daily_goal_minutes, total_minutes, streak_days, gender)
 // User main data (first_name, last_name, email) is handled in UpdateUserForm.vue
 
+type ProfileDto = {
+    avatar_url?: string | null;
+    nickname?: string | null;
+    birthdate?: string | null;
+    daily_goal_minutes?: number | null;
+    gender?: string | null;
+};
+
 const page = usePage();
-const profile = computed(() => page.props.profile ?? {});
+const profile = computed<Partial<ProfileDto>>(() => (page.props as any).profile ?? {});
 
 
-const avatarFile = ref < File | null > (null);
+const avatarFile = ref<File | null>(null);
 
-const form = useForm({
+const form = useForm<{
+    avatar: File | null;
+    nickname: string | null;
+    birthdate: string | null;
+    daily_goal_minutes: number | null;
+    gender: string | null;
+}>({
     avatar: null,
-    nickname: profile.value?.nickname || '',
-    birthdate: profile.value?.birthdate || '',
-    daily_goal_minutes: profile.value?.daily_goal_minutes ?? '',
-    gender: profile.value?.gender || '',
+    nickname: (profile.value?.nickname ?? null) as string | null,
+    birthdate: (profile.value?.birthdate ?? null) as string | null,
+    daily_goal_minutes: (profile.value?.daily_goal_minutes ?? null) as number | null,
+    gender: (profile.value?.gender ?? null) as string | null,
 });
 
 watch(() => avatarFile.value, (f) => {
-    if (f instanceof File) {
-        form.avatar = f;
-    }
+    form.avatar = f ?? null;
 });
 
 const submit = () => {
@@ -54,7 +66,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="mt-6 space-y-6">
             <div class="flex items-center gap-4">
                 <FileInput id="avatar" name="avatar" accept="image/*" v-model="avatarFile" :class="'w-40'"
-                    :preview-url="profile?.avatar_url || '/img/logo03.png'" />
+                    :preview-url="(profile?.avatar_url as string | null) || '/img/logo03.png'" />
                 <div class="flex-1">
                     <InputLabel for="avatar" value="Avatar" />
                     <InputError class="mt-2" :message="form.errors.avatar" />
