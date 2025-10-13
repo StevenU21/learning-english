@@ -136,7 +136,7 @@ php artisan key:generate
 php artisan migrate --seed
 
 # 5. Dependencias frontend
-npm install
+npm install --legacy-peer-deps
 
 # 6. Servir (script combinado: PHP + Queue + Vite)
 composer run dev
