@@ -71,7 +71,9 @@ class ProfileController extends Controller
             'profile' => $user->profile ? [
                 'nickname' => $user->profile->nickname,
                 'birthdate' => $user->profile->birthdate,
-                'academic_level' => $user->profile->academic_level,
+                'daily_goal_minutes' => $user->profile->daily_goal_minutes,
+                'total_minutes' => $user->profile->total_minutes,
+                'streak_days' => $user->profile->streak_days,
                 'gender' => $user->profile->gender,
                 'avatar_url' => $user->profile->avatar_url,
             ] : null,
@@ -119,7 +121,9 @@ class ProfileController extends Controller
             'profile' => $user->profile ? [
                 'nickname' => $user->profile->nickname,
                 'birthdate' => $user->profile->birthdate,
-                'academic_level' => $user->profile->academic_level,
+                'daily_goal_minutes' => $user->profile->daily_goal_minutes,
+                'total_minutes' => $user->profile->total_minutes,
+                'streak_days' => $user->profile->streak_days,
                 'gender' => $user->profile->gender,
                 'avatar_url' => $user->profile->avatar_url,
             ] : null,
@@ -148,7 +152,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update only the user's profile data (nickname, birthdate, academic_level, gender).
+     * Update only the user's profile data (nickname, birthdate, daily_goal_minutes, total_minutes, streak_days, gender).
      */
     public function updateProfile(ProfileUpdateRequest $request, FileService $fileService): RedirectResponse
     {
@@ -158,7 +162,9 @@ class ProfileController extends Controller
             $profile->fill($request->only([
                 'nickname',
                 'birthdate',
-                'academic_level',
+                'daily_goal_minutes',
+                'total_minutes',
+                'streak_days',
                 'gender',
             ]));
 

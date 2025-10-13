@@ -7,35 +7,26 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import FileInput from '@/Components/FileInput.vue';
 
-// This component is for PROFILE data only (avatar, nickname, birthdate, academic_level, gender)
+// This component is for PROFILE data only (avatar, nickname, birthdate, daily_goal_minutes, total_minutes, streak_days, gender)
 // User main data (first_name, last_name, email) is handled in UpdateUserForm.vue
 
 const page = usePage();
 const profile = computed(() => page.props.profile ?? {});
 
 
-const avatarFile = ref(null);
-
-// If there is an avatar_url, fetch and convert to File for FileInput preview
-if (profile.value?.avatar_url) {
-    fetch(profile.value.avatar_url)
-        .then(res => res.blob())
-        .then(blob => {
-            const file = new File([blob], 'avatar.jpg', { type: blob.type });
-            avatarFile.value = file;
-        })
-        .catch(() => { });
-}
+const avatarFile = ref<File | null>(null);
 
 const form = useForm({
     avatar: null,
     nickname: profile.value?.nickname || '',
     birthdate: profile.value?.birthdate || '',
-    academic_level: profile.value?.academic_level || '',
+    daily_goal_minutes: profile.value?.daily_goal_minutes ?? '',
+    total_minutes: profile.value?.total_minutes ?? '',
+    streak_days: profile.value?.streak_days ?? '',
     gender: profile.value?.gender || '',
 });
 
-watch(avatarFile, (f) => {
+watch(() => avatarFile.value, (f) => {
     if (f instanceof File) {
         form.avatar = f;
     }
@@ -86,14 +77,21 @@ const submit = () => {
                 </div>
 
                 <div>
-                    <InputLabel for="academic_level" value="Nivel académico" />
-                    <select id="academic_level" v-model="form.academic_level"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:text-gray-100">
-                        <option value="">Selecciona una opción</option>
-                        <option value="primary">Primaria</option>
-                        <option value="secondary">Secundaria</option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.academic_level" />
+                    <InputLabel for="daily_goal_minutes" value="Meta diaria (minutos)" />
+                    <TextInput id="daily_goal_minutes" type="number" min="0" class="mt-1 block w-full" v-model="form.daily_goal_minutes" />
+                    <InputError class="mt-2" :message="form.errors.daily_goal_minutes" />
+                </div>
+
+                <div>
+                    <InputLabel for="total_minutes" value="Minutos totales" />
+                    <TextInput id="total_minutes" type="number" min="0" class="mt-1 block w-full" v-model="form.total_minutes" />
+                    <InputError class="mt-2" :message="form.errors.total_minutes" />
+                </div>
+
+                <div>
+                    <InputLabel for="streak_days" value="Racha de días" />
+                    <TextInput id="streak_days" type="number" min="0" class="mt-1 block w-full" v-model="form.streak_days" />
+                    <InputError class="mt-2" :message="form.errors.streak_days" />
                 </div>
 
                 <div>
@@ -103,7 +101,7 @@ const submit = () => {
                         <option value="">Selecciona una opción</option>
                         <option value="male">Masculino</option>
                         <option value="female">Femenino</option>
-                        <option value="other">Otro</option>
+
                     </select>
                     <InputError class="mt-2" :message="form.errors.gender" />
                 </div>

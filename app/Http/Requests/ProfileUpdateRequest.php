@@ -31,10 +31,20 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'date',
             ],
-            'academic_level' => [
+            'daily_goal_minutes' => [
                 'nullable',
-                'string',
-                Rule::in(['primary', 'secondary']),
+                'integer',
+                'min:0',
+            ],
+            'total_minutes' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+            'streak_days' => [
+                'nullable',
+                'integer',
+                'min:0',
             ],
             'gender' => [
                 'nullable',
@@ -55,11 +65,13 @@ class ProfileUpdateRequest extends FormRequest
             'avatar' => 'avatar',
             'nickname' => 'apodo',
             'birthdate' => 'fecha de nacimiento',
-            'academic_level' => 'nivel académico',
+            'daily_goal_minutes' => 'meta diaria (minutos)',
+            'total_minutes' => 'minutos totales',
+            'streak_days' => 'racha de días',
             'gender' => 'género',
         ];
     }
-
+    
     /**
      * Custom validation messages in Spanish.
      *
@@ -74,7 +86,12 @@ class ProfileUpdateRequest extends FormRequest
             'nickname.string' => 'El apodo debe ser una cadena de texto.',
             'nickname.max'    => 'El apodo no debe exceder de :max caracteres.',
             'birthdate.date'  => 'La fecha de nacimiento no es válida.',
-            'academic_level.in' => 'El nivel académico seleccionado no es válido.',
+            'daily_goal_minutes.integer' => 'La :attribute debe ser un número entero.',
+            'daily_goal_minutes.min' => 'La :attribute no puede ser negativa.',
+            'total_minutes.integer' => 'Los :attribute deben ser un número entero.',
+            'total_minutes.min' => 'Los :attribute no pueden ser negativos.',
+            'streak_days.integer' => 'La :attribute debe ser un número entero.',
+            'streak_days.min' => 'La :attribute no puede ser negativa.',
             'gender.in'         => 'El género seleccionado no es válido.',
         ];
     }

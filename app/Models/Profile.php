@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Profile extends Model
 {
@@ -26,10 +27,17 @@ class Profile extends Model
     }
 
     /**
-     * Obtiene la URL pública del avatar almacenado en disco.
+     * Obtiene la URL pública del avatar almacenado en disco o devuelve URL absoluta si está definida.
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        if (!$this->avatar) {
+            return null;
+        }
+        // If avatar is an absolute URL, return it directly
+        if (Str::startsWith($this->avatar, ['http://', 'https://'])) {
+            return $this->avatar;
+        }
+        return asset('storage/' . $this->avatar);
     }
 }

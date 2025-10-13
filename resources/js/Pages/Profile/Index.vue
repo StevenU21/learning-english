@@ -27,7 +27,7 @@ const formatDate = (d) => {
     return new Intl.DateTimeFormat('es-ES', { year: 'numeric', month: 'long', day: '2-digit' }).format(date);
 };
 const birthdateFormatted = computed(() => formatDate(profile.value?.birthdate));
-const genderLabels = { male: 'Masculino', female: 'Femenino', other: 'Otro' };
+const genderLabels = { male: 'Masculino', female: 'Femenino' };
 const genderLabel = computed(() => {
     const g = profile.value?.gender;
     if (!g) return null;
@@ -109,14 +109,14 @@ const genderLabel = computed(() => {
                                             <div class="text-sm">{{ birthdateFormatted }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.academic_level" class="flex items-start gap-3">
+                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3">
                                         <i class="fa-solid fa-school mt-1 text-gray-400"></i>
                                         <div>
                                             <div
                                                 class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Nivel
-                                                académico</div>
-                                            <div class="text-sm">{{ profile.academic_level }}</div>
+                                                Meta diaria (minutos)
+                                            </div>
+                                            <div class="text-sm">{{ profile.daily_goal_minutes ?? '—' }}</div>
                                         </div>
                                     </div>
                                     <div v-if="genderLabel" class="flex items-start gap-3">
@@ -127,6 +127,26 @@ const genderLabel = computed(() => {
                                                 Género
                                             </div>
                                             <div class="text-sm">{{ genderLabel }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="profile?.total_minutes != null" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-clock mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Minutos totales
+                                            </div>
+                                            <div class="text-sm">{{ profile.total_minutes }}</div>
+                                        </div>
+                                    </div>
+                                    <div v-if="profile?.streak_days != null" class="flex items-start gap-3">
+                                        <i class="fa-solid fa-fire mt-1 text-gray-400"></i>
+                                        <div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Racha de días
+                                            </div>
+                                            <div class="text-sm">{{ profile.streak_days }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +164,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                    }}%</div>
+                                }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -167,7 +187,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -211,7 +231,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                    }}%
+                                }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{
