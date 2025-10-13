@@ -14,15 +14,13 @@ const page = usePage();
 const profile = computed(() => page.props.profile ?? {});
 
 
-const avatarFile = ref<File | null>(null);
+const avatarFile = ref < File | null > (null);
 
 const form = useForm({
     avatar: null,
     nickname: profile.value?.nickname || '',
     birthdate: profile.value?.birthdate || '',
     daily_goal_minutes: profile.value?.daily_goal_minutes ?? '',
-    total_minutes: profile.value?.total_minutes ?? '',
-    streak_days: profile.value?.streak_days ?? '',
     gender: profile.value?.gender || '',
 });
 
@@ -78,20 +76,17 @@ const submit = () => {
 
                 <div>
                     <InputLabel for="daily_goal_minutes" value="Meta diaria (minutos)" />
-                    <TextInput id="daily_goal_minutes" type="number" min="0" class="mt-1 block w-full" v-model="form.daily_goal_minutes" />
+                    <select id="daily_goal_minutes" v-model="form.daily_goal_minutes"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:text-gray-100">
+                        <option value="">Selecciona una opción</option>
+                        <option value="5">5 minutos</option>
+                        <option value="10">10 minutos</option>
+                        <option value="15">15 minutos</option>
+                        <option value="20">20 minutos</option>
+                        <option value="30">30 minutos</option>
+                        <option value="60">60 minutos</option>
+                    </select>
                     <InputError class="mt-2" :message="form.errors.daily_goal_minutes" />
-                </div>
-
-                <div>
-                    <InputLabel for="total_minutes" value="Minutos totales" />
-                    <TextInput id="total_minutes" type="number" min="0" class="mt-1 block w-full" v-model="form.total_minutes" />
-                    <InputError class="mt-2" :message="form.errors.total_minutes" />
-                </div>
-
-                <div>
-                    <InputLabel for="streak_days" value="Racha de días" />
-                    <TextInput id="streak_days" type="number" min="0" class="mt-1 block w-full" v-model="form.streak_days" />
-                    <InputError class="mt-2" :message="form.errors.streak_days" />
                 </div>
 
                 <div>

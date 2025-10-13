@@ -164,7 +164,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                }}%</div>
+                                    }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -187,7 +187,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -231,7 +231,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                }}%
+                                    }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{

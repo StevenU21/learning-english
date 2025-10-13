@@ -36,16 +36,6 @@ class ProfileUpdateRequest extends FormRequest
                 'integer',
                 'min:0',
             ],
-            'total_minutes' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
-            'streak_days' => [
-                'nullable',
-                'integer',
-                'min:0',
-            ],
             'gender' => [
                 'nullable',
                 'string',
@@ -71,7 +61,7 @@ class ProfileUpdateRequest extends FormRequest
             'gender' => 'género',
         ];
     }
-    
+
     /**
      * Custom validation messages in Spanish.
      *
@@ -88,10 +78,6 @@ class ProfileUpdateRequest extends FormRequest
             'birthdate.date'  => 'La fecha de nacimiento no es válida.',
             'daily_goal_minutes.integer' => 'La :attribute debe ser un número entero.',
             'daily_goal_minutes.min' => 'La :attribute no puede ser negativa.',
-            'total_minutes.integer' => 'Los :attribute deben ser un número entero.',
-            'total_minutes.min' => 'Los :attribute no pueden ser negativos.',
-            'streak_days.integer' => 'La :attribute debe ser un número entero.',
-            'streak_days.min' => 'La :attribute no puede ser negativa.',
             'gender.in'         => 'El género seleccionado no es válido.',
         ];
     }

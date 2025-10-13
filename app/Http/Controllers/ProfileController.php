@@ -163,8 +163,6 @@ class ProfileController extends Controller
                 'nickname',
                 'birthdate',
                 'daily_goal_minutes',
-                'total_minutes',
-                'streak_days',
                 'gender',
             ]));
 

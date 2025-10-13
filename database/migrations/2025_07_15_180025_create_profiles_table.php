@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->string('nickname')->nullable()->unique();
             $table->date('birthdate')->nullable();
-            $table->integer('daily_goal_minutes')->nullable();
-            $table->integer('total_minutes')->nullable();
-            $table->integer('streak_days')->nullable();
+            $table->integer('daily_goal_minutes')->default(0);
+            $table->integer('total_minutes')->default(0);
+            $table->integer('streak_days')->default(0);
             $table->enum('gender', ['male', 'female'])->nullable();
-
+            
             // Foreign key to users table
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
