@@ -5,7 +5,6 @@
         import PageHeader from '@/Components/PageHeader.vue';
         import { ref, computed } from 'vue';
         import { usePage } from '@inertiajs/vue3';
-        import LessonAttemptsModal from './LessonAttemptsModal.vue';
         import ExerciseAttemptsModal from './ExerciseAttemptsModal.vue';
 
         const props = defineProps({
@@ -442,9 +441,6 @@
                             </div>
                         </div>
 
-                        <!-- Modal de intentos por lección -->
-                        <LessonAttemptsModal v-if="showLessonAttempts" :lesson="selectedLesson" :attempts="selectedLessonAttempts"
-                            @close="closeLessonAttempts" />
 
                         <!-- Modal de intentos por ejercicio -->
                         <ExerciseAttemptsModal v-if="showExerciseAttempts" :exercise="selectedExercise" :attempts="selectedExerciseAttempts"
