@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\ProgressController;
 use App\Http\Controllers\Admin\ResourceController;
 use App\Http\Controllers\Admin\UnitController;
+use App\Http\Controllers\Auth\GithubController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +21,17 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::middleware('guest')->group(function () {
+    // Google
+    Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('auth.google.callback');
+
+    // GitHub
+    Route::get('/auth/github/redirect', [GithubController::class, 'redirect'])->name('auth.github.redirect');
+    Route::get('/auth/github/callback', [GithubController::class, 'callback'])->name('auth.github.callback');
+});
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -65,14 +78,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-// Social auth routes (guest only)
-Route::middleware('guest')->group(function () {
-    // Google
-    Route::get('/auth/google/redirect', [\App\Http\Controllers\Auth\GoogleController::class, 'redirect'])->name('auth.google.redirect');
-    Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'callback'])->name('auth.google.callback');
-
-    // GitHub
-    Route::get('/auth/github/redirect', [\App\Http\Controllers\Auth\GithubController::class, 'redirect'])->name('auth.github.redirect');
-    Route::get('/auth/github/callback', [\App\Http\Controllers\Auth\GithubController::class, 'callback'])->name('auth.github.callback');
-});
