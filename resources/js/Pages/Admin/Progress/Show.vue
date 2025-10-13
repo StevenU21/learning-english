@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import LessonAttemptsModal from './LessonAttemptsModal.vue';
 
 const props = defineProps({
     user: Object,
@@ -57,6 +58,27 @@ const filteredAttempts = computed(() => {
         return true;
     });
 });
+
+// Modal: Ver detalles de intentos por lección
+const showLessonAttempts = ref(false);
+const selectedLesson = ref(null);
+const selectedLessonAttempts = computed(() => {
+    if (!selectedLesson.value) return [];
+    const lessonId = selectedLesson.value.id;
+    return attempts.filter(a => {
+        const lesson = a.lesson || a.exercise?.lesson;
+        return String(lesson?.id) === String(lessonId);
+    });
+});
+
+function openLessonAttempts(lesson) {
+    selectedLesson.value = lesson;
+    showLessonAttempts.value = true;
+}
+function closeLessonAttempts() {
+    showLessonAttempts.value = false;
+    selectedLesson.value = null;
+}
 
 function statusBadgeClasses(status) {
     switch (status) {
@@ -320,6 +342,14 @@ function statusBadgeClasses(status) {
                                 <span class="text-gray-500 dark:text-gray-400">{{ att.answered_at ? new
                                     Date(att.answered_at).toLocaleString() : '-' }}</span>
                             </div>
+                            <div class="mt-3">
+                                <button
+                                    class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-md shadow"
+                                    @click="openLessonAttempts(att.lesson || att.exercise?.lesson)">
+                                    <i class="fa-solid fa-eye mr-2"></i>
+                                    Ver detalles
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <!-- Desktop: table -->
@@ -337,11 +367,12 @@ function statusBadgeClasses(status) {
                                             class="fa-solid fa-check mr-2"></i>Correcto</th>
                                     <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
                                             class="fa-solid fa-calendar-check mr-2"></i>Respondido</th>
+                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i class="fa-solid fa-eye mr-2"></i>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-if="filteredAttempts.length === 0">
-                                    <td colspan="5" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin
+                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin
                                         intentos
                                         registrados</td>
                                 </tr>
@@ -361,11 +392,23 @@ function statusBadgeClasses(status) {
                                     </td>
                                     <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ att.answered_at ? new
                                         Date(att.answered_at).toLocaleString() : '-' }}</td>
+                                    <td class="px-4 py-2">
+                                        <button
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-md shadow"
+                                            @click="openLessonAttempts(att.lesson || att.exercise?.lesson)">
+                                            <i class="fa-solid fa-eye mr-2"></i>
+                                            Ver detalles
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
+                <!-- Modal de intentos por lección -->
+                <LessonAttemptsModal v-if="showLessonAttempts" :lesson="selectedLesson" :attempts="selectedLessonAttempts"
+                    @close="closeLessonAttempts" />
             </div>
         </div>
     </AuthenticatedLayout>
