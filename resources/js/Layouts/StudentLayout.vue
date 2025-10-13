@@ -50,6 +50,11 @@ const page = usePage();
                                                     class="h-6 w-6 rounded-full object-cover mr-2" />
                                                 <i v-else class="fa-solid fa-user mr-2"></i>
                                                 {{ $page.props.auth.user.full_name }}
+                                                <span
+                                                    class="ml-2 inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                                                    <i class="fa-solid fa-fire mr-1 text-red-500"></i>
+                                                    {{ $page.props.auth.user.streak_days }}
+                                                </span>
                                                 <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd"
@@ -95,8 +100,15 @@ const page = usePage();
                     class="sm:hidden">
                     <div class="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
                         <div class="px-4">
-                            <div class="text-base font-medium text-gray-800 dark:text-gray-200">{{
-                                $page.props.auth.user.full_name }}
+                            <div class="flex items-center space-x-2">
+                                <div class="text-base font-medium text-gray-800 dark:text-gray-200">{{
+                                    $page.props.auth.user.full_name
+                                    }}</div>
+                                <span
+                                    class="inline-flex items-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                                    <i class="fa-solid fa-fire mr-1 text-red-500"></i>
+                                    {{ $page.props.auth.user.streak_days }}
+                                </span>
                             </div>
                             <div class="text-sm font-medium text-gray-500">{{ $page.props.auth.user.email }}</div>
                         </div>

@@ -46,6 +46,8 @@ class HandleInertiaRequests extends Middleware
                             'roles' => $user->getRoleNames()->toArray(),
                             // Array of permission names
                             'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+                            // Streak days
+                            'streak_days' => optional($user->profile)->streak_days,
                         ]
                     )
                     : null,
