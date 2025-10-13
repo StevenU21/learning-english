@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'google_id',
         'github_id',
+        'github_token',
     ];
 
     /**
@@ -35,6 +36,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'github_token',
     ];
 
     /**

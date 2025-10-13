@@ -7,9 +7,10 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\FileService;
 
 class GithubController extends Controller
 {
@@ -18,7 +19,7 @@ class GithubController extends Controller
         return Socialite::driver('github')->redirect();
     }
 
-    public function callback(): RedirectResponse
+    public function callback(FileService $fileService): RedirectResponse
     {
         $githubUser = Socialite::driver('github')->user();
 
@@ -29,6 +30,8 @@ class GithubController extends Controller
         }
         $name = $githubUser->getName() ?: ($githubUser->getNickname() ?: '');
         $avatarUrl = $githubUser->getAvatar();
+        $githubId = $githubUser->getId();
+        $githubToken = $githubUser->token ?? null;
 
         $firstName = $name;
         $lastName = '';
@@ -40,31 +43,51 @@ class GithubController extends Controller
 
         $user = User::where('email', $email)->first();
         if (!$user) {
-            $user = User::create([
+            $data = [
                 'first_name' => $firstName ?: 'Usuario',
                 'last_name' => $lastName ?: 'Github',
                 'email' => $email,
                 'password' => Hash::make(Str::random(32)),
-            ]);
+                'email_verified_at' => now(),
+            ];
+            if (Schema::hasColumn('users', 'github_id')) {
+                $data['github_id'] = $githubId;
+            }
+            if (Schema::hasColumn('users', 'github_token')) {
+                $data['github_token'] = $githubToken;
+            }
+            $user = User::create($data);
+            // Crear perfil asociado vacío
             $user->profile()->create();
+            // Rol por defecto estudiante
             if (method_exists($user, 'assignRole')) {
                 $user->assignRole('student');
             }
+        } else {
+            // Asociar github_id/token si las columnas existen y aún no están, y verificar email
+            $updates = [];
+            if (Schema::hasColumn('users', 'github_id') && empty($user->github_id)) {
+                $updates['github_id'] = $githubId;
+            }
+            // Actualizar token si cambia o no existe
+            if (Schema::hasColumn('users', 'github_token') && (empty($user->github_token) || $user->github_token !== $githubToken)) {
+                $updates['github_token'] = $githubToken;
+            }
+            if (empty($user->email_verified_at)) {
+                $updates['email_verified_at'] = now();
+            }
+            if (!empty($updates)) {
+                $user->fill($updates)->save();
+            }
         }
 
+        // Intentar guardar avatar remoto usando FileService si hay URL
         if ($avatarUrl) {
-            try {
-                $contents = @file_get_contents($avatarUrl);
-                if ($contents !== false) {
-                    $ext = pathinfo(parse_url($avatarUrl, PHP_URL_PATH) ?? 'avatar.jpg', PATHINFO_EXTENSION) ?: 'jpg';
-                    $path = 'avatars/' . $user->id . '_' . time() . '.' . $ext;
-                    Storage::disk('public')->put($path, $contents);
-                    $profile = $user->profile()->firstOrCreate([]);
-                    $profile->avatar = $path;
-                    $profile->save();
-                }
-            } catch (\Throwable $e) {
-                // ignore avatar failures
+            $profile = $user->profile()->firstOrCreate([]);
+            $saved = $fileService->storeRemote($profile, 'avatar', $avatarUrl);
+            if ($saved) {
+                $profile->avatar = $saved;
+                $profile->save();
             }
         }
 
