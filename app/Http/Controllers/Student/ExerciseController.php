@@ -60,8 +60,8 @@ class ExerciseController extends Controller
                 ]
             );
         }
-        // Actualizar la racha del usuario tras los ejercicios del día
-        (new StreakService())->updateStreak($request->user());
+    // Actualizar la racha del usuario tras los ejercicios del día (usa profile_streaks)
+    (new StreakService())->updateStreak($request->user());
 
         $lessonId = $attempts[0]['lesson_id'] ?? null;
         $unitId = $attempts[0]['unit_id'] ?? null;

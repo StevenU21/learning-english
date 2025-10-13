@@ -25,7 +25,7 @@ class ProfileController extends Controller
      */
     public function index(Request $request): Response
     {
-        $user = $request->user()->load(['profile', 'roles']);
+        $user = $request->user()->load(['profile']);
 
         // Compute progress stats
         $userId = $user->id;
@@ -66,14 +66,12 @@ class ProfileController extends Controller
                 'last_name' => $user->last_name,
                 'full_name' => $user->full_name,
                 'email' => $user->email,
-                'roles' => $user->getRoleNames(),
             ],
             'profile' => $user->profile ? [
                 'nickname' => $user->profile->nickname,
                 'birthdate' => $user->profile->birthdate,
                 'daily_goal_minutes' => $user->profile->daily_goal_minutes,
                 'total_minutes' => $user->profile->total_minutes,
-                'streak_days' => $user->profile->streak_days,
                 'gender' => $user->profile->gender,
                 'avatar_url' => $user->profile->avatar_url,
             ] : null,
@@ -123,7 +121,6 @@ class ProfileController extends Controller
                 'birthdate' => $user->profile->birthdate,
                 'daily_goal_minutes' => $user->profile->daily_goal_minutes,
                 'total_minutes' => $user->profile->total_minutes,
-                'streak_days' => $user->profile->streak_days,
                 'gender' => $user->profile->gender,
                 'avatar_url' => $user->profile->avatar_url,
             ] : null,

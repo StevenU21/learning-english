@@ -23,7 +23,6 @@ class ProfileFactory extends Factory
             'gender' => fake()->randomElement(['male', 'female']),
             'daily_goal_minutes' => fake()->numberBetween(30, 120),
             'total_minutes' => fake()->numberBetween(0, 10000),
-            'streak_days' => fake()->numberBetween(0, 30),
             'user_id' => null,
         ];
     }

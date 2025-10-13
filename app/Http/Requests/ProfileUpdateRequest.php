@@ -57,7 +57,6 @@ class ProfileUpdateRequest extends FormRequest
             'birthdate' => 'fecha de nacimiento',
             'daily_goal_minutes' => 'meta diaria (minutos)',
             'total_minutes' => 'minutos totales',
-            'streak_days' => 'racha de días',
             'gender' => 'género',
         ];
     }

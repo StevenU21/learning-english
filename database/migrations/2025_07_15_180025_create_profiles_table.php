@@ -17,9 +17,9 @@ return new class extends Migration {
             $table->date('birthdate')->nullable();
             $table->integer('daily_goal_minutes')->default(0);
             $table->integer('total_minutes')->default(0);
-            $table->integer('streak_days')->default(0);
+            // $table->integer('streak_days')->default(0); // Eliminado: la racha se maneja en profile_streaks
             $table->enum('gender', ['male', 'female'])->nullable();
-            
+
             // Foreign key to users table
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');

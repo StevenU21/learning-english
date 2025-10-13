@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->string('image')->nullable();
+            $table->integer('duration')->default(0);
             $table->text('description')->nullable();
             $table->string('slug');
 

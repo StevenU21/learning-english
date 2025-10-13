@@ -80,7 +80,7 @@ const genderLabel = computed(() => {
                                     </div>
                                 </div>
 
-                                <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
+                                <div class="mt-4 grid grid-cols-2 gap-4">
                                     <div class="flex items-start gap-3">
                                         <i class="fa-solid fa-envelope mt-1 text-gray-400"></i>
                                         <div>
@@ -155,7 +155,7 @@ const genderLabel = computed(() => {
                         </div>
 
                         <!-- Stats overview cards -->
-                        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        <div class="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
                             <!-- Overall progress -->
                             <div
                                 class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -165,7 +165,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                    }}%</div>
+                                }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -188,7 +188,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -232,7 +232,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                    }}%
+                                }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{

@@ -17,9 +17,16 @@ class Profile extends Model
         'birthdate',
         'daily_goal_minutes',
         'total_minutes',
-        'streak_days',
         'gender',
     ];
+
+    /**
+     * Relación: rachas de actividad diaria.
+     */
+    public function streaks()
+    {
+        return $this->hasMany(ProfileStreak::class);
+    }
 
     public function user(): BelongsTo
     {
