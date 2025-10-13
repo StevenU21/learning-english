@@ -14,7 +14,9 @@ class Profile extends Model
         'avatar',
         'nickname',
         'birthdate',
-        'academic_level',
+        'daily_goal_minutes',
+        'total_minutes',
+        'streak_days',
         'gender',
     ];
 

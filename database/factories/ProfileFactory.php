@@ -20,8 +20,10 @@ class ProfileFactory extends Factory
             'avatar' => fake()->imageUrl(640, 480, 'people', true),
             'nickname' => fake()->unique()->userName(),
             'birthdate' => fake()->date(),
-            'academic_level' => fake()->randomElement(['primary', 'secondary']),
             'gender' => fake()->randomElement(['male', 'female']),
+            'daily_goal_minutes' => fake()->numberBetween(30, 120),
+            'total_minutes' => fake()->numberBetween(0, 10000),
+            'streak_days' => fake()->numberBetween(0, 30),
             'user_id' => null,
         ];
     }

@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->string('avatar')->nullable();
             $table->string('nickname')->nullable()->unique();
             $table->date('birthdate')->nullable();
-            $table->enum('academic_level', ['primary', 'secondary'])->nullable();
+            $table->integer('daily_goal_minutes')->nullable();
+            $table->integer('total_minutes')->nullable();
+            $table->integer('streak_days')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
 
             // Foreign key to users table

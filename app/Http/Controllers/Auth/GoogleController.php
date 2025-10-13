@@ -7,9 +7,9 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\FileService;
 
 class GoogleController extends Controller
 {
@@ -18,7 +18,7 @@ class GoogleController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function callback(): RedirectResponse
+    public function callback(FileService $fileService): RedirectResponse
     {
         $googleUser = Socialite::driver('google')->user();
 
@@ -42,6 +42,8 @@ class GoogleController extends Controller
                 'last_name' => $lastName ?: 'Google',
                 'email' => $email,
                 'password' => Hash::make(Str::random(32)),
+                'google_id' => $googleUser->getId(),
+                'email_verified_at' => now(),
             ]);
             // Crear perfil asociado vacío
             $user->profile()->create();
@@ -49,22 +51,27 @@ class GoogleController extends Controller
             if (method_exists($user, 'assignRole')) {
                 $user->assignRole('student');
             }
+        } else {
+            // Asociar google_id si aún no está, y verificar email
+            $updates = [];
+            if (empty($user->google_id)) {
+                $updates['google_id'] = $googleUser->getId();
+            }
+            if (empty($user->email_verified_at)) {
+                $updates['email_verified_at'] = now();
+            }
+            if (!empty($updates)) {
+                $user->fill($updates)->save();
+            }
         }
 
-        // Intentar guardar avatar en disco público si hay URL
+        // Intentar guardar avatar remoto usando FileService si hay URL
         if ($avatarUrl) {
-            try {
-                $contents = @file_get_contents($avatarUrl);
-                if ($contents !== false) {
-                    $ext = pathinfo(parse_url($avatarUrl, PHP_URL_PATH) ?? 'avatar.jpg', PATHINFO_EXTENSION) ?: 'jpg';
-                    $path = 'avatars/' . $user->id . '_' . time() . '.' . $ext;
-                    Storage::disk('public')->put($path, $contents);
-                    $profile = $user->profile()->firstOrCreate([]);
-                    $profile->avatar = $path;
-                    $profile->save();
-                }
-            } catch (\Throwable $e) {
-                // ignore avatar failures
+            $profile = $user->profile()->firstOrCreate([]);
+            $saved = $fileService->storeRemote($profile, 'avatar', $avatarUrl);
+            if ($saved) {
+                $profile->avatar = $saved;
+                $profile->save();
             }
         }
 

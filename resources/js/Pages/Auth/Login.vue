@@ -75,6 +75,21 @@ const submit = () => {
                     <i class="fas fa-sign-in-alt mr-2"></i> Iniciar sesión
                 </PrimaryButton>
             </div>
+
+            <div class="mt-6">
+                <div class="relative flex items-center py-3">
+                    <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+                    <span class="mx-4 text-gray-500 text-sm">o continúa con</span>
+                    <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+                </div>
+                <div class="mt-2 flex justify-center">
+                    <a :href="route('auth.google.redirect')"
+                        class="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-white dark:ring-gray-600">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="h-5 w-5" />
+                        Iniciar con Google
+                    </a>
+                </div>
+            </div>
         </form>
     </GuestLayout>
 </template>
