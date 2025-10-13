@@ -13,6 +13,8 @@ class LessonUserProgress extends Model
         'lesson_id',
         'progress',
         'status',
+        'attempts_count',
+        'last_completed_at',
     ];
 
     public function user()

@@ -56,6 +56,16 @@ class ProfileController extends Controller
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100, 1) : 0.0;
         $lastActivity = UserExerciseAttempt::where('user_id', $userId)->max('answered_at');
 
+        // Compute today's minutes from lessons completed today (sum of lesson durations where last_completed_at is today)
+        $today = now()->toDateString();
+        $lessonIdsCompletedToday = LessonUserProgress::where('user_id', $userId)
+            ->whereDate('last_completed_at', $today)
+            ->pluck('lesson_id');
+        $todayMinutes = (int) Lesson::whereIn('id', $lessonIdsCompletedToday)->sum('duration');
+        $dailyGoal = (int) ($user->profile->daily_goal_minutes ?? 0);
+        $remainingToday = max(0, $dailyGoal - $todayMinutes);
+        $dailyReached = $dailyGoal > 0 ? $todayMinutes >= $dailyGoal : false;
+
         // Overall progress (use lesson avg as main indicator if available, else unit avg)
         $overallProgress = $avgLessonProgress > 0 ? $avgLessonProgress : $avgUnitProgress;
 
@@ -79,6 +89,12 @@ class ProfileController extends Controller
                 'overall' => [
                     'progress' => round($overallProgress, 1),
                     'last_activity' => optional($lastActivity)->toDateTimeString(),
+                ],
+                'daily' => [
+                    'goal' => $dailyGoal,
+                    'today' => $todayMinutes,
+                    'remaining' => $remainingToday,
+                    'reached' => $dailyReached,
                 ],
                 'units' => [
                     'total' => $unitsTotal,

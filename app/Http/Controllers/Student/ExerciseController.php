@@ -77,16 +77,18 @@ class ExerciseController extends Controller
                     ->first();
                 $justCompleted = ($status === 'completado') && (!$existing || $existing->status !== 'completado');
 
-                LessonUserProgress::updateOrCreate(
-                    [
-                        'user_id' => $userId,
-                        'lesson_id' => $lessonId,
-                    ],
-                    [
-                        'progress' => $progress,
-                        'status' => $status,
-                    ]
-                );
+                $progressRow = LessonUserProgress::firstOrNew([
+                    'user_id' => $userId,
+                    'lesson_id' => $lessonId,
+                ]);
+                $wasCompletedBefore = ($progressRow->exists && $progressRow->status === 'completado');
+                $progressRow->progress = $progress;
+                $progressRow->status = $status;
+                if ($status === 'completado') {
+                    $progressRow->attempts_count = (int) ($progressRow->attempts_count ?? 0) + 1;
+                    $progressRow->last_completed_at = now();
+                }
+                $progressRow->save();
 
                 if ($justCompleted) {
                     $duration = (int) ($lesson->duration ?? 0);

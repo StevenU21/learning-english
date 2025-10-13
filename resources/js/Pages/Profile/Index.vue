@@ -156,7 +156,30 @@ const genderLabel = computed(() => {
                         </div>
 
                         <!-- Stats overview cards -->
-                        <div class="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-4">
+                        <div class="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-5">
+                            <!-- Daily goal progress -->
+                            <div
+                                v-if="(profile?.daily_goal_minutes ?? 0) > 0"
+                                class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Meta diaria</div>
+                                    <i class="fa-solid fa-flag-checkered text-indigo-500"></i>
+                                </div>
+                                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Hoy: <span class="font-semibold text-gray-800 dark:text-gray-200">{{ stats.daily?.today ?? 0 }}</span> / {{ stats.daily?.goal ?? 0 }} min
+                                </div>
+                                <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
+                                    <div class="h-2 rounded bg-indigo-600" :style="{ width: Math.min(100, Math.max(0, ((stats.daily?.today ?? 0) / Math.max(1, stats.daily?.goal ?? 1)) * 100)) + '%' }"></div>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <template v-if="!(stats.daily?.reached)">
+                                        Te faltan <span class="font-semibold">{{ stats.daily?.remaining ?? 0 }}</span> min para tu meta de hoy.
+                                    </template>
+                                    <template v-else>
+                                        ¡Meta alcanzada hoy!
+                                    </template>
+                                </div>
+                            </div>
                             <!-- Overall progress -->
                             <div
                                 class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">

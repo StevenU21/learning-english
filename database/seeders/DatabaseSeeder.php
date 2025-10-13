@@ -60,14 +60,14 @@ class DatabaseSeeder extends Seeder
             'unit_id' => $unit->id,
             'name' => 'Saludos y Presentaciones',
             'description' => 'Aprende saludos básicos y cómo presentarte.',
-            'duration' => 45,
+            'duration' => 2,
         ]);
 
         $lessonNumbersColors = Lesson::create([
             'unit_id' => $unit->id,
             'name' => 'Números y Colores',
             'description' => 'Aprende los números básicos y los colores más comunes.',
-            'duration' => 45,
+            'duration' => 2,
         ]);
 
         // Obtener tipos de ejercicio
