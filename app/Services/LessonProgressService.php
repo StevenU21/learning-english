@@ -9,6 +9,10 @@ class LessonProgressService
 {
     /**
      * Update lesson progress for a user based on the provided attempts.
+     * Criteria change: a lesson is considered "completado" when the user
+     * has finished the sequence (attempted all exercises), regardless of correctness.
+     * Progress is computed by coverage (attempted/total) instead of correctness.
+     *
      * Increments attempts_count per session and sets last_completed_at if completed.
      * Returns an array with ['progress' => int, 'status' => string].
      */
@@ -21,16 +25,17 @@ class LessonProgressService
 
         $total = $lesson->exercises->count();
 
-        // Count correct answers for this lesson from the batch
-        $correct = 0;
+        // Determine coverage: how many distinct exercises from this lesson were attempted in this batch
+        $attemptedExerciseIds = [];
         foreach ($attempts as $a) {
-            if ((int)($a['lesson_id'] ?? 0) === (int)$lesson->id && ($a['is_correct'] ?? false)) {
-                $correct++;
+            if ((int) ($a['lesson_id'] ?? 0) === (int) $lesson->id) {
+                $attemptedExerciseIds[(int) ($a['exercise_id'] ?? 0)] = true;
             }
         }
 
-        $progress = $total > 0 ? (int) floor(($correct / $total) * 100) : 0;
-        $status = $progress === 100 ? 'completado' : 'en_progreso';
+        $attempted = count($attemptedExerciseIds);
+        $progress = $total > 0 ? (int) floor(($attempted / $total) * 100) : 0;
+        $status = ($total > 0 && $attempted >= $total) ? 'completado' : 'en_progreso';
 
         $progressRow = LessonUserProgress::firstOrNew([
             'user_id' => $userId,
