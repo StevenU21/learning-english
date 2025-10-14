@@ -78,56 +78,72 @@ const genderLabel = computed(() => {
                                             {{ r }}
                                         </span>
                                     </div>
+                                    <hr class="my-8 border-t border-gray-300 dark:border-gray-700" />
                                 </div>
 
                                 <div class="mt-4 grid grid-cols-2 gap-4">
-                                    <div class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div
+                                        class="col-span-2 flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-envelope mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Correo</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Correo
+                                            </div>
                                             <div class="text-sm">{{ user.email }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.nickname" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div v-if="profile?.nickname"
+                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-signature mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Apodo</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Apodo
+                                            </div>
                                             <div class="text-sm">{{ profile.nickname }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="birthdateFormatted" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div v-if="birthdateFormatted"
+                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-cake-candles mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Nacimiento</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Nacimiento</div>
                                             <div class="text-sm">{{ birthdateFormatted }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="genderLabel" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div v-if="genderLabel"
+                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-venus-mars mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Género</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Género
+                                            </div>
                                             <div class="text-sm">{{ genderLabel }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
-                                        <i class="fa-solid fa-school mt-1 text-gray-400"></i>
-                                        <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Meta diaria (minutos)</div>
-                                            <div class="text-sm">{{ profile.daily_goal_minutes ?? '—' }}</div>
-                                        </div>
-                                    </div>
 
-                                    <div v-if="profile?.total_minutes != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div v-if="profile?.total_minutes != null"
+                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-clock mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Minutos totales</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Minutos totales</div>
                                             <div class="text-sm">{{ profile.total_minutes }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.streak_days != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
+                                    <div v-if="profile?.streak_days != null"
+                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-fire mt-1 text-gray-400"></i>
                                         <div>
-                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Racha de días</div>
+                                            <div
+                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                Racha
+                                                de días</div>
                                             <div class="text-sm">{{ profile.streak_days }}</div>
                                         </div>
                                     </div>
