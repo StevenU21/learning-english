@@ -9,12 +9,12 @@ class LessonProgressService
 {
     /**
      * Update lesson progress for a user based on the provided attempts.
-     * Criteria change: a lesson is considered "completado" when the user
-     * has finished the sequence (attempted all exercises), regardless of correctness.
-     * Progress is computed by coverage (attempted/total) instead of correctness.
-     *
+     * - status 'completado' ONLY when all answers are correct (100%).
+     * - progress is computed by correctness (correct/total).
+     * - also returns 'finished' flag when the user attempted all exercises in this batch
+     *   (i.e., terminó la secuencia), aunque no todas sean correctas.
      * Increments attempts_count per session and sets last_completed_at if completed.
-     * Returns an array with ['progress' => int, 'status' => string].
+     * Returns an array with ['progress' => int, 'status' => string, 'finished' => bool].
      */
     public function updateFromAttempts(int $userId, Lesson $lesson, array $attempts): array
     {
@@ -25,17 +25,22 @@ class LessonProgressService
 
         $total = $lesson->exercises->count();
 
-        // Determine coverage: how many distinct exercises from this lesson were attempted in this batch
+        // Compute correctness and coverage for this batch
+        $correct = 0;
         $attemptedExerciseIds = [];
         foreach ($attempts as $a) {
-            if ((int) ($a['lesson_id'] ?? 0) === (int) $lesson->id) {
-                $attemptedExerciseIds[(int) ($a['exercise_id'] ?? 0)] = true;
+            if ((int)($a['lesson_id'] ?? 0) === (int)$lesson->id) {
+                if (($a['is_correct'] ?? false) === true) {
+                    $correct++;
+                }
+                $attemptedExerciseIds[(int)($a['exercise_id'] ?? 0)] = true;
             }
         }
 
         $attempted = count($attemptedExerciseIds);
-        $progress = $total > 0 ? (int) floor(($attempted / $total) * 100) : 0;
-        $status = ($total > 0 && $attempted >= $total) ? 'completado' : 'en_progreso';
+        $progress = $total > 0 ? (int) floor(($correct / $total) * 100) : 0; // correctness-based
+        $finished = ($total > 0 && $attempted >= $total); // finished sequence regardless of correctness
+        $status = ($progress === 100) ? 'completado' : 'en_progreso';
 
         $progressRow = LessonUserProgress::firstOrNew([
             'user_id' => $userId,
@@ -50,6 +55,6 @@ class LessonProgressService
         }
         $progressRow->save();
 
-        return ['progress' => $progress, 'status' => $status];
+        return ['progress' => $progress, 'status' => $status, 'finished' => $finished];
     }
 }

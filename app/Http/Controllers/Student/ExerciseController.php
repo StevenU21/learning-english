@@ -72,10 +72,12 @@ class ExerciseController extends Controller
                 $lesson = Lesson::with('exercises')->find($lessonId);
 
                 // Update lesson progress from attempts
-                app(LessonProgressService::class)->updateFromAttempts($userId, $lesson, $attempts);
+                $lp = app(LessonProgressService::class)->updateFromAttempts($userId, $lesson, $attempts);
 
-                // Add activity time and ensure today's streak via service
-                app(ActivityService::class)->addLessonActivity($request->user(), $lesson);
+                // Add activity time and ensure today's streak via service ONLY when the lesson was finished in this batch
+                if (($lp['finished'] ?? false) === true) {
+                    app(ActivityService::class)->addLessonActivity($request->user(), $lesson);
+                }
 
                 // Recalculate unit progress
                 if ($unitId) {

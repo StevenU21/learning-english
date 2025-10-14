@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Lesson;
+use App\Models\LessonActivity;
 use App\Models\ProfileStreak;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,13 @@ class ActivityService
         $duration = (int) ($lesson->duration ?? 0);
         if ($duration > 0) {
             $profile->increment('total_minutes', $duration);
+
+            // Log an activity entry so daily goal can sum repeated finishes
+            LessonActivity::create([
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'minutes' => $duration,
+            ]);
         }
 
         // Ensure today's streak entry exists

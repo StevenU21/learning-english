@@ -10,6 +10,7 @@ use App\Models\Unit;
 use App\Models\LessonUserProgress;
 use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
+use App\Models\LessonActivity;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,12 +57,11 @@ class ProfileController extends Controller
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100, 1) : 0.0;
         $lastActivity = UserExerciseAttempt::where('user_id', $userId)->max('answered_at');
 
-        // Compute today's minutes from lessons completed today (sum of lesson durations where last_completed_at is today)
+        // Compute today's minutes from finished lesson activities today (sum of minutes), including repeated finishes
         $today = now()->toDateString();
-        $lessonIdsCompletedToday = LessonUserProgress::where('user_id', $userId)
-            ->whereDate('last_completed_at', $today)
-            ->pluck('lesson_id');
-        $todayMinutes = (int) Lesson::whereIn('id', $lessonIdsCompletedToday)->sum('duration');
+        $todayMinutes = (int) LessonActivity::where('user_id', $userId)
+            ->whereDate('created_at', $today)
+            ->sum('minutes');
         $dailyGoal = (int) ($user->profile->daily_goal_minutes ?? 0);
         $remainingToday = max(0, $dailyGoal - $todayMinutes);
         $dailyReached = $dailyGoal > 0 ? $todayMinutes >= $dailyGoal : false;
