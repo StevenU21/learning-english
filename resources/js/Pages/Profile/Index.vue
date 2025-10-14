@@ -81,73 +81,53 @@ const genderLabel = computed(() => {
                                 </div>
 
                                 <div class="mt-4 grid grid-cols-2 gap-4">
-                                    <div class="flex items-start gap-3">
+                                    <div class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-envelope mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Correo
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Correo</div>
                                             <div class="text-sm">{{ user.email }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.nickname" class="flex items-start gap-3">
+                                    <div v-if="profile?.nickname" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-signature mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Apodo
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Apodo</div>
                                             <div class="text-sm">{{ profile.nickname }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="birthdateFormatted" class="flex items-start gap-3">
+                                    <div v-if="birthdateFormatted" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-cake-candles mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Nacimiento</div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Nacimiento</div>
                                             <div class="text-sm">{{ birthdateFormatted }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="genderLabel" class="flex items-start gap-3">
+                                    <div v-if="genderLabel" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-venus-mars mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Género
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Género</div>
                                             <div class="text-sm">{{ genderLabel }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3">
+                                    <div v-if="profile?.daily_goal_minutes != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-school mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Meta diaria (minutos)
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Meta diaria (minutos)</div>
                                             <div class="text-sm">{{ profile.daily_goal_minutes ?? '—' }}</div>
                                         </div>
                                     </div>
 
-                                    <div v-if="profile?.total_minutes != null" class="flex items-start gap-3">
+                                    <div v-if="profile?.total_minutes != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-clock mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Minutos totales
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Minutos totales</div>
                                             <div class="text-sm">{{ profile.total_minutes }}</div>
                                         </div>
                                     </div>
-                                    <div v-if="profile?.streak_days != null" class="flex items-start gap-3">
+                                    <div v-if="profile?.streak_days != null" class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
                                         <i class="fa-solid fa-fire mt-1 text-gray-400"></i>
                                         <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Racha de días
-                                            </div>
+                                            <div class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Racha de días</div>
                                             <div class="text-sm">{{ profile.streak_days }}</div>
                                         </div>
                                     </div>
@@ -158,22 +138,26 @@ const genderLabel = computed(() => {
                         <!-- Stats overview cards -->
                         <div class="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-5">
                             <!-- Daily goal progress -->
-                            <div
-                                v-if="(profile?.daily_goal_minutes ?? 0) > 0"
+                            <div v-if="(profile?.daily_goal_minutes ?? 0) > 0"
                                 class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                                 <div class="flex items-center justify-between">
                                     <div class="text-sm font-medium text-gray-600 dark:text-gray-300">Meta diaria</div>
                                     <i class="fa-solid fa-flag-checkered text-indigo-500"></i>
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Hoy: <span class="font-semibold text-gray-800 dark:text-gray-200">{{ stats.daily?.today ?? 0 }}</span> / {{ stats.daily?.goal ?? 0 }} min
+                                    Hoy: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
+                                        stats.daily?.today ?? 0
+                                        }}</span> / {{ stats.daily?.goal ?? 0 }} min
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
-                                    <div class="h-2 rounded bg-indigo-600" :style="{ width: Math.min(100, Math.max(0, ((stats.daily?.today ?? 0) / Math.max(1, stats.daily?.goal ?? 1)) * 100)) + '%' }"></div>
+                                    <div class="h-2 rounded bg-indigo-600"
+                                        :style="{ width: Math.min(100, Math.max(0, ((stats.daily?.today ?? 0) / Math.max(1, stats.daily?.goal ?? 1)) * 100)) + '%' }">
+                                    </div>
                                 </div>
                                 <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                     <template v-if="!(stats.daily?.reached)">
-                                        Te faltan <span class="font-semibold">{{ stats.daily?.remaining ?? 0 }}</span> min para tu meta de hoy.
+                                        Te faltan <span class="font-semibold">{{ stats.daily?.remaining ?? 0 }}</span>
+                                        min para tu meta de hoy.
                                     </template>
                                     <template v-else>
                                         ¡Meta alcanzada hoy!
@@ -189,7 +173,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-chart-line text-indigo-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.overall?.progress ?? 0).toFixed(1)
-                                    }}%</div>
+                                }}%</div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-indigo-600"
                                         :style="{ width: Math.min(100, Math.max(0, stats.overall?.progress ?? 0)) + '%' }">
@@ -212,7 +196,7 @@ const genderLabel = computed(() => {
                                         stats.units?.worked ?? 0 }}</span> / {{ stats.units?.total ?? 0 }} ·
                                     Completadas: <span class="font-semibold text-gray-800 dark:text-gray-200">{{
                                         stats.units?.completed ?? 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="mt-2 h-2 w-full rounded bg-gray-200 dark:bg-gray-700">
                                     <div class="h-2 rounded bg-emerald-500"
@@ -256,7 +240,7 @@ const genderLabel = computed(() => {
                                     <i class="fa-solid fa-bullseye text-pink-500"></i>
                                 </div>
                                 <div class="mt-2 text-2xl font-semibold">{{ (stats.exercises?.accuracy ?? 0).toFixed(1)
-                                    }}%
+                                }}%
                                 </div>
                                 <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Correctas: <span
                                         class="font-semibold text-gray-800 dark:text-gray-200">{{
