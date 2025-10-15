@@ -233,7 +233,7 @@ function submitEdit() {
         </div>
 
         <!-- Create Modal -->
-        <Modal :show="showCreate" max-width="4xl" @close="showCreate = false">
+        <Modal :show="showCreate" max-width="9xl" @close="showCreate = false">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                     Crear Ejercicio
@@ -246,7 +246,7 @@ function submitEdit() {
         </Modal>
 
         <!-- Edit Modal -->
-        <Modal :show="showEdit" max-width="4xl" @close="showEdit = false">
+        <Modal :show="showEdit" max-width="9xl" @close="showEdit = false">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                     Editar Ejercicio
