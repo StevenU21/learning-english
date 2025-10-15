@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Http;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,5 +43,25 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Lesson::class, LessonPolicy::class);
         Gate::policy(Exercise::class, ExercisePolicy::class);
         Gate::policy(ExerciseType::class, ExerciseTypePolicy::class);
+        // Define an HTTP macro for OpenAI realtime sessions
+        Http::macro('openaiRealtime', function () {
+            $apiKey = config('openai.api_key');
+
+            if (empty($apiKey)) {
+                throw new \RuntimeException('OpenAI API key is not configured.');
+            }
+
+            $client = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+                'OpenAI-Beta' => 'realtime=v1',
+            ])->timeout(config('openai.request_timeout', 30));
+
+            if ($baseUrl = config('openai.base_uri')) {
+                $client = $client->baseUrl($baseUrl);
+            }
+
+            return $client;
+        });
     }
 }

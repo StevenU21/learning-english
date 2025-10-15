@@ -45,7 +45,7 @@ class VoiceChatController extends Controller
             ], 503);
         }
 
-        if (! ($session['client_secret'] ?? null)) {
+        if (!($session['client_secret'] ?? null)) {
             return response()->json([
                 'message' => 'El servicio de IA no devolvió las credenciales necesarias para iniciar la sesión.',
             ], 502);

@@ -98,6 +98,33 @@ const startCountdown = (duration) => {
     }, seconds * 1000);
 };
 
+const getSessionDuration = (data) => {
+    if (!data) {
+        return props.sessionDuration;
+    }
+
+    const expiresIn = Number(data.expires_in);
+    if (Number.isFinite(expiresIn) && expiresIn > 0) {
+        return expiresIn;
+    }
+
+    const expiresAtRaw = data.expires_at;
+    if (expiresAtRaw) {
+        const expiresAtMs = typeof expiresAtRaw === 'number'
+            ? (expiresAtRaw > 1e12 ? expiresAtRaw : expiresAtRaw * 1000)
+            : Date.parse(expiresAtRaw);
+
+        if (Number.isFinite(expiresAtMs)) {
+            const remaining = Math.max(0, Math.round((expiresAtMs - Date.now()) / 1000));
+            if (remaining > 0) {
+                return remaining;
+            }
+        }
+    }
+
+    return props.sessionDuration;
+};
+
 const mapMediaError = (error) => {
     if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
         return 'Necesitamos permisos del micrófono para iniciar la sesión.';
@@ -228,7 +255,7 @@ const startSession = async () => {
             });
         }
 
-        startCountdown(sessionData.expires_in ?? props.sessionDuration);
+        startCountdown(getSessionDuration(sessionData));
 
         statusMessage.value = 'Sesión activa. ¡Hablemos!';
         isActive.value = true;
