@@ -31,8 +31,12 @@ class UnitController extends Controller
             ];
         });
 
+        // Also provide levels for create/edit modals rendered inside Index
+        $levels = Level::all();
+
         return Inertia::render('Admin/Units/Index', [
-            'units' => $units
+            'units' => $units,
+            'levels' => $levels,
         ]);
     }
 
