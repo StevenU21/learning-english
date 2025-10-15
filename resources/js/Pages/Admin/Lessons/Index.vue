@@ -73,6 +73,7 @@ function deleteLesson(id) {
 const showCreate = ref(false);
 const showEdit = ref(false);
 const editingLesson = ref(null);
+const editPreviewUrl = ref(null);
 
 // Create form
 const createForm = useForm({
@@ -120,6 +121,7 @@ function openEdit(lesson) {
     editForm.duration = lesson.duration ?? '';
     editForm.unit_id = lesson.unit?.id ?? lesson.unit_id ?? null;
     editForm.image = null;
+    editPreviewUrl.value = lesson.image_url || lesson.image || null;
     showEdit.value = true;
 }
 
@@ -233,7 +235,7 @@ function submitEdit() {
                     Editar Lección
                 </h2>
                 <form @submit.prevent="submitEdit" enctype="multipart/form-data">
-                    <Form :form="editForm" :units="props.units" submitText="Actualizar" />
+                    <Form :form="editForm" :units="props.units" :preview-url="editPreviewUrl" submitText="Actualizar" />
                 </form>
             </div>
         </Modal>

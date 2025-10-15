@@ -11,6 +11,11 @@ import FileInput from '@/Components/FileInput.vue';
 const props = defineProps({
     form: Object,
     units: Array,
+    // Optional preview URL for editing existing image
+    previewUrl: {
+        type: String,
+        default: null,
+    },
     submitText: {
         type: String,
         default: 'Guardar'
@@ -39,7 +44,7 @@ const props = defineProps({
         </div>
         <div>
             <InputLabel for="image" value="Imagen" />
-            <FileInput id="image" v-model="form.image" accept="image/*" />
+            <FileInput id="image" v-model="form.image" accept="image/*" :preview-url="previewUrl" />
             <InputError :message="form.errors.image" class="mt-2" />
         </div>
         <div>
