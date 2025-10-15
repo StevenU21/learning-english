@@ -54,6 +54,10 @@ class ExerciseController extends Controller
         $lessonIds = $lessonsQuery->distinct()->pluck('lesson_id')->filter()->values();
         $lessons = Lesson::whereIn('id', $lessonIds)->orderBy('name')->get(['id', 'name']);
 
+        // Provide both filtered lists (for filters UX) and full lists (for create/edit modals)
+        $allTypes = ExerciseType::orderBy('name')->get(['id', 'name']);
+        $allLessons = Lesson::orderBy('name')->get(['id', 'name']);
+
         return Inertia::render('Admin/Exercises/Index', [
             'exercises' => $exercises,
             'permissions' => $permissions,
@@ -62,7 +66,9 @@ class ExerciseController extends Controller
                 'lesson' => $lesson
             ],
             'types' => $types,
-            'lessons' => $lessons
+            'lessons' => $lessons,
+            'allTypes' => $allTypes,
+            'allLessons' => $allLessons,
         ]);
     }
 

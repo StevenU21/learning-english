@@ -1,18 +1,22 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import DataTable from '@/Components/DataTable.vue';
 import PageHeader from '@/Components/PageHeader.vue';
+import Modal from '@/Components/Modal.vue';
+import ExerciseForm from './ExerciseForm.vue';
 
 const props = defineProps({
     exercises: [Object, Array],
     filters: Object,
     types: Array,
     lessons: Array,
+    allTypes: { type: Array, default: () => [] },
+    allLessons: { type: Array, default: () => [] },
 });
 
 const exerciseList = computed(() => {
@@ -28,6 +32,8 @@ const meta = computed(() => Array.isArray(props.exercises) ? null : ({
 const filters = props.filters;
 const types = props.types;
 const lessons = props.lessons;
+const allTypes = props.allTypes?.length ? props.allTypes : types;
+const allLessons = props.allLessons?.length ? props.allLessons : lessons;
 
 const form = useForm({
     type: filters.type || '',
@@ -64,6 +70,94 @@ const columns = [
     { key: 'lesson.name', label: 'Lección', icon: 'fa-solid fa-book', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
     { key: 'prompt', label: 'Prompt', icon: 'fa-solid fa-align-left', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
 ];
+
+// Modal state
+const showCreate = ref(false);
+const showEdit = ref(false);
+const editingExercise = ref(null);
+
+// Create form for modal
+const createForm = useForm({
+    prompt: '',
+    options: [],
+    solution: [],
+    explanation: '',
+    exercise_type_id: filters.type || '',
+    lesson_id: filters.lesson || '',
+    file: null,
+    file_b: null,
+});
+
+function openCreate() {
+    createForm.reset();
+    createForm.clearErrors();
+    createForm.exercise_type_id = filters.type || '';
+    createForm.lesson_id = filters.lesson || '';
+    showCreate.value = true;
+}
+
+function submitCreate() {
+    createForm.post(route('exercises.store'), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            showCreate.value = false;
+            router.reload({ preserveScroll: true });
+        },
+    });
+}
+
+// Edit form for modal
+const editForm = useForm({
+    prompt: '',
+    options: [],
+    solution: [],
+    explanation: '',
+    exercise_type_id: '',
+    lesson_id: '',
+    file: null,
+    file_b: null,
+    file_url: null,
+    file_b_url: null,
+});
+
+function openEdit(ex) {
+    editingExercise.value = ex;
+    editForm.reset();
+    editForm.clearErrors();
+    editForm.prompt = ex.prompt || '';
+    editForm.options = Array.isArray(ex.options) ? [...ex.options] : [];
+    editForm.solution = Array.isArray(ex.solution) ? [...ex.solution] : [];
+    editForm.explanation = ex.explanation || '';
+    editForm.exercise_type_id = ex.exercise_type?.id ?? ex.exercise_type_id ?? '';
+    editForm.lesson_id = ex.lesson?.id ?? ex.lesson_id ?? '';
+    editForm.file = null;
+    editForm.file_b = null;
+    editForm.file_url = ex.file_url || null;
+    editForm.file_b_url = ex.file_b_url || null;
+    showEdit.value = true;
+}
+
+function submitEdit() {
+    if (!editingExercise.value) return;
+    editForm
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            delete payload.file_url;
+            delete payload.file_b_url;
+            if (!payload.file) delete payload.file;
+            if (!payload.file_b) delete payload.file_b;
+            return payload;
+        })
+        .post(route('exercises.update', editingExercise.value.id), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                showEdit.value = false;
+                router.reload({ preserveScroll: true });
+            },
+        });
+}
 </script>
 
 <template>
@@ -78,12 +172,10 @@ const columns = [
                     { label: 'Ejercicios' }
                 ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
-                    <Link :href="route('exercises.create')">
-                    <PrimaryButton>
+                    <PrimaryButton @click="openCreate">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Ejercicio
                     </PrimaryButton>
-                    </Link>
                 </template>
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
@@ -124,11 +216,9 @@ const columns = [
                                 <i class="fa-solid fa-eye mr-2"></i> Ver
                             </PrimaryButton>
                             </Link>
-                            <Link :href="route('exercises.edit', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                             </PrimaryButton>
-                            </Link>
                             <PrimaryButton @click="deleteExercise(row.id)"
                                 class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
@@ -141,5 +231,31 @@ const columns = [
                 </div>
             </div>
         </div>
+
+        <!-- Create Modal -->
+        <Modal :show="showCreate" max-width="4xl" @close="showCreate = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Crear Ejercicio
+                </h2>
+                <form @submit.prevent="submitCreate" enctype="multipart/form-data">
+                    <ExerciseForm :form="createForm" :types="allTypes" :lessons="allLessons" :errors="createForm.errors"
+                        :on-submit="submitCreate" :is-edit="false" />
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Edit Modal -->
+        <Modal :show="showEdit" max-width="4xl" @close="showEdit = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Editar Ejercicio
+                </h2>
+                <form @submit.prevent="submitEdit" enctype="multipart/form-data">
+                    <ExerciseForm :form="editForm" :types="allTypes" :lessons="allLessons" :errors="editForm.errors"
+                        :on-submit="submitEdit" :is-edit="true" />
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
