@@ -9,6 +9,8 @@ import { computed, ref } from 'vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Modal from '@/Components/Modal.vue';
 import Form from './Form.vue';
+import Badge from '@/Components/Badge.vue';
+import LevelBadge from '@/Components/LevelBadge.vue';
 
 const props = defineProps({
     units: {
@@ -140,7 +142,7 @@ function deleteUnit(id) {
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Unidad
                     </PrimaryButton>
-                </template> 
+                </template>
             </PageHeader>
         </template>
 
@@ -162,6 +164,16 @@ function deleteUnit(id) {
                             <span class="text-gray-600 dark:text-gray-400">
                                 {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
                             </span>
+                        </template>
+
+                        <!-- Duración con Badge info -->
+                        <template #cell-expected_time="{ value }">
+                            <Badge type="info">{{ value }}</Badge>
+                        </template>
+
+                        <!-- Nivel con LevelBadge -->
+                        <template #cell-level.name="{ row }">
+                            <LevelBadge :level="row.level.name" />
                         </template>
 
                         <!-- Acciones -->

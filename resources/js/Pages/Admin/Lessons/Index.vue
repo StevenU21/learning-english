@@ -10,6 +10,7 @@ import { computed, ref, watch } from 'vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import Modal from '@/Components/Modal.vue';
 import Form from './Form.vue';
+import Badge from '@/Components/Badge.vue';
 
 const props = defineProps({
     lessons: {
@@ -192,6 +193,11 @@ function submitEdit() {
                             <span class="text-gray-600 dark:text-gray-400">
                                 {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
                             </span>
+                        </template>
+
+                        <!-- Duración con Badge -->
+                        <template #cell-duration="{ value }">
+                            <Badge type="info">{{ value }}</Badge>
                         </template>
 
                         <!-- Acciones -->
