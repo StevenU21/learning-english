@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ImageCell from '@/Components/ImageCell.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 
@@ -53,12 +54,12 @@ const { lesson } = props;
                                     <td class="p-4 text-gray-300 font-semibold text-lg">{{ lesson.name }}</td>
                                 </tr>
                                 <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
-                                        <th class="text-left p-4 text-gray-200 align-top">
-                                            <i class="fa-solid fa-clock mr-2"></i>Duración (min)
-                                        </th>
-                                        <td class="p-4 text-gray-300">{{ lesson.duration ?? '-' }}</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
+                                    <th class="text-left p-4 text-gray-200 align-top">
+                                        <i class="fa-solid fa-clock mr-2"></i>Duración (min)
+                                    </th>
+                                    <td class="p-4 text-gray-300">{{ lesson.duration ?? '-' }}</td>
+                                </tr>
+                                <tr class="border-b border-gray-600 hover:bg-gray-600/40 transition">
                                     <th class="text-left p-4 text-gray-200 align-top">
                                         <i class="fa-solid fa-layer-group mr-2"></i>Unidad
                                     </th>
@@ -81,7 +82,15 @@ const { lesson } = props;
                                         <i class="fa-solid fa-image mr-2"></i>Imagen
                                     </th>
                                     <td class="p-4">
-                                        <ImageCell :src="lesson.image_url || lesson.image" alt="Imagen de la lección" />
+                                        <div class="flex items-center justify-center">
+                                            <div
+                                                class="bg-purple-900/60 rounded-2xl shadow-2xl border-4 border-purple-500 p-1">
+                                                <ImageCell :src="lesson.image_url || lesson.image"
+                                                    alt="Imagen de la lección" :width="300" :height="300"
+                                                    class="rounded-xl shadow-xl"
+                                                    style="width: 100%; height: auto; object-fit: contain; background: #222; display: block;" />
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
