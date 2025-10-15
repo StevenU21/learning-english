@@ -15,11 +15,16 @@ class LessonController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Lesson::class);
         PermissionHelper::getPermissions('lessons');
-        $lessons = Lesson::with('unit')->paginate(10);
+        // Consulta base con posible filtro por unidad
+        $query = Lesson::with('unit');
+        if ($request->filled('unit')) {
+            $query->where('unit_id', $request->input('unit'));
+        }
+        $lessons = $query->paginate(10)->withQueryString();
 
         $lessons->getCollection()->transform(function ($lesson) {
             return [
@@ -32,8 +37,14 @@ class LessonController extends Controller
             ];
         });
 
+        // Lista de unidades para el filtro
+        $units = Unit::all();
         return Inertia::render('Admin/Lessons/Index', [
-            'lessons' => $lessons
+            'lessons' => $lessons,
+            'units' => $units,
+            'filters' => [
+                'unit' => $request->input('unit', ''),
+            ],
         ]);
     }
 
