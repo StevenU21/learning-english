@@ -1,12 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import { computed, ref, watch } from 'vue';
+import Modal from '@/Components/Modal.vue';
+import Form from './Form.vue';
 
 const props = defineProps({
     resources: {
@@ -57,7 +59,82 @@ function deleteResource(id) {
 
     router.delete(route('resources.destroy', id), {
         preserveScroll: true,
+        onSuccess: () => router.reload({ preserveScroll: true }),
     });
+}
+
+// Modal state
+const showCreate = ref(false);
+const showEdit = ref(false);
+const editingResource = ref(null);
+
+// Create form
+const createForm = useForm({
+    name: '',
+    description: '',
+    unit_id: props.filters?.unit || (props.units?.[0]?.id ?? null),
+    file_path: null,
+});
+
+function openCreate() {
+    createForm.reset();
+    createForm.clearErrors();
+    createForm.unit_id = selectedUnit.value || (props.units?.[0]?.id ?? null);
+    showCreate.value = true;
+}
+
+function submitCreate() {
+    createForm
+        .transform((data) => {
+            const payload = { ...data };
+            if (!payload.file_path) delete payload.file_path;
+            return payload;
+        })
+        .post(route('resources.store'), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                showCreate.value = false;
+                router.reload({ preserveScroll: true });
+            },
+        });
+}
+
+// Edit form
+const editForm = useForm({
+    name: '',
+    description: '',
+    unit_id: null,
+    file_path: null,
+});
+
+function openEdit(resource) {
+    editingResource.value = resource;
+    editForm.reset();
+    editForm.clearErrors();
+    editForm.name = resource.name ?? '';
+    editForm.description = resource.description ?? '';
+    editForm.unit_id = resource.unit?.id ?? resource.unit_id ?? null;
+    editForm.file_path = null;
+    showEdit.value = true;
+}
+
+function submitEdit() {
+    if (!editingResource.value) return;
+    editForm
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            if (!payload.file_path) delete payload.file_path;
+            return payload;
+        })
+        .post(route('resources.update', editingResource.value.id), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                showEdit.value = false;
+                router.reload({ preserveScroll: true });
+            },
+        });
 }
 </script>
 
@@ -73,12 +150,10 @@ function deleteResource(id) {
                     { label: 'Recursos' }
                 ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
-                    <Link :href="route('resources.create')">
-                    <PrimaryButton>
+                    <PrimaryButton @click="openCreate">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Recurso
                     </PrimaryButton>
-                    </Link>
                 </template>
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
@@ -121,11 +196,9 @@ function deleteResource(id) {
                                 <i class="fa-solid fa-eye mr-2"></i> Ver
                             </PrimaryButton>
                             </Link>
-                            <Link :href="route('resources.edit', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                             </PrimaryButton>
-                            </Link>
                             <!-- Descargar (solo visible en móvil dentro del dropdown) -->
                             <a :href="route('resources.download', row.id)"
                                 class="md:hidden inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
@@ -143,5 +216,29 @@ function deleteResource(id) {
                 </div>
             </div>
         </div>
+
+        <!-- Create Modal -->
+        <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Crear Recurso
+                </h2>
+                <form @submit.prevent="submitCreate" enctype="multipart/form-data">
+                    <Form :form="createForm" :units="props.units" submitText="Crear" />
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Edit Modal -->
+        <Modal :show="showEdit" max-width="2xl" @close="showEdit = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Editar Recurso
+                </h2>
+                <form @submit.prevent="submitEdit" enctype="multipart/form-data">
+                    <Form :form="editForm" :units="props.units" submitText="Actualizar" />
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
