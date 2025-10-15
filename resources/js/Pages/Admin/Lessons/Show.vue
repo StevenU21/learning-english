@@ -29,12 +29,6 @@ const { lesson } = props;
                             Volver a la lista
                         </PrimaryButton>
                         </Link>
-                        <Link :href="route('lessons.edit', lesson.id)">
-                        <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                            <i class="fa-solid fa-pen-to-square mr-2"></i>
-                            Editar
-                        </PrimaryButton>
-                        </Link>
                     </div>
                 </template>
             </PageHeader>
