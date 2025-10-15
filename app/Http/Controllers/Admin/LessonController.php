@@ -80,7 +80,7 @@ class LessonController extends Controller
         $this->authorize('create', Lesson::class);
         $data = $request->validated();
         Lesson::create($data);
-        return redirect()->route('lessons.index')->with('success', 'Lección creada correctamente');
+        return redirect()->route('lessons.index', $request->query())->with('success', 'Lección creada correctamente');
     }
 
     public function edit(Lesson $lesson)
@@ -98,13 +98,13 @@ class LessonController extends Controller
         $this->authorize('update', $lesson);
         $data = $request->validated();
         $lesson->update($data);
-        return redirect()->route('lessons.index')->with('success', 'Lección actualizada correctamente');
+        return redirect()->route('lessons.index', $request->query())->with('success', 'Lección actualizada correctamente');
     }
 
     public function destroy(Lesson $lesson)
     {
         $this->authorize('destroy', $lesson);
         $lesson->delete();
-        return redirect()->route('lessons.index')->with('success', 'Lección eliminada correctamente');
+        return redirect()->route('lessons.index', request()->query())->with('success', 'Lección eliminada correctamente');
     }
 }

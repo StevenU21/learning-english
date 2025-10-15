@@ -13,6 +13,7 @@ use App\Models\Exercise;
 use App\Models\ExerciseType;
 use App\Classes\ExerciseTypeLogic;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Unit;
 
 class ExerciseController extends Controller
 {
@@ -25,6 +26,7 @@ class ExerciseController extends Controller
 
         $type = request('type') ?: null;      // id de tipo seleccionado
         $lesson = request('lesson') ?: null;  // id de lección seleccionada
+        $unit = request('unit') ?: null;      // id de unidad seleccionada
 
         // Query principal (con ambos filtros aplicados si existen)
         $mainQuery = Exercise::query();
@@ -33,6 +35,11 @@ class ExerciseController extends Controller
         }
         if ($lesson) {
             $mainQuery->where('lesson_id', $lesson);
+        }
+        if ($unit) {
+            $mainQuery->whereHas('lesson', function ($q) use ($unit) {
+                $q->where('unit_id', $unit);
+            });
         }
 
         // Paginamos resultados finales
@@ -56,19 +63,22 @@ class ExerciseController extends Controller
 
         // Provide both filtered lists (for filters UX) and full lists (for create/edit modals)
         $allTypes = ExerciseType::orderBy('name')->get(['id', 'name']);
-        $allLessons = Lesson::orderBy('name')->get(['id', 'name']);
+        $allLessons = Lesson::orderBy('name')->get(['id', 'name', 'unit_id']);
+        $allUnits = Unit::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Admin/Exercises/Index', [
             'exercises' => $exercises,
             'permissions' => $permissions,
             'filters' => [
                 'type' => $type,
-                'lesson' => $lesson
+                'lesson' => $lesson,
+                'unit' => $unit,
             ],
             'types' => $types,
             'lessons' => $lessons,
             'allTypes' => $allTypes,
             'allLessons' => $allLessons,
+            'allUnits' => $allUnits,
         ]);
     }
 
@@ -118,7 +128,7 @@ class ExerciseController extends Controller
             $result['data']['file_b'] = $storedB;
         }
         Exercise::create($result['data']);
-        return redirect()->route('exercises.index')->with('success', 'Ejercicio creado correctamente');
+    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio creado correctamente');
     }
 
     public function show(Exercise $exercise)
@@ -188,13 +198,13 @@ class ExerciseController extends Controller
             unset($result['data']['file_b']);
         }
         $exercise->update($result['data']);
-        return redirect()->route('exercises.index')->with('success', 'Ejercicio actualizado correctamente');
+    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio actualizado correctamente');
     }
 
     public function destroy(Exercise $exercise): RedirectResponse
     {
         $this->authorize('destroy', $exercise);
         $exercise->delete();
-        return redirect()->route('exercises.index')->with('success', 'Ejercicio eliminado correctamente');
+    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio eliminado correctamente');
     }
 }

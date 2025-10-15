@@ -9,6 +9,7 @@ import DataTable from '@/Components/DataTable.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Modal from '@/Components/Modal.vue';
 import ExerciseForm from './ExerciseForm.vue';
+import { withQuery } from '@/utils/url';
 
 const props = defineProps({
     exercises: [Object, Array],
@@ -17,6 +18,7 @@ const props = defineProps({
     lessons: Array,
     allTypes: { type: Array, default: () => [] },
     allLessons: { type: Array, default: () => [] },
+    allUnits: { type: Array, default: () => [] },
 });
 
 const exerciseList = computed(() => {
@@ -34,9 +36,11 @@ const types = props.types;
 const lessons = props.lessons;
 const allTypes = props.allTypes?.length ? props.allTypes : types;
 const allLessons = props.allLessons?.length ? props.allLessons : lessons;
+const allUnits = props.allUnits ?? [];
 
 const form = useForm({
     type: filters.type || '',
+    unit: filters.unit || '',
     lesson: filters.lesson || '',
 });
 
@@ -44,6 +48,7 @@ function applyFilters() {
     // Usamos router.get directamente para evitar que el estado interno del form retenga props antiguos
     router.get(route('exercises.index'), {
         type: form.type || '',
+        unit: form.unit || '',
         lesson: form.lesson || '',
     }, {
         replace: true,
@@ -53,14 +58,20 @@ function applyFilters() {
 }
 
 // Watch reactivo: cada cambio en los selects dispara el filtrado
-watch(() => [form.type, form.lesson], ([newType, newLesson], [oldType, oldLesson]) => {
-    if (newType === oldType && newLesson === oldLesson) return;
+watch(() => [form.type, form.unit, form.lesson], ([newType, newUnit, newLesson], [oldType, oldUnit, oldLesson]) => {
+    if (newType === oldType && newUnit === oldUnit && newLesson === oldLesson) return;
     applyFilters();
+});
+
+// Lista de lecciones dependiente de unidad (si hay unidad seleccionada)
+const filteredLessons = computed(() => {
+    if (!form.unit) return allLessons;
+    return allLessons.filter(l => String(l.unit_id) === String(form.unit));
 });
 
 function deleteExercise(id) {
     if (!confirm('¿Estás seguro de eliminar este ejercicio?')) return;
-    router.delete(route('exercises.destroy', id));
+    router.delete(withQuery(route('exercises.destroy', id)), { preserveScroll: true, onSuccess: () => router.reload({ preserveScroll: true }) });
 }
 
 // Responsive columns for table: show Tipo, Lección y Acciones en móvil
@@ -97,7 +108,7 @@ function openCreate() {
 }
 
 function submitCreate() {
-    createForm.post(route('exercises.store'), {
+    createForm.post(withQuery(route('exercises.store')), {
         forceFormData: true,
         preserveScroll: true,
         onSuccess: () => {
@@ -149,7 +160,7 @@ function submitEdit() {
             if (!payload.file_b) delete payload.file_b;
             return payload;
         })
-        .post(route('exercises.update', editingExercise.value.id), {
+        .post(withQuery(route('exercises.update', editingExercise.value.id)), {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
@@ -180,15 +191,25 @@ function submitEdit() {
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
                         <div>
+                            <SelectInput v-model="form.unit" class="w-60">
+                                <option value="">Todas las unidades</option>
+                                <option v-for="unit in allUnits" :value="unit.id" :key="unit.id">{{ unit.name }}
+                                </option>
+                            </SelectInput>
+                        </div>
+                        <div>
                             <SelectInput v-model="form.type" class="w-60">
                                 <option value="">Todos los tipos de ejercicio</option>
-                                <option v-for="type in types" :value="type.id" :key="type.id">{{ type.name }}</option>
+                                <option v-for="type in allTypes" :value="type.id" :key="type.id">{{ type.name }}
+                                </option>
                             </SelectInput>
                         </div>
                         <div>
                             <SelectInput v-model="form.lesson" class="w-56">
                                 <option value="">Todas las lecciones</option>
-                                <option v-for="lesson in lessons" :value="lesson.id" :key="lesson.id">{{ lesson.name }}
+                                <option v-for="lesson in filteredLessons" :value="lesson.id" :key="lesson.id">{{
+                                    lesson.name
+                                    }}
                                 </option>
                             </SelectInput>
                         </div>

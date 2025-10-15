@@ -71,7 +71,7 @@ class ResourceController extends Controller
         } else {
             $resource->save();
         }
-        return redirect()->route('resources.index')->with('success', 'Recurso creado correctamente');
+    return redirect()->route('resources.index', $request->query())->with('success', 'Recurso creado correctamente');
     }
 
     public function edit(Resource $resource)
@@ -99,7 +99,7 @@ class ResourceController extends Controller
             // Si no hay archivo nuevo, actualiza los demás campos
             $resource->update(collect($data)->except('file_path')->toArray());
         }
-        return redirect()->route('resources.index')->with('success', 'Recurso actualizado correctamente');
+    return redirect()->route('resources.index', $request->query())->with('success', 'Recurso actualizado correctamente');
     }
 
     public function destroy(Resource $resource, FileService $fileService)
@@ -107,7 +107,7 @@ class ResourceController extends Controller
         $this->authorize('destroy', $resource);
         $fileService->deleteLocal($resource, 'file_path');
         $resource->delete();
-        return redirect()->route('resources.index')->with('success', 'Recurso eliminado correctamente');
+    return redirect()->route('resources.index', request()->query())->with('success', 'Recurso eliminado correctamente');
     }
 
     public function download(Resource $resource)
