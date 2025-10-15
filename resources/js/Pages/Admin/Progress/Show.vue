@@ -8,6 +8,7 @@
         import { usePage } from '@inertiajs/vue3';
         import ExerciseAttemptsModal from './ExerciseAttemptsModal.vue';
         import ProgressBar from '@/Components/ProgressBar.vue';
+        import CorrectBadge from '@/Components/CorrectBadge.vue';
 
         const props = defineProps({
             user: Object,
@@ -370,9 +371,7 @@
                                     <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Intento: #{{ att.attempt_number
                                         }}</div>
                                     <div class="mt-2 flex items-center justify-between text-sm">
-                                        <span
-                                            :class="['px-2 py-1 rounded text-xs font-medium', att.is_correct ? 'bg-green-100 text-green-700 dark:bg-green-600/20 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300']">{{
-                                                att.is_correct ? 'Sí' : 'No' }}</span>
+                                        <CorrectBadge :correct="att.is_correct" />
                                         <span class="text-gray-500 dark:text-gray-400">{{ att.answered_at ? new
                                             Date(att.answered_at).toLocaleString() : '-' }}</span>
                                     </div>
@@ -413,9 +412,7 @@
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ g.lesson?.name || g.exercise?.lesson?.name }}</td>
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ g.attempts.length }}</td>
                                             <td class="px-4 py-2">
-                                                <span :class="['px-2 py-1 rounded text-xs font-medium', g.latestAttempt?.is_correct ? 'bg-green-100 text-green-700 dark:bg-green-600/20 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-300']">
-                                                    {{ g.latestAttempt?.is_correct ? 'Sí' : 'No' }}
-                                                </span>
+                                                <CorrectBadge :correct="g.latestAttempt?.is_correct" />
                                             </td>
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ g.latestAttempt?.answered_at ? new Date(g.latestAttempt.answered_at).toLocaleString() : '-' }}</td>
                                             <td class="px-4 py-2">
