@@ -5,13 +5,32 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue';
-import { computed } from 'vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     resources: {
         type: [Object, Array],
         required: true
+    },
+    units: {
+        type: Array,
+        default: () => []
+    },
+    filters: {
+        type: Object,
+        default: () => ({ unit: '' })
     }
+});
+// Filter state
+const selectedUnit = ref(props.filters.unit || '');
+function applyFilter() {
+    router.get(route('resources.index'), { unit: selectedUnit.value }, {
+        preserveScroll: true,
+    });
+}
+watch(selectedUnit, (newVal, oldVal) => {
+    if (newVal !== oldVal) applyFilter();
 });
 
 const resourceList = computed(() => {
@@ -60,6 +79,16 @@ function deleteResource(id) {
                         Agregar Recurso
                     </PrimaryButton>
                     </Link>
+                </template>
+                <template #filters>
+                    <div class="flex flex-wrap gap-4">
+                        <div>
+                            <SelectInput v-model="selectedUnit" class="w-56">
+                                <option value="">Todas las unidades</option>
+                                <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                            </SelectInput>
+                        </div>
+                    </div>
                 </template>
             </PageHeader>
         </template>

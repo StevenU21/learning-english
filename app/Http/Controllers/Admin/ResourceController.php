@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Classes\PermissionHelper;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Requests\ResourceRequest;
 use App\Models\Resource;
 use App\Models\Unit;
@@ -17,14 +18,26 @@ class ResourceController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Resource::class);
         $permissions = PermissionHelper::getPermissions('resources', ['download']);
-        $resources = Resource::with('unit')->paginate(10);
+        // Aplicar filtro por unidad si se especifica
+        $query = Resource::with('unit');
+        if ($request->filled('unit')) {
+            $query->where('unit_id', $request->input('unit'));
+        }
+        $resources = $query->paginate(10)->withQueryString();
+
+        // Lista de unidades para filtro
+        $units = Unit::all();
         return Inertia::render('Admin/Resources/Index', [
             'resources' => $resources,
-            'permissions' => $permissions
+            'permissions' => $permissions,
+            'units' => $units,
+            'filters' => [
+                'unit' => $request->input('unit', ''),
+            ],
         ]);
     }
 
