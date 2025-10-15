@@ -139,19 +139,6 @@ const genderLabel = computed(() => {
                                                 '-' }}</div>
                                         </div>
                                     </div>
-                                    <div
-                                        class="flex items-start gap-3 rounded-lg border border-gray-300 bg-gray-50 p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:shadow-none transition-colors">
-                                        <i class="fa-solid fa-fire mt-1 text-gray-400"></i>
-                                        <div>
-                                            <div
-                                                class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                                Racha de días
-                                            </div>
-                                            <div class="text-sm">{{ (profile?.streak_days != null) ? profile.streak_days
-                                                : '-'
-                                                }}</div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
