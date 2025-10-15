@@ -9,8 +9,8 @@ return new class extends Migration {
     {
         Schema::create('lesson_activities', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('lesson_id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('lesson_id')->unsigned();
             $table->unsignedInteger('minutes')->default(0);
             $table->timestamps();
 
