@@ -7,6 +7,7 @@
         import { ref, computed } from 'vue';
         import { usePage } from '@inertiajs/vue3';
         import ExerciseAttemptsModal from './ExerciseAttemptsModal.vue';
+        import ProgressBar from '@/Components/ProgressBar.vue';
 
         const props = defineProps({
             user: Object,
@@ -208,7 +209,8 @@
                                         <div class="font-medium text-gray-800 dark:text-gray-200">{{ up.unit.name }}</div>
                                             <StatusBadge :status="up.status" />
                                     </div>
-                                    <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">Progreso: {{ up.progress }}%
+                                    <div class="mt-2">
+                                        <ProgressBar :value="up.progress" />
                                     </div>
                                 </div>
                             </div>
@@ -234,7 +236,9 @@
                                         <tr v-for="up in filteredUnitProgress" :key="up.id"
                                             class="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
                                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ up.unit.name }}</td>
-                                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ up.progress }}%</td>
+                                            <td class="px-4 py-2">
+                                                <ProgressBar :value="up.progress" />
+                                            </td>
                                             <td class="px-4 py-2">
                                                     <StatusBadge :status="up.status" />
                                             </td>
@@ -278,7 +282,8 @@
                                     </div>
                                     <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Unidad: {{ lp.lesson.unit.name }}
                                     </div>
-                                    <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Progreso: {{ lp.progress }}%
+                                    <div class="mt-1">
+                                        <ProgressBar :value="lp.progress" />
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +313,9 @@
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ lp.lesson.unit.name }}
                                             </td>
                                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ lp.lesson.name }}</td>
-                                            <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ lp.progress }}%</td>
+                                            <td class="px-4 py-2">
+                                                <ProgressBar :value="lp.progress" />
+                                            </td>
                                             <td class="px-4 py-2">
                                                     <StatusBadge :status="lp.status" />
                                             </td>

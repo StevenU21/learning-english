@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import StatusBadge from '@/Components/StatusBadge.vue';
+import ProgressBar from '@/Components/ProgressBar.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { computed, watch } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -93,13 +94,6 @@ const columns = [
 ];
 
 
-function progressBarClass(val) {
-    const pct = Number(val) || 0;
-    if (pct >= 100) return 'bg-green-600';
-    if (pct >= 67) return 'bg-green-500';
-    if (pct >= 34) return 'bg-yellow-500';
-    return 'bg-red-500';
-}
 
 </script>
 
@@ -159,17 +153,7 @@ function progressBarClass(val) {
                             <StatusBadge :status="value" />
                         </template>
                         <template #cell-progress="{ value }">
-                            <div class="relative w-full max-w-xs">
-                                <div class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div class="h-full transition-all duration-300" :class="progressBarClass(value)"
-                                        :style="{ width: `${Number(value) || 0}%` }"></div>
-                                </div>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span
-                                        class="text-[10px] sm:text-xs font-semibold text-gray-900 dark:text-gray-100">{{
-                                            (Number(value) || 0) + '%' }}</span>
-                                </div>
-                            </div>
+                            <ProgressBar :value="value" />
                         </template>
                         <template #actions="{ row }">
                             <Link :href="route('admin.progress.show', row.user.id)">
