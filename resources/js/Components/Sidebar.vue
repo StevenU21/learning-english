@@ -6,7 +6,7 @@
 
     <!-- Sidebar -->
     <aside :class="[
-        'fixed inset-y-0 left-0 z-50 transform bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg lg:shadow-none transition-all duration-200 ease-in-out',
+        'fixed inset-y-0 left-0 z-50 transform bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transition-all duration-200 ease-in-out',
         modelValue ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         // Full width on mobile, dynamic width on desktop
         'w-64',
@@ -22,15 +22,6 @@
             </h1>
             </Link>
             <div class="flex items-center gap-2">
-                <!-- Desktop collapse toggle -->
-                <button class="hidden lg:inline-flex"
-                    :class="[effectiveCollapsed ? 'p-1.5' : 'p-2', 'text-gray-500 hover:text-gray-700 dark:text-gray-400']"
-                    @click="toggleCollapsed" :title="effectiveCollapsed ? 'Expandir' : 'Contraer'">
-                    <i :class="[
-                        effectiveCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left',
-                        'w-5 text-center text-gray-500'
-                    ]"></i>
-                </button>
                 <!-- Mobile close -->
                 <button class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400"
                     @click="$emit('update:modelValue', false)">
@@ -101,6 +92,17 @@
             </SidebarLink>
         </nav>
     </aside>
+
+    <!-- Desktop collapse toggle floating outside so it's always accessible -->
+    <button
+        class="hidden lg:flex items-center justify-center w-10 h-10 rounded-r-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 fixed top-16 z-50 transform translate-x-1/2 -translate-y-1/2"
+        :style="desktopToggleStyle" @click="toggleCollapsed" :title="effectiveCollapsed ? 'Expandir' : 'Contraer'"
+        :aria-label="effectiveCollapsed ? 'Expandir menú lateral' : 'Contraer menú lateral'">
+        <i :class="[
+            effectiveCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left',
+            'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+        ]"></i>
+    </button>
 </template>
 
 <script setup>
@@ -151,6 +153,11 @@ onUnmounted(() => {
 });
 
 const effectiveCollapsed = computed(() => (isDesktop.value ? props.collapsed : false));
+
+// Keep the desktop toggle anchored to the sidebar edge.
+const desktopToggleStyle = computed(() => ({
+    left: effectiveCollapsed.value ? '4rem' : '16rem',
+}));
 </script>
 
 <style scoped>
