@@ -140,7 +140,7 @@ function deleteUnit(id) {
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Unidad
                     </PrimaryButton>
-                </template>
+                </template> 
             </PageHeader>
         </template>
 

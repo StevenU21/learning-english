@@ -1,11 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DataTable from '@/Components/DataTable.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PageHeader from '@/Components/PageHeader.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import Modal from '@/Components/Modal.vue';
+import Form from './Form.vue';
 
 const props = defineProps({
     levels: {
@@ -33,11 +35,65 @@ const columns = [
     { key: 'description', label: 'Descripción', icon: 'fa-solid fa-align-left', align: 'left', thClass: 'hidden md:table-cell', tdClass: 'text-gray-600 dark:text-gray-400 hidden md:table-cell' },
 ];
 
+// Modal state
+const showCreate = ref(false);
+const showEdit = ref(false);
+const editingLevel = ref(null);
+
+// Create form
+const createForm = useForm({
+    name: '',
+    description: '',
+});
+
+function openCreate() {
+    createForm.reset();
+    createForm.clearErrors();
+    showCreate.value = true;
+}
+
+function submitCreate() {
+    createForm.post(route('levels.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showCreate.value = false;
+            router.reload({ preserveScroll: true });
+        },
+    });
+}
+
+// Edit form
+const editForm = useForm({
+    name: '',
+    description: '',
+});
+
+function openEdit(level) {
+    editingLevel.value = level;
+    editForm.reset();
+    editForm.clearErrors();
+    editForm.name = level.name ?? '';
+    editForm.description = level.description ?? '';
+    showEdit.value = true;
+}
+
+function submitEdit() {
+    if (!editingLevel.value) return;
+    editForm.put(route('levels.update', editingLevel.value.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            showEdit.value = false;
+            router.reload({ preserveScroll: true });
+        },
+    });
+}
+
 function deleteLevel(id) {
     if (!confirm('¿Estás seguro?')) return;
 
     router.delete(route('levels.destroy', id), {
         preserveScroll: true,
+        onSuccess: () => router.reload({ preserveScroll: true }),
     });
 }
 </script>
@@ -54,12 +110,10 @@ function deleteLevel(id) {
                     { label: 'Niveles' }
                 ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
-                    <Link :href="route('levels.create')">
-                    <PrimaryButton>
+                    <PrimaryButton @click="openCreate">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Nivel
                     </PrimaryButton>
-                    </Link>
                 </template>
             </PageHeader>
         </template>
@@ -84,11 +138,9 @@ function deleteLevel(id) {
                                 <i class="fa-solid fa-eye mr-2"></i> Ver
                             </PrimaryButton>
                             </Link>
-                            <Link :href="route('levels.edit', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                             </PrimaryButton>
-                            </Link>
                             <PrimaryButton @click="deleteLevel(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
                             </PrimaryButton>
@@ -100,5 +152,29 @@ function deleteLevel(id) {
                 </div>
             </div>
         </div>
+
+        <!-- Create Modal -->
+        <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Crear Nivel
+                </h2>
+                <form @submit.prevent="submitCreate">
+                    <Form :form="createForm" submitText="Crear" />
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Edit Modal -->
+        <Modal :show="showEdit" max-width="2xl" @close="showEdit = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Editar Nivel
+                </h2>
+                <form @submit.prevent="submitEdit">
+                    <Form :form="editForm" submitText="Actualizar" />
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
