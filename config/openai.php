@@ -46,4 +46,16 @@ return [
     */
 
     'request_timeout' => env('OPENAI_REQUEST_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | OpenAI Realtime Defaults
+    |--------------------------------------------------------------------------
+    |
+    | These options define the default model and voice that will be used when
+    | creating short-lived realtime sessions for voice conversations.
+    */
+
+    'realtime_model' => env('OPENAI_REALTIME_MODEL', 'gpt-4o-realtime-preview-2024-12-17'),
+    'realtime_voice' => env('OPENAI_REALTIME_VOICE', 'alloy'),
 ];
