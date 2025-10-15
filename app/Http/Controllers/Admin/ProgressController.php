@@ -24,10 +24,10 @@ class ProgressController extends Controller
 
         $units = Unit::all();
         $users = User::all();
-        $lessons = Lesson::all();
+        $lessons = Lesson::all(['id', 'name', 'unit_id']);
 
         // Filtrar por unidad, usuario, lección y estado en LessonUserProgress
-    $query = LessonUserProgress::with(['user.profile', 'lesson.unit']);
+        $query = LessonUserProgress::with(['user.profile', 'lesson.unit']);
         if ($unitId) {
             $lessonIds = Lesson::where('unit_id', $unitId)->pluck('id');
             $query->whereIn('lesson_id', $lessonIds);
@@ -44,7 +44,7 @@ class ProgressController extends Controller
         // Paginate progress 10 per page with filters applied
         $progress = $query->paginate(10)->appends($request->all());
         // Añadir avatar_url al usuario en cada progreso
-        $progress->getCollection()->transform(function($item) {
+        $progress->getCollection()->transform(function ($item) {
             // Añadir avatar_url directamente al ítem para facilitar DataTable
             $item->avatar_url = optional($item->user->profile)->avatar_url;
             return $item;

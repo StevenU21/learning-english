@@ -2,6 +2,7 @@
         import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
         import { Head, Link } from '@inertiajs/vue3';
         import PrimaryButton from '@/Components/PrimaryButton.vue';
+        import StatusBadge from '@/Components/StatusBadge.vue';
         import PageHeader from '@/Components/PageHeader.vue';
         import { ref, computed } from 'vue';
         import { usePage } from '@inertiajs/vue3';
@@ -124,16 +125,6 @@
             selectedExercise.value = null;
         }
 
-        function statusBadgeClasses(status) {
-            switch (status) {
-                case 'completado':
-                    return 'bg-green-100 text-green-800 dark:bg-green-600/20 dark:text-green-300';
-                case 'en_progreso':
-                    return 'bg-blue-100 text-blue-800 dark:bg-blue-600/20 dark:text-blue-300';
-                default:
-                    return 'bg-gray-100 text-gray-800 dark:bg-gray-600/30 dark:text-gray-300';
-            }
-        }
         </script>
 
         <template>
@@ -215,9 +206,7 @@
                                     class="rounded-md border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
                                     <div class="flex items-center justify-between">
                                         <div class="font-medium text-gray-800 dark:text-gray-200">{{ up.unit.name }}</div>
-                                        <span
-                                            :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(up.status)]">{{
-                                                up.status }}</span>
+                                            <StatusBadge :status="up.status" />
                                     </div>
                                     <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">Progreso: {{ up.progress }}%
                                     </div>
@@ -247,9 +236,7 @@
                                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ up.unit.name }}</td>
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ up.progress }}%</td>
                                             <td class="px-4 py-2">
-                                                <span
-                                                    :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(up.status)]">{{
-                                                        up.status }}</span>
+                                                    <StatusBadge :status="up.status" />
                                             </td>
                                         </tr>
                                     </tbody>
@@ -287,9 +274,7 @@
                                     class="rounded-md border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
                                     <div class="flex items-center justify-between">
                                         <div class="font-medium text-gray-800 dark:text-gray-200">{{ lp.lesson.name }}</div>
-                                        <span
-                                            :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(lp.status)]">{{
-                                                lp.status }}</span>
+                                            <StatusBadge :status="lp.status" />
                                     </div>
                                     <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Unidad: {{ lp.lesson.unit.name }}
                                     </div>
@@ -325,9 +310,7 @@
                                             <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ lp.lesson.name }}</td>
                                             <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ lp.progress }}%</td>
                                             <td class="px-4 py-2">
-                                                <span
-                                                    :class="['px-2 py-1 rounded text-xs font-medium', statusBadgeClasses(lp.status)]">{{
-                                                        lp.status }}</span>
+                                                    <StatusBadge :status="lp.status" />
                                             </td>
                                         </tr>
                                     </tbody>

@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import StatusBadge from '@/Components/StatusBadge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { computed, watch } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -61,10 +62,23 @@ function applyFilters() {
 // Watch reactivo para disparar filtrado automáticamente
 watch(() => [form.unit_id, form.user_id, form.lesson_id, form.status],
     ([nu, nuu, nl, ns], [ou, ouu, ol, os]) => {
+        // Si se cambia la unidad y la lección ya no pertenece a esa unidad, limpiar lesson_id
+        if (nu && nl) {
+            const match = lessons.find(l => String(l.id) === String(nl));
+            if (match && String(match.unit_id) !== String(nu)) {
+                form.lesson_id = '';
+            }
+        }
         if (nu === ou && nuu === ouu && nl === ol && ns === os) return;
         applyFilters();
     }
 );
+
+// Lista de lecciones dependiente de unidad
+const filteredLessons = computed(() => {
+    if (!form.unit_id) return lessons;
+    return lessons.filter(l => String(l.unit_id) === String(form.unit_id));
+});
 
 // Columns for DataTable (similar style to Units)
 const columns = [
@@ -77,6 +91,16 @@ const columns = [
     { key: 'progress', label: 'Progreso', icon: 'fa-solid fa-bars-progress', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
     { key: 'status', label: 'Estado', icon: 'fa-solid fa-flag-checkered', align: 'left' },
 ];
+
+
+function progressBarClass(val) {
+    const pct = Number(val) || 0;
+    if (pct >= 100) return 'bg-green-600';
+    if (pct >= 67) return 'bg-green-500';
+    if (pct >= 34) return 'bg-yellow-500';
+    return 'bg-red-500';
+}
+
 </script>
 
 <template>
@@ -108,8 +132,8 @@ const columns = [
                         <div>
                             <SelectInput v-model="form.lesson_id" class="w-60">
                                 <option value="">Todas las Lecciones</option>
-                                <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}
-                                </option>
+                                <option v-for="lesson in filteredLessons" :key="lesson.id" :value="lesson.id">{{
+                                    lesson.name }}</option>
                             </SelectInput>
                         </div>
                         <div>
@@ -132,7 +156,20 @@ const columns = [
                     <DataTable :items="progressList" :columns="columns"
                         :empty-text="'No se encontraron registros de progreso.'" show-actions>
                         <template #cell-status="{ value }">
-                            <span class="capitalize">{{ value }}</span>
+                            <StatusBadge :status="value" />
+                        </template>
+                        <template #cell-progress="{ value }">
+                            <div class="relative w-full max-w-xs">
+                                <div class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div class="h-full transition-all duration-300" :class="progressBarClass(value)"
+                                        :style="{ width: `${Number(value) || 0}%` }"></div>
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span
+                                        class="text-[10px] sm:text-xs font-semibold text-gray-900 dark:text-gray-100">{{
+                                            (Number(value) || 0) + '%' }}</span>
+                                </div>
+                            </div>
                         </template>
                         <template #actions="{ row }">
                             <Link :href="route('admin.progress.show', row.user.id)">
