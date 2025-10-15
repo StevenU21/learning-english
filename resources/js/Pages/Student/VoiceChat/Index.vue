@@ -4,7 +4,7 @@ import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { useVoiceChat, type VoiceChatProps } from './useVoiceChat';
 
-const props = withDefaults(defineProps < VoiceChatProps > (), {
+const props = withDefaults(defineProps<VoiceChatProps>(), {
     defaultVoice: 'alloy',
     defaultModel: 'gpt-4o-realtime-preview-2024-12-17',
     sessionDuration: 60,
@@ -35,10 +35,10 @@ const {
                 ]" gradient-classes="from-sky-600 to-indigo-600" />
         </template>
         <div
-            class="flex min-h-[calc(100vh-56px)] flex-col bg-gradient-to-b from-sky-100 via-white to-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 pb-24 sm:pb-8">
+            class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 dark:bg-gray-800 pb-24 sm:pb-8">
             <div class="flex flex-1 flex-col items-center justify-center px-6 pt-8 sm:pt-12">
                 <div
-                    class="w-full max-w-md rounded-3xl bg-white/80 p-6 text-center shadow-lg backdrop-blur dark:bg-gray-900/70 dark:text-gray-100">
+                    class="w-full max-w-md rounded-3xl bg-white p-6 text-center shadow-lg dark:bg-gray-800 dark:text-gray-100">
                     <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">Chat de voz con IA</h1>
                     <p class="mt-3 text-sm text-gray-600 sm:text-base dark:text-gray-300">
                         Practica conversaciones en voz con sesiones de un minuto. Asegúrate de estar en un lugar
@@ -80,7 +80,7 @@ const {
                     </div>
 
                     <div
-                        class="mt-6 rounded-2xl bg-gray-50 px-4 py-4 text-left text-xs text-gray-500 sm:text-sm dark:bg-gray-800/80 dark:text-gray-300">
+                        class="mt-6 rounded-2xl bg-gray-50 px-4 py-4 text-left text-xs text-gray-500 sm:text-sm dark:bg-gray-800 dark:text-gray-300">
                         <p class="font-medium text-gray-600 dark:text-gray-200">Recomendaciones:</p>
                         <ul class="mt-2 space-y-2">
                             <li class="flex items-start gap-2">
