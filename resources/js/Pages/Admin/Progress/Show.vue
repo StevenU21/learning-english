@@ -4,7 +4,7 @@
         import PrimaryButton from '@/Components/PrimaryButton.vue';
         import StatusBadge from '@/Components/StatusBadge.vue';
         import PageHeader from '@/Components/PageHeader.vue';
-        import { ref, computed } from 'vue';
+    import { ref, computed, watch } from 'vue';
         import { usePage } from '@inertiajs/vue3';
         import ExerciseAttemptsModal from './ExerciseAttemptsModal.vue';
         import ProgressBar from '@/Components/ProgressBar.vue';
@@ -31,6 +31,18 @@
         const attemptCorrectFilter = ref(''); // '', '1', '0'
         const attemptSearch = ref('');
 
+        // Lecciones dependientes de la unidad seleccionada en el filtro de intentos
+        const attemptLessonsForSelectedUnit = computed(() => {
+            if (!attemptUnitFilter.value) return lessons;
+            return lessons.filter(l => String(l.unit?.id ?? l.unit_id) === String(attemptUnitFilter.value));
+        });
+        // Reiniciar selección de lección cuando cambie la unidad
+        watch(attemptUnitFilter, () => {
+            // Si la lección seleccionada no pertenece a la nueva unidad, limpiar
+            const exists = attemptLessonsForSelectedUnit.value.some(l => String(l.id) === String(attemptLessonFilter.value));
+            if (!exists) attemptLessonFilter.value = '';
+        });
+
         // Computed filtrados
         const filteredUnitProgress = computed(() => {
             return unitProgress.filter(up => {
@@ -50,11 +62,16 @@
         // Lista plana filtrada
         const filteredAttempts = computed(() => {
             return attempts.filter(att => {
+                // El intento puede tener lesson directo o mediante exercise.lesson
                 const lesson = att.lesson || att.exercise?.lesson;
                 const unitId = lesson?.unit?.id;
+                // Filtrar por unidad si corresponde
                 if (attemptUnitFilter.value && String(unitId) !== String(attemptUnitFilter.value)) return false;
+                // Filtrar por lección si corresponde
                 if (attemptLessonFilter.value && String(lesson?.id) !== String(attemptLessonFilter.value)) return false;
+                // Filtrar por correcto/incorrecto
                 if (attemptCorrectFilter.value !== '' && String(att.is_correct ? 1 : 0) !== attemptCorrectFilter.value) return false;
+                // Búsqueda por texto
                 if (attemptSearch.value) {
                     const text = (att.exercise?.prompt || '').toLowerCase();
                     if (!text.includes(attemptSearch.value.toLowerCase())) return false;
@@ -342,7 +359,7 @@
                                     <select v-model="attemptLessonFilter"
                                         class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                         <option value="">Lección: Todas</option>
-                                        <option v-for="l in lessons" :key="l.id" :value="l.id">{{ l.name }}</option>
+                                        <option v-for="l in attemptLessonsForSelectedUnit" :key="l.id" :value="l.id">{{ l.name }}</option>
                                     </select>
                                     <select v-model="attemptCorrectFilter"
                                         class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -427,7 +444,6 @@
                                 </table>
                             </div>
                         </div>
-
 
                         <!-- Modal de intentos por ejercicio -->
                         <ExerciseAttemptsModal v-if="showExerciseAttempts" :exercise="selectedExercise" :attempts="selectedExerciseAttempts"

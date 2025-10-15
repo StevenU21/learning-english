@@ -74,7 +74,8 @@ class ProgressController extends Controller
         $unitProgress = UnitUserProgress::with(['unit'])
             ->where('user_id', $userId)
             ->get();
-        $attempts = UserExerciseAttempt::with(['lesson', 'exercise'])
+        // Cargar relaciones anidadas para poder filtrar por unidad en el front
+        $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
             ->where('user_id', $userId)
             ->orderByDesc('created_at')
             ->get();
