@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
@@ -8,6 +8,8 @@ import ImageCell from '@/Components/ImageCell.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref, watch } from 'vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import Modal from '@/Components/Modal.vue';
+import Form from './Form.vue';
 
 const props = defineProps({
     lessons: {
@@ -63,7 +65,80 @@ function deleteLesson(id) {
 
     router.delete(route('lessons.destroy', id), {
         preserveScroll: true,
+        onSuccess: () => router.reload({ preserveScroll: true }),
     });
+}
+
+// Modal state
+const showCreate = ref(false);
+const showEdit = ref(false);
+const editingLesson = ref(null);
+
+// Create form
+const createForm = useForm({
+    name: '',
+    description: '',
+    duration: '',
+    image: null,
+    unit_id: props.filters?.unit || (props.units?.[0]?.id ?? null),
+});
+
+function openCreate() {
+    createForm.reset();
+    createForm.clearErrors();
+    // Prefill unit with current filter if any
+    createForm.unit_id = selectedUnit.value || (props.units?.[0]?.id ?? null);
+    showCreate.value = true;
+}
+
+function submitCreate() {
+    createForm.post(route('lessons.store'), {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            showCreate.value = false;
+            router.reload({ preserveScroll: true });
+        },
+    });
+}
+
+// Edit form
+const editForm = useForm({
+    name: '',
+    description: '',
+    duration: '',
+    unit_id: null,
+    image: null,
+});
+
+function openEdit(lesson) {
+    editingLesson.value = lesson;
+    editForm.reset();
+    editForm.clearErrors();
+    editForm.name = lesson.name ?? '';
+    editForm.description = lesson.description ?? '';
+    editForm.duration = lesson.duration ?? '';
+    editForm.unit_id = lesson.unit?.id ?? lesson.unit_id ?? null;
+    editForm.image = null;
+    showEdit.value = true;
+}
+
+function submitEdit() {
+    if (!editingLesson.value) return;
+    editForm
+        .transform((data) => {
+            const payload = { ...data, _method: 'put' };
+            if (!payload.image) delete payload.image;
+            return payload;
+        })
+        .post(route('lessons.update', editingLesson.value.id), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                showEdit.value = false;
+                router.reload({ preserveScroll: true });
+            },
+        });
 }
 </script>
 
@@ -79,12 +154,10 @@ function deleteLesson(id) {
                     { label: 'Lecciones' }
                 ]" gradient-classes="from-purple-600 to-indigo-600">
                 <template #actions>
-                    <Link :href="route('lessons.create')">
-                    <PrimaryButton>
+                    <PrimaryButton @click="openCreate">
                         <i class="fa-solid fa-plus mr-2"></i>
                         Agregar Lección
                     </PrimaryButton>
-                    </Link>
                 </template>
                 <template #filters>
                     <div class="flex flex-wrap gap-4">
@@ -126,11 +199,9 @@ function deleteLesson(id) {
                                 <i class="fa-solid fa-eye mr-2"></i> Ver
                             </PrimaryButton>
                             </Link>
-                            <Link :href="route('lessons.edit', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                             </PrimaryButton>
-                            </Link>
                             <PrimaryButton @click="deleteLesson(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
                             </PrimaryButton>
@@ -142,5 +213,29 @@ function deleteLesson(id) {
                 </div>
             </div>
         </div>
+
+        <!-- Create Modal -->
+        <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Crear Lección
+                </h2>
+                <form @submit.prevent="submitCreate" enctype="multipart/form-data">
+                    <Form :form="createForm" :units="props.units" submitText="Crear" />
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Edit Modal -->
+        <Modal :show="showEdit" max-width="2xl" @close="showEdit = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    Editar Lección
+                </h2>
+                <form @submit.prevent="submitEdit" enctype="multipart/form-data">
+                    <Form :form="editForm" :units="props.units" submitText="Actualizar" />
+                </form>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
