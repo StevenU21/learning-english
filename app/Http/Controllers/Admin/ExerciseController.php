@@ -24,44 +24,28 @@ class ExerciseController extends Controller
         $this->authorize('viewAny', Exercise::class);
         $permissions = PermissionHelper::getPermissions('exercises');
 
-        $type = request('type') ?: null;      // id de tipo seleccionado
-        $lesson = request('lesson') ?: null;  // id de lección seleccionada
-        $unit = request('unit') ?: null;      // id de unidad seleccionada
+        $type = request('type');
+        $lesson = request('lesson');
+        $unit = request('unit');
 
-        // Query principal (con ambos filtros aplicados si existen)
-        $mainQuery = Exercise::query();
-        if ($type) {
-            $mainQuery->where('exercise_type_id', $type);
-        }
-        if ($lesson) {
-            $mainQuery->where('lesson_id', $lesson);
-        }
-        if ($unit) {
-            $mainQuery->whereHas('lesson', function ($q) use ($unit) {
-                $q->where('unit_id', $unit);
-            });
-        }
+        $exercises = Exercise::query()
+            ->when($type, fn($q) => $q->where('exercise_type_id', $type))
+            ->when($lesson, fn($q) => $q->where('lesson_id', $lesson))
+            ->when($unit, fn($q) => $q->whereHas('lesson', fn($q) => $q->where('unit_id', $unit)))
+            ->with(['exerciseType', 'lesson'])
+            ->paginate(10)
+            ->appends(request()->all());
 
-        // Paginamos resultados finales
-        $exercises = $mainQuery->with('exerciseType', 'lesson')->paginate(10)->appends(request()->all());
-
-        // Construimos la lista de tipos aplicando SOLO el filtro de lección (para poder cambiar de tipo)
-        $typesQuery = Exercise::query();
-        if ($lesson) {
-            $typesQuery->where('lesson_id', $lesson);
-        }
-        $typeIds = $typesQuery->distinct()->pluck('exercise_type_id')->filter()->values();
+        $typeIds = Exercise::query()
+            ->when($lesson, fn($q) => $q->where('lesson_id', $lesson))
+            ->distinct()->pluck('exercise_type_id')->filter()->values();
         $types = ExerciseType::whereIn('id', $typeIds)->orderBy('name')->get(['id', 'name']);
 
-        // Construimos la lista de lecciones aplicando SOLO el filtro de tipo (para poder cambiar de lección)
-        $lessonsQuery = Exercise::query();
-        if ($type) {
-            $lessonsQuery->where('exercise_type_id', $type);
-        }
-        $lessonIds = $lessonsQuery->distinct()->pluck('lesson_id')->filter()->values();
+        $lessonIds = Exercise::query()
+            ->when($type, fn($q) => $q->where('exercise_type_id', $type))
+            ->distinct()->pluck('lesson_id')->filter()->values();
         $lessons = Lesson::whereIn('id', $lessonIds)->orderBy('name')->get(['id', 'name']);
 
-        // Provide both filtered lists (for filters UX) and full lists (for create/edit modals)
         $allTypes = ExerciseType::orderBy('name')->get(['id', 'name']);
         $allLessons = Lesson::orderBy('name')->get(['id', 'name', 'unit_id']);
         $allUnits = Unit::orderBy('name')->get(['id', 'name']);
@@ -69,11 +53,7 @@ class ExerciseController extends Controller
         return Inertia::render('Admin/Exercises/Index', [
             'exercises' => $exercises,
             'permissions' => $permissions,
-            'filters' => [
-                'type' => $type,
-                'lesson' => $lesson,
-                'unit' => $unit,
-            ],
+            'filters' => compact('type', 'lesson', 'unit'),
             'types' => $types,
             'lessons' => $lessons,
             'allTypes' => $allTypes,
@@ -85,32 +65,29 @@ class ExerciseController extends Controller
     public function create()
     {
         $this->authorize('create', Exercise::class);
-        $types = ExerciseType::all(['id', 'name']);
-        $lessons = Lesson::all(['id', 'name']);
         return Inertia::render('Admin/Exercises/Create', [
-            'types' => $types,
-            'lessons' => $lessons
+            'types' => ExerciseType::all(['id', 'name']),
+            'lessons' => Lesson::all(['id', 'name']),
         ]);
     }
+
     public function store(ExerciseRequest $request): RedirectResponse
     {
         $this->authorize('create', Exercise::class);
         $data = $request->validated();
-        // Keep UploadedFile objects for type validation
-        $uploadedA = $request->file('file');
-        $uploadedB = $request->file('file_b');
-        $data['file'] = $uploadedA;
-        $data['file_b'] = $uploadedB;
 
-        // Normalize arrays: drop null/empty strings and reindex
-        $data['options'] = array_values(array_filter((array) ($data['options'] ?? []), function ($v) {
-            return !is_null($v) && !(is_string($v) && trim($v) === '');
-        }));
-        $data['solution'] = array_values(array_filter((array) ($data['solution'] ?? []), function ($v) {
-            return !is_null($v) && !(is_string($v) && trim($v) === '');
-        }));
+        $data['file'] = $request->file('file');
+        $data['file_b'] = $request->file('file_b');
+
+        $data['options'] = collect($data['options'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        $data['solution'] = collect($data['solution'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+
         $type = ExerciseType::find($data['exercise_type_id']);
-        if (!$type instanceof ExerciseType) {
+        if (!$type) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
         }
 
@@ -118,23 +95,22 @@ class ExerciseController extends Controller
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors'])->withInput();
         }
-        // If validation passed, persist files and replace with stored paths
-        if ($uploadedA) {
-            $storedA = $uploadedA->store('units', 'public');
-            $result['data']['file'] = $storedA;
+
+        if ($data['file']) {
+            $result['data']['file'] = $data['file']->store('units', 'public');
         }
-        if ($uploadedB) {
-            $storedB = $uploadedB->store('units', 'public');
-            $result['data']['file_b'] = $storedB;
+        if ($data['file_b']) {
+            $result['data']['file_b'] = $data['file_b']->store('units', 'public');
         }
+
         Exercise::create($result['data']);
-    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio creado correctamente');
+        return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio creado correctamente');
     }
 
     public function show(Exercise $exercise)
     {
         $this->authorize('view', $exercise);
-        $exercise->load('exerciseType', 'lesson');
+        $exercise->load(['exerciseType', 'lesson']);
         $permissions = PermissionHelper::getPermissions('exercises');
         return Inertia::render('Admin/Exercises/Show', [
             'exercise' => $exercise,
@@ -145,12 +121,10 @@ class ExerciseController extends Controller
     public function edit(Exercise $exercise)
     {
         $this->authorize('update', $exercise);
-        $types = ExerciseType::all(['id', 'name']);
-        $lessons = Lesson::all(['id', 'name']);
         return Inertia::render('Admin/Exercises/Edit', [
             'exercise' => $exercise,
-            'types' => $types,
-            'lessons' => $lessons
+            'types' => ExerciseType::all(['id', 'name']),
+            'lessons' => Lesson::all(['id', 'name']),
         ]);
     }
 
@@ -158,21 +132,19 @@ class ExerciseController extends Controller
     {
         $this->authorize('update', $exercise);
         $data = $request->validated();
-        // Keep UploadedFile objects for type validation
-        $uploadedA = $request->file('file');
-        $uploadedB = $request->file('file_b');
-        $data['file'] = $uploadedA;
-        $data['file_b'] = $uploadedB;
 
-        // Normalize arrays: drop null/empty strings and reindex
-        $data['options'] = array_values(array_filter((array) ($data['options'] ?? []), function ($v) {
-            return !is_null($v) && !(is_string($v) && trim($v) === '');
-        }));
-        $data['solution'] = array_values(array_filter((array) ($data['solution'] ?? []), function ($v) {
-            return !is_null($v) && !(is_string($v) && trim($v) === '');
-        }));
+        $data['file'] = $request->file('file');
+        $data['file_b'] = $request->file('file_b');
+
+        $data['options'] = collect($data['options'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        $data['solution'] = collect($data['solution'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+
         $type = ExerciseType::find($data['exercise_type_id']);
-        if (!$type instanceof ExerciseType) {
+        if (!$type) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
         }
 
@@ -180,31 +152,32 @@ class ExerciseController extends Controller
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors'])->withInput();
         }
-        // Persist new files if any; delete old ones; keep existing paths otherwise
-        if ($uploadedA) {
-            if (!empty($exercise->file)) {
+
+        if ($data['file']) {
+            if ($exercise->file) {
                 Storage::disk('public')->delete($exercise->file);
             }
-            $result['data']['file'] = $uploadedA->store('units', 'public');
+            $result['data']['file'] = $data['file']->store('units', 'public');
         } else {
             unset($result['data']['file']);
         }
-        if ($uploadedB) {
-            if (!empty($exercise->file_b)) {
+        if ($data['file_b']) {
+            if ($exercise->file_b) {
                 Storage::disk('public')->delete($exercise->file_b);
             }
-            $result['data']['file_b'] = $uploadedB->store('units', 'public');
+            $result['data']['file_b'] = $data['file_b']->store('units', 'public');
         } else {
             unset($result['data']['file_b']);
         }
+
         $exercise->update($result['data']);
-    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio actualizado correctamente');
+        return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio actualizado correctamente');
     }
 
     public function destroy(Exercise $exercise): RedirectResponse
     {
         $this->authorize('destroy', $exercise);
         $exercise->delete();
-    return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio eliminado correctamente');
+        return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio eliminado correctamente');
     }
 }
