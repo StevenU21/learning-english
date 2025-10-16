@@ -8,8 +8,8 @@ import { useVoiceChat, type VoiceChatProps } from './useVoiceChat';
 
 const props = withDefaults(defineProps<VoiceChatProps>(), {
     defaultVoice: 'alloy',
-    defaultModel: 'gpt-4o-realtime-preview-2024-12-17',
-    sessionDuration: 60,
+    defaultModel: 'gpt-realtime-mini-2025-10-06',
+    sessionDuration: 90,
 });
 
 const voiceOptions = [

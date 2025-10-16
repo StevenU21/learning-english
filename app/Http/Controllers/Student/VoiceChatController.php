@@ -18,8 +18,8 @@ class VoiceChatController extends Controller
     {
         return Inertia::render('Student/VoiceChat/Index', [
             'defaultVoice' => config('openai.realtime_voice', 'alloy'),
-            'defaultModel' => config('openai.realtime_model', 'gpt-4o-realtime-preview-2024-12-17'),
-            'sessionDuration' => 60,
+            'defaultModel' => config('openai.realtime_model', 'gpt-realtime-mini-2025-10-06'),
+            'sessionDuration' => 90,
         ]);
     }
 
@@ -36,7 +36,7 @@ class VoiceChatController extends Controller
                 voice: $validated['voice'] ?? null,
                 instructions: $validated['instructions'] ?? null,
                 model: null,
-                expiresIn: 60,
+                expiresIn: 90,
                 conversationLevel: $validated['level'] ?? null,
             );
         } catch (\Throwable $exception) {

@@ -18,13 +18,13 @@ class OpenAIRealtimeService
         ?string $voice = null,
         ?string $instructions = null,
         ?string $model = null,
-        int $expiresIn = 60,
+        int $expiresIn = 90,
         ?string $conversationLevel = null
     ): array {
 
         $model ??= config('openai.realtime_model', 'gpt-realtime-mini');
         $voice ??= config('openai.realtime_voice', 'alloy');
-        $expiresIn = max(1, min($expiresIn, 60));
+        $expiresIn = max(1, min($expiresIn, 90));
 
         if (!$instructions) {
             $instructions = $this->buildInstructions($conversationLevel);
@@ -72,6 +72,7 @@ class OpenAIRealtimeService
     {
         $baseInstructions = implode(' ', [
             'You are Nativo, the AI assistant of the Nativo web application.',
+            'Always respond in English and prioritize using English in your conversation.',
             'Your goal is to engage in friendly and accessible conversations with Spanish-speaking students to help them practice their English speaking skills.',
             'Ask follow-up questions, encourage student participation, and keep the interaction active and motivating.',
         ]);
