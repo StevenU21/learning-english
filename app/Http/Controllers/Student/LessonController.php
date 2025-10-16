@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Unit;
 use App\Models\Lesson;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LessonController extends Controller

@@ -4,7 +4,7 @@ import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref, watch } from 'vue';
 import SelectInput from '@/Components/SelectInput.vue';
-import { useVoiceChat, type VoiceChatProps } from './useVoiceChat';
+import { useVoiceChat, type VoiceChatProps } from './useVoiceChat/index';
 
 const props = withDefaults(defineProps<VoiceChatProps>(), {
     defaultVoice: 'alloy',
