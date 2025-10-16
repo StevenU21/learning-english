@@ -368,14 +368,14 @@ function handleStarterPrompt(prompt: string) {
                                         </div>
 
                                         <div v-if="followUpSuggestions.length"
-                                            class="flex flex-wrap items-center gap-2 rounded-2xl border border-indigo-100 bg-white p-4 text-sm text-gray-700 dark:border-indigo-500/30 dark:bg-gray-900 dark:text-gray-200">
+                                                                                    class="flex flex-wrap items-center gap-2 rounded-2xl border border-indigo-100 bg-white p-4 text-sm text-gray-700 dark:border-indigo-500/30 dark:bg-gray-900 dark:text-gray-200">
                                             <span
                                                 class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
                                                 Responde con alguna idea:
                                             </span>
                                             <button v-for="suggestion in followUpSuggestions" :key="suggestion"
                                                 type="button" @click="handleStarterPrompt(suggestion)"
-                                                class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200">
+                                                class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200 dark:hover:bg-indigo-500/30 dark:hover:text-white">
                                                 {{ suggestion }}
                                             </button>
                                         </div>
