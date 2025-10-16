@@ -12,12 +12,6 @@ use Illuminate\Support\Carbon;
 
 class OpenAIRealtimeService
 {
-    /**
-     * Create a short-lived voice conversation session with OpenAI's Realtime API.
-     *
-     * @throws RequestException
-     * @throws ConnectionException
-     */
     public function createVoiceSession(
         ?string $voice = null,
         ?string $instructions = null,
