@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\ProgressController;
 use App\Http\Controllers\Admin\ResourceController;
+use App\Http\Controllers\Student\TextChatController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Auth\GithubController;
 use App\Http\Controllers\Auth\GoogleController;
@@ -63,6 +64,8 @@ Route::middleware('auth')->group(function () {
         Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
         Route::get('voice-chat', [\App\Http\Controllers\Student\VoiceChatController::class, 'index'])->name('voice-chat.index');
         Route::post('voice-chat/session', [\App\Http\Controllers\Student\VoiceChatController::class, 'createSession'])->name('voice-chat.session');
+        Route::get('text-chat', [TextChatController::class, 'index'])->name('text-chat.index');
+        Route::post('text-chat/message', [TextChatController::class, 'sendMessage'])->name('text-chat.message');
     });
 
     Route::middleware('role:admin')->group(function () {

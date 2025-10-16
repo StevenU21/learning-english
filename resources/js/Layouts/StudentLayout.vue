@@ -43,6 +43,15 @@ const page = usePage();
                                 <i class="fa-solid fa-microphone-lines mr-2"></i>
                                 Conversación
                                 </Link>
+                                <Link :href="route('student.text-chat.index')" :class="[
+                                    'inline-flex items-center text-sm font-medium transition-colors',
+                                    route().current('student.text-chat.*')
+                                        ? 'text-gray-900 dark:text-white'
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                ]">
+                                <i class="fa-solid fa-comments mr-2"></i>
+                                Chat de texto
+                                </Link>
                             </div>
                         </div>
 
@@ -135,6 +144,10 @@ const page = usePage();
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
                             <i class="fa-solid fa-microphone-lines mr-2"></i>Conversación
                             </Link>
+                            <Link :href="route('student.text-chat.index')"
+                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
+                            <i class="fa-solid fa-comments mr-2"></i>Chat de texto
+                            </Link>
                             <Link :href="route('profile.index')"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
                             <i class="fa-solid fa-user mr-2"></i>Perfil
@@ -174,15 +187,15 @@ const page = usePage();
                     <i class="fa-solid fa-microphone-lines"></i>
                     <div class="text-[11px]">Conversar</div>
                     </Link>
+                    <Link :href="route('student.text-chat.index')"
+                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                    <i class="fa-solid fa-comments"></i>
+                    <div class="text-[11px]">Chat</div>
+                    </Link>
                     <Link :href="route('profile.index')"
                         class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                     <i class="fa-solid fa-user"></i>
                     <div class="text-[11px]">Perfil</div>
-                    </Link>
-                    <Link :href="route('logout')" method="post" as="button"
-                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <div class="text-[11px]">Salir</div>
                     </Link>
                 </div>
             </nav>
