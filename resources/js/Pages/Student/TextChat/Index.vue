@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { computed, nextTick, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
 import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -41,6 +41,7 @@ const canSendMessage = computed(() => draftMessage.value.trim().length > 0 && !i
 
 const chatContainer = ref<HTMLDivElement | null>(null);
 const messageInput = ref<ComponentPublicInstance | null>(null);
+const resizeObserver = ref<ResizeObserver | null>(null);
 
 const lastMessageSignature = computed(() => {
     const lastMessage = messages.value[messages.value.length - 1];
@@ -93,6 +94,55 @@ onMounted(() => {
     nextTick(() => {
         scrollToBottom();
     });
+
+    if ('ResizeObserver' in window) {
+        const observer = new ResizeObserver(() => {
+            const container = chatContainer.value;
+
+            if (!container) {
+                return;
+            }
+
+            requestAnimationFrame(() => {
+                container.scrollTop = container.scrollHeight;
+            });
+        });
+
+        resizeObserver.value = observer;
+
+        nextTick(() => {
+            const element = chatContainer.value;
+            if (element) {
+                observer.observe(element);
+            }
+        });
+    }
+});
+
+watch(
+    chatContainer,
+    (element, previous) => {
+        const observer = resizeObserver.value;
+
+        if (!observer) {
+            return;
+        }
+
+        if (previous) {
+            observer.unobserve(previous);
+        }
+
+        if (element) {
+            observer.observe(element);
+        }
+    },
+);
+
+onBeforeUnmount(() => {
+    if (resizeObserver.value) {
+        resizeObserver.value.disconnect();
+        resizeObserver.value = null;
+    }
 });
 
 watch(
@@ -100,6 +150,32 @@ watch(
     async () => {
         await nextTick();
         scrollToBottom();
+    },
+    { flush: 'post' },
+);
+
+watch(
+    () => {
+        const last = messages.value[messages.value.length - 1];
+
+        if (!last) {
+            return '';
+        }
+
+        return `${last.id}::${last.streaming ? 'streaming' : 'done'}`;
+    },
+    async (currentState, previousState) => {
+        if (!previousState || !currentState) {
+            return;
+        }
+
+        const [currentId, currentFlag] = currentState.split('::');
+        const [previousId, previousFlag] = previousState.split('::');
+
+        if (currentId === previousId && previousFlag === 'streaming' && currentFlag === 'done') {
+            await nextTick();
+            scrollToBottom();
+        }
     },
     { flush: 'post' },
 );
@@ -130,9 +206,9 @@ function handleStarterPrompt(prompt: string) {
         </template>
 
         <div
-            class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8">
-            <div class="w-full flex-1">
-                <div class="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-2 sm:px-6 sm:py-10 lg:px-8">
+            class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8 lg:h-auto lg:min-h-0">
+            <div class="w-full flex-1 lg:h-auto">
+                <div class="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-2 sm:px-6 sm:py-10 lg:h-auto lg:px-8">
                     <div
                         class="flex h-full flex-col gap-6 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
@@ -222,8 +298,7 @@ function handleStarterPrompt(prompt: string) {
                                 </div>
                                 <div v-if="latestGrammarTips.length" class="mt-4 space-y-2">
                                     <p class="text-xs font-semibold uppercase text-emerald-500 dark:text-emerald-300">
-                                        Consejos
-                                        gramaticales</p>
+                                        Consejos gramaticales</p>
                                     <div v-for="tip in latestGrammarTips" :key="tip"
                                         class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-100">
                                         {{ tip }}
@@ -233,24 +308,13 @@ function handleStarterPrompt(prompt: string) {
                         </aside>
 
                         <section
-                            class="order-1 flex min-h-0 flex-1 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
-                            <div class="flex h-full min-h-0 flex-col gap-8">
-                                <div class="order-2 hidden text-center md:block md:order-1">
-                                    <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
-                                        Práctica de
-                                        escritura con IA</h1>
-                                    <p class="mt-3 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-                                        Escribe libremente y recibe respuestas con vocabulario nuevo, correcciones y
-                                        preguntas
-                                        de seguimiento para continuar la conversación.
-                                    </p>
-                                </div>
-
+                            class="order-1 flex min-h-0 flex-1 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:flex-none lg:p-8">
+                            <div class="flex h-full min-h-0 flex-col gap-8 lg:flex-none">
                                 <div
-                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
-                                    <div class="flex flex-1 min-h-0 flex-col gap-6">
+                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2 lg:flex-none">
+                                    <div class="flex flex-1 min-h-0 flex-col gap-6 lg:flex-none">
                                         <div ref="chatContainer"
-                                            class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2">
+                                            class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2 lg:flex-none">
                                             <div v-for="message in messages" :key="message.id"
                                                 :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
                                                 <div :class="[
@@ -277,8 +341,7 @@ function handleStarterPrompt(prompt: string) {
                                                     <div v-if="message.vocabulary?.length"
                                                         class="mt-4 space-y-2 rounded-2xl border border-indigo-100 bg-indigo-50 p-3 text-xs text-indigo-900 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-100">
                                                         <p class="font-semibold uppercase text-[10px] tracking-wide">
-                                                            Vocabulario
-                                                            recomendado</p>
+                                                            Vocabulario recomendado</p>
                                                         <div v-for="item in message.vocabulary" :key="item.term">
                                                             <span class="font-semibold">{{ item.term }}</span> - {{
                                                                 item.definition }}

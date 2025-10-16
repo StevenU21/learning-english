@@ -192,16 +192,6 @@ const startSessionWithVoice = () =>
                         <section
                             class="order-1 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
                             <div class="flex flex-col gap-8">
-                                <div class="order-2 hidden text-center md:block md:order-1">
-                                    <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">Chat de
-                                        voz con
-                                        IA</h1>
-                                    <p class="mt-3 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-                                        Practica conversaciones guiadas y aprovecha la visualización en tiempo real para
-                                        ver
-                                        quién está hablando.
-                                    </p>
-                                </div>
 
                                 <div
                                     class="order-1 rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10 md:order-2">
