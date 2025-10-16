@@ -8,9 +8,6 @@ use App\Models\UnitUserProgress;
 
 class UnitProgressService
 {
-    /**
-     * Recalculate and upsert unit progress for a user given a unitId.
-     */
     public function recalc(int $userId, int $unitId): void
     {
         $lessonIds = Lesson::where('unit_id', $unitId)->pluck('id');
