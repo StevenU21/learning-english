@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use Generator;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use OpenAI\Exceptions\ErrorException;
+use OpenAI\Laravel\Facades\OpenAI;
 use RuntimeException;
 
 class OpenAITextChatService
@@ -14,12 +17,13 @@ class OpenAITextChatService
      * Generate a conversational reply tailored for English learning.
      *
      * @param array<int, array{role: string, content: string}> $messages
-    * @return array{
-    *     reply: string,
-    *     vocabulary: array<int, array{term: string, definition: string, example?: string}>,
-    *     grammar_tips: array<int, string>,
-    *     follow_up_questions: array<int, string>,
-    *     raw: mixed
+     *
+     * @return array{
+     *     reply: string,
+     *     vocabulary: array<int, array{term: string, definition: string, example?: string}>,
+     *     grammar_tips: array<int, string>,
+     *     follow_up_questions: array<int, string>,
+     *     raw: mixed
      * }
      *
      * @throws RequestException
@@ -59,6 +63,88 @@ class OpenAITextChatService
             'grammar_tips' => $this->sanitizeStringArray($parsed['grammar_tips'] ?? []),
             'follow_up_questions' => $this->sanitizeStringArray($parsed['follow_up_questions'] ?? []),
             'raw' => $parsed,
+        ];
+    }
+
+    /**
+     * Stream a conversational reply and yield incremental chunks for the UI.
+     *
+     * @param array<int, array{role: string, content: string}> $messages
+     */
+    public function streamReply(array $messages, ?string $level = null, ?float $temperature = null): Generator
+    {
+        $normalizedMessages = $this->normalizeMessages($messages);
+
+        $model = config('openai.text_chat_model', 'gpt-4o-mini');
+        $temperature ??= (float) config('openai.text_chat_temperature', 0.7);
+        $systemPrompt = $this->buildSystemPrompt($level);
+
+        $payload = [
+            'model' => $model,
+            'temperature' => max(0, min($temperature, 2)),
+            'messages' => array_merge([
+                [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ],
+            ], $normalizedMessages),
+        ];
+
+        $contentBuffer = '';
+
+        try {
+            $stream = OpenAI::chat()->createStreamed($payload);
+
+            foreach ($stream as $chunk) {
+                foreach ($chunk->choices as $choice) {
+                    $delta = $choice->delta->content ?? null;
+
+                    if (is_string($delta) && $delta !== '') {
+                        $contentBuffer .= $delta;
+
+                        yield [
+                            'type' => 'delta',
+                            'text' => $delta,
+                        ];
+                    }
+
+                    if ($choice->finishReason === 'stop') {
+                        $normalized = $this->normalizeCompletedContent($contentBuffer);
+
+                        yield [
+                            'type' => 'complete',
+                            'message' => $normalized,
+                        ];
+
+                        return;
+                    }
+                }
+            }
+        } catch (ErrorException $exception) {
+            $message = $exception->getErrorMessage();
+
+            yield [
+                'type' => 'error',
+                'message' => $message,
+            ];
+
+            return;
+        }
+
+        if ($contentBuffer !== '') {
+            $normalized = $this->normalizeCompletedContent($contentBuffer);
+
+            yield [
+                'type' => 'complete',
+                'message' => $normalized,
+            ];
+
+            return;
+        }
+
+        yield [
+            'type' => 'error',
+            'message' => 'No se recibió ninguna respuesta válida del servicio de IA.',
         ];
     }
 
@@ -144,10 +230,13 @@ class OpenAITextChatService
     protected function buildSystemPrompt(?string $level): string
     {
         $base = implode(' ', [
-            'You are Nativo, a friendly AI tutor helping Spanish-speaking students practice conversational English.',
-            'Respond only in English, and keep a warm, encouraging tone.',
-            'Offer concise explanations in English, include gentle corrections when needed, and encourage the student to elaborate.',
-            'Use Markdown for structure (paragraphs and bullet lists) when it improves clarity.',
+            'You are Nativo, a friendly AI tutor guiding Spanish-speaking students as they practice conversational English.',
+            'Speak directly to the student in English, use a warm and encouraging tone, give concise explanations, and motivate them to expand on their ideas.',
+            'Every response must be a well-formed JSON object with the keys reply, vocabulary, grammar_tips, and follow_up_questions.',
+            'The reply field must contain the conversational answer in plain English sentences (no Markdown formatting) that addresses the student using "you" language.',
+            'The vocabulary field must be an array of objects with term, definition, and optional example phrased for the student (e.g., "Use this word when you talk about...").',
+            'The grammar_tips array must contain short, actionable coaching statements written to the student. Each item should begin with a second-person cue such as "Try", "Remember", or "Make sure you" (e.g., "Try using the past tense when you describe..."), and must never include instructions for the assistant.',
+            'The follow_up_questions array must list engaging questions that you are asking the student directly (e.g., "What hobbies do you enjoy most?") so they can continue the conversation. Do not include meta-instructions for yourself.',
         ]);
 
         $levelGuidance = [
@@ -158,7 +247,7 @@ class OpenAITextChatService
 
         $selected = $levelGuidance[$level] ?? $levelGuidance['intermedio'];
 
-        return $base . ' ' . $selected . ' Present your answer as JSON with the keys reply, vocabulary, grammar_tips, and follow_up_questions.';
+        return $base . ' ' . $selected . ' Ensure the JSON stays valid even while being streamed progressively.';
     }
 
     /**
@@ -179,6 +268,44 @@ class OpenAITextChatService
         return is_array($decoded) ? $decoded : [];
     }
 
+    /**
+     * @return array{
+     *     reply: string,
+     *     vocabulary: array<int, array{term: string, definition: string, example?: string}>,
+     *     grammar_tips: array<int, string>,
+     *     follow_up_questions: array<int, string>
+     * }
+     */
+    protected function normalizeCompletedContent(string $content): array
+    {
+        $parsed = $this->decodeContent($content);
+
+        if (empty($parsed)) {
+            $parsed = $this->decodeLenientJson($content);
+        }
+
+        $reply = '';
+
+        if (isset($parsed['reply']) && is_string($parsed['reply'])) {
+            $reply = trim($parsed['reply']);
+        }
+
+        if ($reply === '') {
+            $reply = $this->extractReplyFromRaw($content);
+        }
+
+        if ($reply === '') {
+            $reply = 'I could not generate a detailed response this time. Please try asking again.';
+        }
+
+        return [
+            'reply' => $reply,
+            'vocabulary' => $this->sanitizeVocabulary($parsed['vocabulary'] ?? []),
+            'grammar_tips' => $this->sanitizeStringArray($parsed['grammar_tips'] ?? []),
+            'follow_up_questions' => $this->sanitizeStringArray($parsed['follow_up_questions'] ?? []),
+        ];
+    }
+
     protected function client(): PendingRequest
     {
         $apiKey = config('openai.api_key');
@@ -193,5 +320,58 @@ class OpenAITextChatService
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
         ])->baseUrl($baseUri)->timeout(config('openai.request_timeout', 30));
+    }
+
+    /**
+     * Attempt to decode JSON that may include trailing commas or spacing glitches.
+     *
+     * @return array<string, mixed>
+     */
+    protected function decodeLenientJson(string $content): array
+    {
+        $candidate = trim($content);
+
+        if ($candidate === '') {
+            return [];
+        }
+
+        $attempts = [$candidate];
+
+        $strippedTrailingComma = preg_replace('/,\s*}$/', '}', $candidate);
+        if (is_string($strippedTrailingComma) && $strippedTrailingComma !== $candidate) {
+            $attempts[] = $strippedTrailingComma;
+        }
+
+        foreach ($attempts as $attempt) {
+            $decoded = json_decode($attempt, true);
+
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Extract the reply text from a raw JSON-like string when decoding fails.
+     */
+    protected function extractReplyFromRaw(string $content): string
+    {
+        if (!preg_match('/"reply"\s*:\s*"((?:\\\\.|[^"\\\\])*)"/u', $content, $matches)) {
+            return '';
+        }
+
+        $candidate = '"' . $matches[1] . '"';
+
+        $decoded = json_decode($candidate, true);
+
+        if (is_string($decoded)) {
+            return trim($decoded);
+        }
+
+        $fallback = stripcslashes($matches[1]);
+
+        return trim($fallback);
     }
 }

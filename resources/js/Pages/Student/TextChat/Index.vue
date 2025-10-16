@@ -60,6 +60,17 @@ watch(
     },
 );
 
+watch(
+    () => messages.value.map((message) => `${message.id}:${message.content.length}`),
+    () => {
+        nextTick(() => {
+            if (chatContainer.value) {
+                chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+            }
+        });
+    },
+);
+
 async function handleSubmit() {
     await sendMessage();
     focusInput();
@@ -72,11 +83,13 @@ function handleStarterPrompt(prompt: string) {
 </script>
 
 <template>
+
     <Head title="Chat de texto" />
 
     <StudentLayout>
         <template #header>
-            <PageHeader title="Chat de texto" subtitle="Practica la escritura y comprensión en inglés con una IA que corrige y sugiere nuevas ideas."
+            <PageHeader title="Chat de texto"
+                subtitle="Practica la escritura y comprensión en inglés con una IA que corrige y sugiere nuevas ideas."
                 icon="fa-solid fa-comments" :breadcrumbs="[
                     { label: 'Inicio', href: route('student.units.index'), icon: 'fa-solid fa-house' },
                     { label: 'Chat de texto' }
@@ -90,7 +103,8 @@ function handleStarterPrompt(prompt: string) {
                         <aside class="order-2 space-y-6 lg:order-1">
                             <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
-                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Nivel de conversación</h2>
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Nivel de conversación
+                                </h2>
                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                     Ajusta el tipo de retroalimentación que recibirás según tu nivel actual.
                                 </p>
@@ -132,16 +146,21 @@ function handleStarterPrompt(prompt: string) {
                                     Estrategias</p>
                                 <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
                                     <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-pen-to-square mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
-                                        Escribe respuestas completas y cuéntale a la IA detalles para obtener correcciones específicas.
+                                        <i
+                                            class="fa-solid fa-pen-to-square mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
+                                        Escribe respuestas completas y cuéntale a la IA detalles para obtener
+                                        correcciones
+                                        específicas.
                                     </li>
                                     <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-lightbulb mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
+                                        <i
+                                            class="fa-solid fa-lightbulb mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
                                         Pregunta por sinónimos o frases alternativas cuando aprendas una palabra nueva.
                                     </li>
                                     <li class="flex items-start gap-2">
                                         <i class="fa-solid fa-book mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
-                                        Guarda el vocabulario recomendado y utilízalo en tu siguiente respuesta para reforzarlo.
+                                        Guarda el vocabulario recomendado y utilízalo en tu siguiente respuesta para
+                                        reforzarlo.
                                     </li>
                                 </ul>
                             </div>
@@ -153,18 +172,23 @@ function handleStarterPrompt(prompt: string) {
                                     Aprendizaje destacado
                                 </p>
                                 <div v-if="latestVocabulary.length" class="mt-4 space-y-3">
-                                    <p class="text-xs font-semibold uppercase text-indigo-500 dark:text-indigo-300">Vocabulario</p>
+                                    <p class="text-xs font-semibold uppercase text-indigo-500 dark:text-indigo-300">
+                                        Vocabulario
+                                    </p>
                                     <div v-for="word in latestVocabulary" :key="word.term"
                                         class="rounded-2xl border border-indigo-100 bg-indigo-50 p-3 text-sm text-indigo-900 dark:border-indigo-500/40 dark:bg-indigo-500/10 dark:text-indigo-100">
                                         <div class="font-semibold">{{ word.term }}</div>
                                         <p class="mt-1 text-sm">{{ word.definition }}</p>
-                                        <p v-if="word.example" class="mt-1 text-xs text-indigo-700/80 dark:text-indigo-200/80">
+                                        <p v-if="word.example"
+                                            class="mt-1 text-xs text-indigo-700/80 dark:text-indigo-200/80">
                                             Ejemplo: {{ word.example }}
                                         </p>
                                     </div>
                                 </div>
                                 <div v-if="latestGrammarTips.length" class="mt-4 space-y-2">
-                                    <p class="text-xs font-semibold uppercase text-emerald-500 dark:text-emerald-300">Consejos gramaticales</p>
+                                    <p class="text-xs font-semibold uppercase text-emerald-500 dark:text-emerald-300">
+                                        Consejos
+                                        gramaticales</p>
                                     <div v-for="tip in latestGrammarTips" :key="tip"
                                         class="rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-100">
                                         {{ tip }}
@@ -177,10 +201,13 @@ function handleStarterPrompt(prompt: string) {
                             class="order-1 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
                             <div class="flex flex-col gap-8">
                                 <div class="order-2 hidden text-center md:block md:order-1">
-                                    <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">Práctica de
+                                    <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
+                                        Práctica de
                                         escritura con IA</h1>
                                     <p class="mt-3 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-                                        Escribe libremente y recibe respuestas con vocabulario nuevo, correcciones y preguntas de seguimiento para continuar la conversación.
+                                        Escribe libremente y recibe respuestas con vocabulario nuevo, correcciones y
+                                        preguntas
+                                        de seguimiento para continuar la conversación.
                                     </p>
                                 </div>
 
@@ -201,16 +228,27 @@ function handleStarterPrompt(prompt: string) {
                                                         :class="message.role === 'user' ? 'text-indigo-200' : 'text-indigo-500 dark:text-indigo-300'">
                                                         {{ message.role === 'user' ? 'Tú' : 'Nativo' }}
                                                     </div>
-                                                    <p class="mt-2 whitespace-pre-line text-sm leading-relaxed">
+                                                    <p v-if="message.content"
+                                                        class="mt-2 whitespace-pre-line text-sm leading-relaxed">
                                                         {{ message.content }}
                                                     </p>
 
+                                                    <div v-if="message.streaming && !message.content"
+                                                        class="mt-2 flex items-center gap-2 text-xs font-medium text-indigo-400 dark:text-indigo-300">
+                                                        <i class="fa-solid fa-circle-notch animate-spin"></i>
+                                                        <span>Nativo está escribiendo...</span>
+                                                    </div>
+
                                                     <div v-if="message.vocabulary?.length"
                                                         class="mt-4 space-y-2 rounded-2xl border border-indigo-100 bg-indigo-50 p-3 text-xs text-indigo-900 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-100">
-                                                        <p class="font-semibold uppercase text-[10px] tracking-wide">Vocabulario recomendado</p>
+                                                        <p class="font-semibold uppercase text-[10px] tracking-wide">
+                                                            Vocabulario
+                                                            recomendado</p>
                                                         <div v-for="item in message.vocabulary" :key="item.term">
-                                                            <span class="font-semibold">{{ item.term }}</span> - {{ item.definition }}
-                                                            <div v-if="item.example" class="mt-1 text-[11px] opacity-80">
+                                                            <span class="font-semibold">{{ item.term }}</span> - {{
+                                                                item.definition }}
+                                                            <div v-if="item.example"
+                                                                class="mt-1 text-[11px] opacity-80">
                                                                 Example: {{ item.example }}
                                                             </div>
                                                         </div>
@@ -218,19 +256,23 @@ function handleStarterPrompt(prompt: string) {
 
                                                     <div v-if="message.grammarTips?.length"
                                                         class="mt-3 space-y-2 rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-xs text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-100">
-                                                        <p class="font-semibold uppercase text-[10px] tracking-wide">Correcciones</p>
+                                                        <p class="font-semibold uppercase text-[10px] tracking-wide">
+                                                            Correcciones</p>
                                                         <ul class="list-disc pl-4">
-                                                            <li v-for="tip in message.grammarTips" :key="tip">{{ tip }}</li>
+                                                            <li v-for="tip in message.grammarTips" :key="tip">{{ tip }}
+                                                            </li>
                                                         </ul>
                                                     </div>
 
                                                     <div v-if="message.followUpQuestions?.length"
                                                         class="mt-3 space-y-1 text-xs">
-                                                        <p class="font-semibold uppercase tracking-wide text-indigo-400 dark:text-indigo-300">
+                                                        <p
+                                                            class="font-semibold uppercase tracking-wide text-indigo-400 dark:text-indigo-300">
                                                             Sugerencias de respuesta
                                                         </p>
                                                         <ul class="list-disc pl-4">
-                                                            <li v-for="question in message.followUpQuestions" :key="question">
+                                                            <li v-for="question in message.followUpQuestions"
+                                                                :key="question">
                                                                 {{ question }}
                                                             </li>
                                                         </ul>
@@ -241,24 +283,27 @@ function handleStarterPrompt(prompt: string) {
 
                                         <div v-if="followUpSuggestions.length"
                                             class="flex flex-wrap items-center gap-2 rounded-2xl border border-indigo-100 bg-white p-4 text-sm text-gray-700 dark:border-indigo-500/30 dark:bg-gray-900 dark:text-gray-200">
-                                            <span class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
+                                            <span
+                                                class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
                                                 Prueba con:
                                             </span>
-                                            <button v-for="suggestion in followUpSuggestions" :key="suggestion" type="button"
-                                                @click="handleStarterPrompt(suggestion)"
+                                            <button v-for="suggestion in followUpSuggestions" :key="suggestion"
+                                                type="button" @click="handleStarterPrompt(suggestion)"
                                                 class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200">
                                                 {{ suggestion }}
                                             </button>
                                         </div>
 
                                         <form class="space-y-3" @submit.prevent="handleSubmit">
-                                            <label class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
+                                            <label
+                                                class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
                                                 Escribe tu mensaje
                                             </label>
                                             <TextArea ref="messageInput" v-model="draftMessage" rows="4"
                                                 class="w-full rounded-2xl border-gray-200 bg-white/90 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900/80 dark:text-gray-100" />
 
-                                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                            <div
+                                                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                                 <div class="text-xs text-rose-500" v-if="errorMessage">
                                                     {{ errorMessage }}
                                                 </div>
