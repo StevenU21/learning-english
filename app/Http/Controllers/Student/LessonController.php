@@ -14,26 +14,21 @@ class LessonController extends Controller
     {
         $units = Unit::all();
         $unit->load([
-            'lessons.lessonUserProgress' => function ($q) {
-                $q->where('user_id', auth()->id());
-            },
+            'lessons.lessonUserProgress' => fn($q) => $q->where('user_id', auth()->id()),
             'lessons.unit:id,slug'
         ]);
-        $lessons = $unit->lessons->map(function ($lesson) {
-            $progress = $lesson->lessonUserProgress->first();
-            return [
-                'id' => $lesson->id,
-                'slug' => $lesson->slug,
-                'unit_id' => $lesson->unit_id,
-                'unit_slug' => optional($lesson->unit)->slug,
-                'name' => $lesson->name,
-                'duration' => (int) $lesson->duration,
-                'description' => $lesson->description,
-                'image_url' => $lesson->image_url,
-                'progress' => $progress ? $progress->progress : 0,
-                'status' => $progress ? $progress->status : 'no_comenzado',
-            ];
-        });
+        $lessons = $unit->lessons->map(fn($lesson) => [
+            'id' => $lesson->id,
+            'slug' => $lesson->slug,
+            'unit_id' => $lesson->unit_id,
+            'unit_slug' => optional($lesson->unit)->slug,
+            'name' => $lesson->name,
+            'duration' => (int) $lesson->duration,
+            'description' => $lesson->description,
+            'image_url' => $lesson->image_url,
+            'progress' => optional($lesson->lessonUserProgress->first())->progress ?? 0,
+            'status' => optional($lesson->lessonUserProgress->first())->status ?? 'no_comenzado',
+        ]);
 
         return Inertia::render('Student/Lessons/Index', [
             'units' => $units,
@@ -43,21 +38,16 @@ class LessonController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified lesson summary with exercises.
-     */
     public function show(Unit $unit, Lesson $lesson)
     {
-        // Ensure the lesson belongs to the provided unit to avoid cross-access
         if ($lesson->unit_id !== $unit->id) {
             abort(404);
         }
         $lesson->load(['exercises.exerciseType', 'unit']);
-        $exercises = $lesson->exercises->map(function ($exercise) {
-            $exerciseArr = $exercise->toArray();
-            $exerciseArr['options'] = is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true);
-            return $exerciseArr;
-        });
+        $exercises = $lesson->exercises->map(fn($exercise) => [
+            ...$exercise->toArray(),
+            'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),
+        ]);
         return Inertia::render('Student/Lessons/Show', [
             'lesson' => $lesson,
             'exercises' => $exercises,

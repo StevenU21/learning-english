@@ -12,29 +12,23 @@ class UnitController extends Controller
 {
     public function index(Request $request)
     {
-        // Accept either a numeric id or a slug for level filtering
         $levelParam = $request->input('level') ?? $request->input('level_id');
         $levels = Level::all();
-        $unitsQuery = Unit::query();
-        if ($levelParam) {
-            if (is_numeric($levelParam)) {
-                $unitsQuery->where('level_id', $levelParam);
-            } else {
-                $unitsQuery->whereHas('level', function ($q) use ($levelParam) {
-                    $q->where('slug', $levelParam);
-                });
-            }
-        }
-        $units = $unitsQuery->with([
-            'level',
-            'unitUserProgress' => function ($q) {
-                $q->where('user_id', auth()->id());
-            }
-        ])
-        ->withSum('lessons as lessons_sum_duration', 'duration')
-        ->get()->map(function ($unit) {
-            $progress = $unit->unitUserProgress->first();
-            return [
+        $units = Unit::query()
+            ->when($levelParam, function ($q) use ($levelParam) {
+                if (is_numeric($levelParam)) {
+                    $q->where('level_id', $levelParam);
+                } else {
+                    $q->whereHas('level', fn($q) => $q->where('slug', $levelParam));
+                }
+            })
+            ->with([
+                'level',
+                'unitUserProgress' => fn($q) => $q->where('user_id', auth()->id()),
+            ])
+            ->withSum('lessons as lessons_sum_duration', 'duration')
+            ->get()
+            ->map(fn($unit) => [
                 'id' => $unit->id,
                 'slug' => $unit->slug,
                 'level_id' => $unit->level_id,
@@ -43,10 +37,9 @@ class UnitController extends Controller
                 'expected_time' => (int) $unit->expected_time,
                 'image_url' => $unit->image_url,
                 'level' => $unit->level,
-                'progress' => $progress ? $progress->progress : 0,
-                'status' => $progress ? $progress->status : 'no_comenzado',
-            ];
-        });
+                'progress' => optional($unit->unitUserProgress->first())->progress ?? 0,
+                'status' => optional($unit->unitUserProgress->first())->status ?? 'no_comenzado',
+            ]);
 
         return Inertia::render('Student/Units/Index', [
             'levels' => $levels,

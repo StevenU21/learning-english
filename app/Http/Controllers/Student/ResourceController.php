@@ -11,7 +11,6 @@ class ResourceController extends Controller
 {
     public function index(Unit $unit)
     {
-        // Load resources for the unit
         $resources = Resource::where('unit_id', $unit->id)->get();
         return Inertia::render('Student/Units/Resources', [
             'unit' => $unit->only(['id', 'name', 'description']),
@@ -26,7 +25,6 @@ class ResourceController extends Controller
 
     public function download(Resource $resource)
     {
-        // Basic authorization: ensure user can access the unit (could be expanded)
         if ($resource->unit === null) {
             abort(404);
         }
