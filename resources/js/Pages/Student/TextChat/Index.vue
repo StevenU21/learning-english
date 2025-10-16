@@ -42,6 +42,7 @@ const canSendMessage = computed(() => draftMessage.value.trim().length > 0 && !i
 const chatContainer = ref<HTMLDivElement | null>(null);
 const messageInput = ref<ComponentPublicInstance | null>(null);
 const resizeObserver = ref<ResizeObserver | null>(null);
+const shouldAutoScroll = ref(true);
 
 const lastMessageSignature = computed(() => {
     const lastMessage = messages.value[messages.value.length - 1];
@@ -71,14 +72,27 @@ const lastMessageSignature = computed(() => {
 function focusInput() {
     nextTick(() => {
         const element = messageInput.value?.$el as HTMLTextAreaElement | undefined;
-        element?.focus();
+
+        if (!element) {
+            return;
+        }
+
+        try {
+            element.focus({ preventScroll: true });
+        } catch {
+            element.focus();
+        }
     });
 }
 
-function scrollToBottom() {
+function scrollToBottom(force = false) {
     const container = chatContainer.value;
 
     if (!container) {
+        return;
+    }
+
+    if (!force && !shouldAutoScroll.value) {
         return;
     }
 
@@ -88,6 +102,17 @@ function scrollToBottom() {
             container.scrollTop = container.scrollHeight;
         });
     });
+}
+
+function handleChatScroll() {
+    const container = chatContainer.value;
+
+    if (!container) {
+        return;
+    }
+
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    shouldAutoScroll.value = distanceFromBottom <= 120;
 }
 
 onMounted(() => {
@@ -117,6 +142,10 @@ onMounted(() => {
             }
         });
     }
+
+    nextTick(() => {
+        handleChatScroll();
+    });
 });
 
 watch(
@@ -181,13 +210,22 @@ watch(
 );
 
 async function handleSubmit() {
+    shouldAutoScroll.value = true;
     await sendMessage();
     focusInput();
+    scrollToBottom(true);
 }
 
 function handleStarterPrompt(prompt: string) {
     applySuggestion(prompt);
     focusInput();
+}
+
+async function handleResetChat() {
+    shouldAutoScroll.value = true;
+    await resetChat();
+    await nextTick();
+    scrollToBottom(true);
 }
 </script>
 
@@ -208,7 +246,8 @@ function handleStarterPrompt(prompt: string) {
         <div
             class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8 lg:h-auto lg:min-h-0">
             <div class="w-full flex-1 lg:h-auto">
-                <div class="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-2 sm:px-6 sm:py-10 lg:h-auto lg:px-8">
+                <div
+                    class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-3 py-2 sm:px-6 sm:py-10 lg:h-auto lg:px-8">
                     <div
                         class="flex h-full flex-col gap-6 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
@@ -314,11 +353,12 @@ function handleStarterPrompt(prompt: string) {
                                     class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2 lg:flex-none">
                                     <div class="flex flex-1 min-h-0 flex-col gap-6 lg:flex-none">
                                         <div ref="chatContainer"
-                                            class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2 lg:flex-none">
+                                            class="flex-none h-[55vh] max-h-[560px] space-y-6 overflow-y-auto pr-0 md:h-[520px] md:max-h-none md:pr-2 lg:h-[560px]"
+                                            @scroll="handleChatScroll">
                                             <div v-for="message in messages" :key="message.id"
                                                 :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
                                                 <div :class="[
-                                                    'max-w-xl rounded-3xl px-5 py-4 shadow-sm transition',
+                                                    'max-w-2xl rounded-3xl px-5 py-4 shadow-sm transition',
                                                     message.role === 'user'
                                                         ? 'rounded-br-sm bg-indigo-600 text-white'
                                                         : 'rounded-bl-sm bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100'
@@ -394,7 +434,7 @@ function handleStarterPrompt(prompt: string) {
                                                     {{ errorMessage }}
                                                 </div>
                                                 <div class="flex items-center gap-3">
-                                                    <button type="button" @click="resetChat" :disabled="isSending"
+                                                    <button type="button" @click="handleResetChat" :disabled="isSending"
                                                         class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-300 hover:text-gray-900 disabled:opacity-60 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:text-white">
                                                         <i class="fa-solid fa-rotate-right mr-2"></i>Reiniciar chat
                                                     </button>

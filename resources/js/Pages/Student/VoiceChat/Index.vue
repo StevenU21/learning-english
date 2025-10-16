@@ -166,7 +166,7 @@ const startSessionWithVoice = () =>
                                 </p>
                             </div>
 
-                            <div
+                            <!-- <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
                                 <p
                                     class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
@@ -186,7 +186,7 @@ const startSessionWithVoice = () =>
                                         Puedes iniciar otra sesión cuando el tiempo termine.
                                     </li>
                                 </ul>
-                            </div>
+                            </div> -->
                         </aside>
 
                         <section
