@@ -19,25 +19,21 @@ class LessonController extends Controller
     {
         $this->authorize('viewAny', Lesson::class);
         PermissionHelper::getPermissions('lessons');
-        // Consulta base con posible filtro por unidad
-        $query = Lesson::with('unit');
-        if ($request->filled('unit')) {
-            $query->where('unit_id', $request->input('unit'));
-        }
-        $lessons = $query->paginate(10)->withQueryString();
 
-        $lessons->getCollection()->transform(function ($lesson) {
-            return [
-                'id' => $lesson->id,
-                'name' => $lesson->name,
-                'duration' => (int) $lesson->duration,
-                'description' => $lesson->description,
-                'image_url' => $lesson->image_url,
-                'unit' => $lesson->unit
-            ];
-        });
+        $lessons = Lesson::with('unit')
+            ->when($request->filled('unit'), fn($q) => $q->where('unit_id', $request->input('unit')))
+            ->paginate(10)
+            ->withQueryString();
 
-        // Lista de unidades para el filtro
+        $lessons->getCollection()->transform(fn($lesson) => [
+            'id' => $lesson->id,
+            'name' => $lesson->name,
+            'duration' => (int) $lesson->duration,
+            'description' => $lesson->description,
+            'image_url' => $lesson->image_url,
+            'unit' => $lesson->unit
+        ]);
+
         $units = Unit::all();
         return Inertia::render('Admin/Lessons/Index', [
             'lessons' => $lessons,
@@ -52,52 +48,47 @@ class LessonController extends Controller
     {
         $this->authorize('view', $lesson);
         $lesson->load('unit');
-        $lessonData = [
-            'id' => $lesson->id,
-            'name' => $lesson->name,
-            'duration' => (int) $lesson->duration,
-            'description' => $lesson->description,
-            'image_url' => $lesson->image_url,
-            'unit' => $lesson->unit,
-            'created_at' => $lesson->created_at,
-        ];
         return Inertia::render('Admin/Lessons/Show', [
-            'lesson' => $lessonData
+            'lesson' => [
+                'id' => $lesson->id,
+                'name' => $lesson->name,
+                'duration' => (int) $lesson->duration,
+                'description' => $lesson->description,
+                'image_url' => $lesson->image_url,
+                'unit' => $lesson->unit,
+                'created_at' => $lesson->created_at,
+            ]
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', Lesson::class);
-        $units = Unit::all();
         return Inertia::render('Admin/Lessons/Create', [
-            'units' => $units
+            'units' => Unit::all()
         ]);
     }
 
     public function store(LessonRequest $request)
     {
         $this->authorize('create', Lesson::class);
-        $data = $request->validated();
-        Lesson::create($data);
+        Lesson::create($request->validated());
         return redirect()->route('lessons.index', $request->query())->with('success', 'Lección creada correctamente');
     }
 
     public function edit(Lesson $lesson)
     {
         $this->authorize('update', $lesson);
-        $units = Unit::all();
         return Inertia::render('Admin/Lessons/Edit', [
             'lesson' => $lesson,
-            'units' => $units
+            'units' => Unit::all()
         ]);
     }
 
     public function update(LessonRequest $request, Lesson $lesson)
     {
         $this->authorize('update', $lesson);
-        $data = $request->validated();
-        $lesson->update($data);
+        $lesson->update($request->validated());
         return redirect()->route('lessons.index', $request->query())->with('success', 'Lección actualizada correctamente');
     }
 

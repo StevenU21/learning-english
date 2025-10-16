@@ -16,7 +16,6 @@ class ProgressController extends Controller
 {
     public function index(Request $request)
     {
-        // Filtros opcionales
         $unitId = $request->input('unit_id');
         $userId = $request->input('user_id');
         $lessonId = $request->input('lesson_id');
@@ -26,29 +25,15 @@ class ProgressController extends Controller
         $users = User::all();
         $lessons = Lesson::all(['id', 'name', 'unit_id']);
 
-        // Filtrar por unidad, usuario, lección y estado en LessonUserProgress
-        $query = LessonUserProgress::with(['user.profile', 'lesson.unit']);
-        if ($unitId) {
-            $lessonIds = Lesson::where('unit_id', $unitId)->pluck('id');
-            $query->whereIn('lesson_id', $lessonIds);
-        }
-        if ($userId) {
-            $query->where('user_id', $userId);
-        }
-        if ($lessonId) {
-            $query->where('lesson_id', $lessonId);
-        }
-        if ($status) {
-            $query->where('status', $status);
-        }
-        // Paginate progress 10 per page with filters applied
-        $progress = $query->paginate(10)->appends($request->all());
-        // Añadir avatar_url al usuario en cada progreso
-        $progress->getCollection()->transform(function ($item) {
-            // Añadir avatar_url directamente al ítem para facilitar DataTable
-            $item->avatar_url = optional($item->user->profile)->avatar_url;
-            return $item;
-        });
+        $progress = LessonUserProgress::with(['user.profile', 'lesson.unit'])
+            ->when($unitId, fn($q) => $q->whereIn('lesson_id', Lesson::where('unit_id', $unitId)->pluck('id')))
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when($lessonId, fn($q) => $q->where('lesson_id', $lessonId))
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->paginate(10)
+            ->appends($request->all());
+
+        $progress->getCollection()->transform(fn($item) => tap($item, fn($i) => $i->avatar_url = optional($i->user->profile)->avatar_url));
 
         return Inertia::render('Admin/Progress/Index', [
             'units' => $units,
@@ -64,7 +49,6 @@ class ProgressController extends Controller
 
     public function show($userId)
     {
-        // Cargar relación profile para obtener avatar
         $user = User::with('profile')->findOrFail($userId);
         $units = Unit::all();
         $lessons = Lesson::with('unit')->get();
@@ -74,7 +58,6 @@ class ProgressController extends Controller
         $unitProgress = UnitUserProgress::with(['unit'])
             ->where('user_id', $userId)
             ->get();
-        // Cargar relaciones anidadas para poder filtrar por unidad en el front
         $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
             ->where('user_id', $userId)
             ->orderByDesc('created_at')

@@ -15,7 +15,6 @@ class LevelController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Level::class);
-        // Paginate 10 items per page for levels
         $levels = Level::paginate(10);
         return Inertia::render('Admin/Levels/Index', [
             'levels' => $levels

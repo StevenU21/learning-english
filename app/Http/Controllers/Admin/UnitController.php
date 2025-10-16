@@ -20,32 +20,26 @@ class UnitController extends Controller
             ->withSum('lessons as lessons_sum_duration', 'duration')
             ->paginate(10);
 
-        $units->getCollection()->transform(function ($unit) {
-            return [
-                'id' => $unit->id,
-                'name' => $unit->name,
-                'description' => $unit->description,
-                'expected_time' => (int) $unit->expected_time,
-                'image_url' => $unit->image_url,
-                'level' => $unit->level
-            ];
-        });
-
-        // Also provide levels for create/edit modals rendered inside Index
-        $levels = Level::all();
+        $units->getCollection()->transform(fn($unit) => [
+            'id' => $unit->id,
+            'name' => $unit->name,
+            'description' => $unit->description,
+            'expected_time' => (int) $unit->expected_time,
+            'image_url' => $unit->image_url,
+            'level' => $unit->level
+        ]);
 
         return Inertia::render('Admin/Units/Index', [
             'units' => $units,
-            'levels' => $levels,
+            'levels' => Level::all(),
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', Unit::class);
-        $levels = Level::all();
         return Inertia::render('Admin/Units/Create', [
-            'levels' => $levels
+            'levels' => Level::all()
         ]);
     }
 
@@ -53,7 +47,6 @@ class UnitController extends Controller
     {
         $this->authorize('create', Unit::class);
         Unit::create($request->validated());
-
         return redirect()->route('units.index')->with('success', 'Unidad creada correctamente');
     }
 
@@ -62,27 +55,25 @@ class UnitController extends Controller
         $this->authorize('view', $unit);
         $unit->load('level')
             ->loadSum('lessons as lessons_sum_duration', 'duration');
-        $unitData = [
-            'id' => $unit->id,
-            'name' => $unit->name,
-            'description' => $unit->description,
-            'expected_time' => (int) $unit->expected_time,
-            'image_url' => $unit->image_url,
-            'level' => $unit->level,
-            'created_at' => $unit->created_at,
-        ];
         return Inertia::render('Admin/Units/Show', [
-            'unit' => $unitData
+            'unit' => [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'description' => $unit->description,
+                'expected_time' => (int) $unit->expected_time,
+                'image_url' => $unit->image_url,
+                'level' => $unit->level,
+                'created_at' => $unit->created_at,
+            ]
         ]);
     }
 
     public function edit(Unit $unit)
     {
         $this->authorize('update', $unit);
-        $levels = Level::all();
         return Inertia::render('Admin/Units/Edit', [
             'unit' => $unit,
-            'levels' => $levels
+            'levels' => Level::all()
         ]);
     }
 
