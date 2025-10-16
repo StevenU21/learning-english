@@ -168,26 +168,6 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                 <div
                                     class="order-1 rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10 md:order-2">
                                     <div class="flex flex-col gap-6">
-                                        <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                                            <button type="button"
-                                                class="inline-flex w-full items-center justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300 dark:bg-sky-500 dark:hover:bg-sky-400 dark:disabled:bg-sky-500/40"
-                                                :disabled="isConnecting || isActive" @click="startSessionWithVoice">
-                                                <span v-if="isConnecting" class="flex items-center gap-2">
-                                                    <i class="fa-solid fa-spinner animate-spin"></i>
-                                                    Conectando...
-                                                </span>
-                                                <span v-else class="flex items-center justify-center gap-2">
-                                                    <i class="fa-solid fa-microphone"></i>
-                                                    Iniciar sesión
-                                                </span>
-                                            </button>
-                                            <button v-if="isActive" type="button"
-                                                class="inline-flex w-full items-center justify-center rounded-full border border-gray-200 px-6 py-3 text-base font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-                                                @click="stopSession('Sesión finalizada por ti.')">
-                                                <i class="fa-solid fa-phone-slash mr-2"></i>
-                                                Finalizar
-                                            </button>
-                                        </div>
 
                                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                             <div>
@@ -211,6 +191,27 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                                     Duración {{ props.sessionDuration }}s
                                                 </p>
                                             </div>
+                                        </div>
+
+                                        <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                                            <button type="button"
+                                                class="inline-flex w-full items-center justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300 dark:bg-sky-500 dark:hover:bg-sky-400 dark:disabled:bg-sky-500/40"
+                                                :disabled="isConnecting || isActive" @click="startSessionWithVoice">
+                                                <span v-if="isConnecting" class="flex items-center gap-2">
+                                                    <i class="fa-solid fa-spinner animate-spin"></i>
+                                                    Conectando...
+                                                </span>
+                                                <span v-else class="flex items-center justify-center gap-2">
+                                                    <i class="fa-solid fa-microphone"></i>
+                                                    Iniciar sesión
+                                                </span>
+                                            </button>
+                                            <button v-if="isActive" type="button"
+                                                class="inline-flex w-full items-center justify-center rounded-full border border-gray-200 px-6 py-3 text-base font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+                                                @click="stopSession('Sesión finalizada por ti.')">
+                                                <i class="fa-solid fa-phone-slash mr-2"></i>
+                                                Finalizar
+                                            </button>
                                         </div>
 
                                         <div v-if="isActive"
