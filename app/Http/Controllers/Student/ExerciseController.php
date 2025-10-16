@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
-use App\Models\LessonUserProgress;
 use App\Models\Unit;
-use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
 use App\Http\Requests\UserExerciseAttemptRequest;
 use Inertia\Inertia;
