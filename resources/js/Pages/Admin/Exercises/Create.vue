@@ -7,7 +7,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     types: { type: Array, required: true },
-    lessons: { type: Array, required: true }
+    lessons: { type: Array, required: true },
+    units: { type: Array, required: true }
 });
 
 const form = useForm({
@@ -17,6 +18,7 @@ const form = useForm({
     explanation: '',
     exercise_type_id: '',
     lesson_id: '',
+    unit_id: '',
     file: null,
     file_b: null
 });
@@ -55,7 +57,7 @@ function submit() {
             <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700 p-6">
                     <form @submit.prevent="submit" enctype="multipart/form-data">
-                        <ExerciseForm :form="form" :types="props.types" :lessons="props.lessons" :errors="form.errors"
+                        <ExerciseForm :form="form" :types="props.types" :lessons="props.lessons" :units="props.units" :errors="form.errors"
                             :on-submit="submit" :is-edit="false" />
                     </form>
                 </div>

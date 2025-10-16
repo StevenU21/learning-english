@@ -95,6 +95,8 @@ const createForm = useForm({
     explanation: '',
     exercise_type_id: filters.type || '',
     lesson_id: filters.lesson || '',
+    // unit filter for lesson select
+    unit_id: filters.unit || '',
     file: null,
     file_b: null,
 });
@@ -104,6 +106,7 @@ function openCreate() {
     createForm.clearErrors();
     createForm.exercise_type_id = filters.type || '';
     createForm.lesson_id = filters.lesson || '';
+    createForm.unit_id = filters.unit || '';
     showCreate.value = true;
 }
 
@@ -260,7 +263,7 @@ function submitEdit() {
                     Crear Ejercicio
                 </h2>
                 <form @submit.prevent="submitCreate" enctype="multipart/form-data">
-                    <ExerciseForm :form="createForm" :types="allTypes" :lessons="allLessons" :errors="createForm.errors"
+                    <ExerciseForm :form="createForm" :types="allTypes" :lessons="allLessons" :units="allUnits" :errors="createForm.errors"
                         :on-submit="submitCreate" :is-edit="false" />
                 </form>
             </div>

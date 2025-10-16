@@ -67,7 +67,8 @@ class ExerciseController extends Controller
         $this->authorize('create', Exercise::class);
         return Inertia::render('Admin/Exercises/Create', [
             'types' => ExerciseType::all(['id', 'name']),
-            'lessons' => Lesson::all(['id', 'name']),
+            'lessons' => Lesson::orderBy('name')->get(['id', 'name', 'unit_id']),
+            'units' => Unit::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -124,7 +125,8 @@ class ExerciseController extends Controller
         return Inertia::render('Admin/Exercises/Edit', [
             'exercise' => $exercise,
             'types' => ExerciseType::all(['id', 'name']),
-            'lessons' => Lesson::all(['id', 'name']),
+            'lessons' => Lesson::orderBy('name')->get(['id', 'name', 'unit_id']),
+            'units' => Unit::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

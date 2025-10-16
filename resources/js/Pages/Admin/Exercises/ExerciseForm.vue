@@ -20,6 +20,7 @@ const props = defineProps({
     form: { type: Object, required: true },
     types: { type: Array, required: true },
     lessons: { type: Array, required: true },
+    units: { type: Array, required: true },
     errors: { type: Object, default: () => ({}) },
     onSubmit: { type: Function, required: true },
     isEdit: { type: Boolean, default: false }
@@ -27,10 +28,59 @@ const props = defineProps({
 
 const selectedType = computed(() => props.types.find(t => t.id === props.form.exercise_type_id) || {});
 
+const filteredLessons = computed(() => {
+    if (!props.form.unit_id) {
+        return props.lessons;
+    }
+
+    return props.lessons.filter((lesson) => String(lesson.unit_id ?? '') === String(props.form.unit_id));
+});
+
 watch(() => props.form.exercise_type_id, () => {
     props.form.options = [];
     props.form.solution = [];
 });
+
+watch(
+    () => props.form.unit_id,
+    () => {
+        if (!props.form.lesson_id) {
+            return;
+        }
+
+        const lessonExists = filteredLessons.value.some(
+            (lesson) => String(lesson.id) === String(props.form.lesson_id)
+        );
+
+        if (!lessonExists) {
+            props.form.lesson_id = '';
+        }
+    }
+);
+
+watch(
+    () => props.form.lesson_id,
+    (lessonId) => {
+        if (!lessonId) {
+            return;
+        }
+
+        const lesson = props.lessons.find(
+            (lessonItem) => String(lessonItem.id) === String(lessonId)
+        );
+
+        if (!lesson) {
+            return;
+        }
+
+        const nextUnitId = lesson.unit_id != null ? String(lesson.unit_id) : '';
+
+        if (String(props.form.unit_id ?? '') !== nextUnitId) {
+            props.form.unit_id = nextUnitId;
+        }
+    },
+    { immediate: true }
+);
 
 const componentMap = computed(() => {
     switch (selectedType.value.name) {
@@ -75,8 +125,21 @@ const componentMap = computed(() => {
                 <InputError :message="errors.prompt" class="mt-2" />
             </div>
 
-            <!-- Lección y Tipo en la misma línea -->
-            <div class="grid grid-cols-2 gap-4">
+            <!-- Unidad, Lección y Tipo en la misma línea -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-gray-300">
+                        <i class="fa-solid fa-layer-group text-gray-400"></i>
+                        <InputLabel for="unit_id" value="Unidad" />
+                    </div>
+                    <select id="unit_id" v-model="form.unit_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                        <option value="">Todas las unidades</option>
+                        <option v-for="unit in units" :key="unit.id" :value="unit.id">{{ unit.name }}</option>
+                    </select>
+                    <InputError :message="errors.unit_id" class="mt-2" />
+                </div>
+
                 <div>
                     <div class="flex items-center gap-2 text-gray-300">
                         <i class="fa-solid fa-book-open text-gray-400"></i>
@@ -85,7 +148,8 @@ const componentMap = computed(() => {
                     <select id="lesson_id" v-model="form.lesson_id"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                         <option value="">Selecciona una lección</option>
-                        <option v-for="lesson in lessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}</option>
+                        <option v-for="lesson in filteredLessons" :key="lesson.id" :value="lesson.id">{{ lesson.name }}
+                        </option>
                     </select>
                     <InputError :message="errors.lesson_id" class="mt-2" />
                 </div>
