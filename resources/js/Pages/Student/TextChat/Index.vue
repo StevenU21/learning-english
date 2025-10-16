@@ -289,32 +289,6 @@ async function handleResetChat() {
                                 </div>
                             </div>
 
-                            <div
-                                class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
-                                <p
-                                    class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                    Estrategias</p>
-                                <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                                    <li class="flex items-start gap-2">
-                                        <i
-                                            class="fa-solid fa-pen-to-square mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
-                                        Escribe respuestas completas y cuéntale a la IA detalles para obtener
-                                        correcciones
-                                        específicas.
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i
-                                            class="fa-solid fa-lightbulb mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
-                                        Pregunta por sinónimos o frases alternativas cuando aprendas una palabra nueva.
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-book mt-0.5 text-indigo-500 dark:text-indigo-300"></i>
-                                        Guarda el vocabulario recomendado y utilízalo en tu siguiente respuesta para
-                                        reforzarlo.
-                                    </li>
-                                </ul>
-                            </div>
-
                             <div v-if="latestVocabulary.length || latestGrammarTips.length"
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
                                 <p
@@ -347,13 +321,13 @@ async function handleResetChat() {
                         </aside>
 
                         <section
-                            class="order-1 flex min-h-0 flex-1 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:flex-none lg:p-8">
-                            <div class="flex h-full min-h-0 flex-col gap-8 lg:flex-none">
+                            class="order-1 flex min-h-0 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
+                            <div class="flex min-h-0 flex-col gap-8">
                                 <div
-                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2 lg:flex-none">
-                                    <div class="flex flex-1 min-h-0 flex-col gap-6 lg:flex-none">
+                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
+                                    <div class="flex flex-1 min-h-0 flex-col gap-6">
                                         <div ref="chatContainer"
-                                            class="flex-none h-[55vh] max-h-[560px] space-y-6 overflow-y-auto pr-0 md:h-[520px] md:max-h-none md:pr-2 lg:h-[560px]"
+                                            class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 md:pr-2 max-h-[clamp(320px,calc(100vh-340px),620px)]"
                                             @scroll="handleChatScroll">
                                             <div v-for="message in messages" :key="message.id"
                                                 :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
@@ -369,7 +343,7 @@ async function handleResetChat() {
                                                     </div>
                                                     <p v-if="message.content"
                                                         class="mt-2 whitespace-pre-line text-sm leading-relaxed">
-                                                        {{ message.content }}   
+                                                        {{ message.content }}
                                                     </p>
 
                                                     <div v-if="message.streaming && !message.content"
