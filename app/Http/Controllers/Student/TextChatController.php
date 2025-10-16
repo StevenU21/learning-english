@@ -13,8 +13,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse as SymfonyStreamedResponse
 
 class TextChatController extends Controller
 {
-
-
     public function index(): Response
     {
         $levels = [

@@ -5,6 +5,10 @@ namespace App\Services;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Carbon;
 
 class OpenAIRealtimeService
 {
@@ -21,30 +25,29 @@ class OpenAIRealtimeService
         int $expiresIn = 120,
         ?string $conversationLevel = null
     ): array {
-
-        $model ??= config('openai.realtime_model', 'gpt-realtime-mini');
-        $voice ??= config('openai.realtime_voice', 'alloy');
+        $model = $model ?? Config::get('openai.realtime_model', 'gpt-realtime-mini');
+        $voice = $voice ?? Config::get('openai.realtime_voice', 'alloy');
         $expiresIn = max(1, min($expiresIn, 120));
 
-        if (!$instructions) {
-            $instructions = $this->buildInstructions($conversationLevel);
-        }
+        $instructions = $instructions ?? $this->buildInstructions($conversationLevel);
 
         $payload = [
             'model' => $model,
             'voice' => $voice,
             'modalities' => ['text', 'audio'],
         ];
-
         if ($instructions) {
             $payload['instructions'] = $instructions;
         }
 
-        // Use the openaiRealtime HTTP macro to include headers and timeout
-        $response = Http::openaiRealtime()
-            ->post('https://api.openai.com/v1/realtime/sessions', $payload);
-
-        $response->throw();
+        try {
+            $response = Http::openaiRealtime()
+                ->post('https://api.openai.com/v1/realtime/sessions', $payload);
+            $response->throw();
+        } catch (RequestException | ConnectionException $e) {
+            Log::error('OpenAI Realtime API error: ' . $e->getMessage());
+            throw $e;
+        }
 
         $data = $response->json();
 
@@ -52,17 +55,19 @@ class OpenAIRealtimeService
         $expiresAt = $data['expires_at'] ?? null;
 
         if ($expiresInResponse === null && $expiresAt) {
-            $expiresAtTs = is_numeric($expiresAt) ? (int) $expiresAt : strtotime($expiresAt);
-            if ($expiresAtTs) {
-                $expiresInResponse = max(0, $expiresAtTs - time());
+            if (is_numeric($expiresAt)) {
+                $expiresAtTs = (int) $expiresAt;
+            } else {
+                $expiresAtTs = Carbon::parse($expiresAt)->timestamp;
             }
+            $expiresInResponse = max(0, $expiresAtTs - Carbon::now()->timestamp);
         }
 
         return [
             'id' => $data['id'] ?? null,
             'model' => $data['model'] ?? $model,
             'voice' => $data['voice'] ?? $voice,
-            'client_secret' => $data['client_secret']['value'] ?? null,
+            'client_secret' => data_get($data, 'client_secret.value'),
             'expires_in' => $expiresInResponse ?? $expiresIn,
             'expires_at' => $expiresAt,
         ];
@@ -70,12 +75,12 @@ class OpenAIRealtimeService
 
     protected function buildInstructions(?string $conversationLevel): string
     {
-        $baseInstructions = implode(' ', [
+        $baseInstructions = collect([
             'You are Nativo, the AI assistant of the Nativo web application.',
             'Always respond in English and prioritize using English in your conversation.',
             'Your goal is to engage in friendly and accessible conversations with Spanish-speaking students to help them practice their English speaking skills.',
             'Ask follow-up questions, encourage student participation, and keep the interaction active and motivating.',
-        ]);
+        ])->implode(' ');
 
         $levelGuidance = [
             'basico' => 'Use simple vocabulary, speak slowly, and introduce everyday topics that are easy to follow.',
@@ -83,7 +88,7 @@ class OpenAIRealtimeService
             'avanzado' => 'Maintain an eloquent conversation, explore complex ideas, and challenge the student with arguments and nuances.',
         ];
 
-        $selectedGuidance = $levelGuidance[$conversationLevel] ?? $levelGuidance['intermedio'];
+        $selectedGuidance = data_get($levelGuidance, $conversationLevel, $levelGuidance['intermedio']);
 
         return $baseInstructions . ' ' . $selectedGuidance;
     }
