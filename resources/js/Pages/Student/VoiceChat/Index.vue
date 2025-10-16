@@ -26,8 +26,8 @@ const voiceOptions = [
 
 const selectedVoice = ref(
     voiceOptions.find((option) => option.value === props.defaultVoice)?.value ??
-        props.defaultVoice ??
-        voiceOptions[0].value,
+    props.defaultVoice ??
+    voiceOptions[0].value,
 );
 
 const {
@@ -103,9 +103,11 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
             <div class="w-full">
                 <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
                     <div class="grid gap-8 lg:grid-cols-[320px,minmax(0,1fr)] xl:grid-cols-[340px,minmax(0,1fr)]">
-                        <aside class="space-y-6">
-                            <div class="rounded-3xl bg-white p-6 shadow-lg dark:bg-gray-900/80">
-                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Configuración rápida</h2>
+                        <aside class="order-2 space-y-6 lg:order-1">
+                            <div
+                                class="rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Configuración rápida
+                                </h2>
                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                     Define la voz con la que quieres practicar antes de comenzar la sesión.
                                 </p>
@@ -113,21 +115,23 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                     class="mt-6 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                     Selecciona la voz
                                 </label>
-                                <SelectInput v-model="selectedVoice" :disabled="!canChangeVoice"
-                                    class="mt-2 w-full">
+                                <SelectInput v-model="selectedVoice" :disabled="!canChangeVoice" class="mt-2 w-full">
                                     <option v-for="voice in availableVoices" :key="voice.value" :value="voice.value">
                                         {{ voice.label }}
                                     </option>
                                 </SelectInput>
                                 <div
-                                    class="mt-6 rounded-2xl bg-gray-50 p-4 text-sm text-gray-600 dark:bg-gray-800/80 dark:text-gray-300">
+                                    class="mt-6 rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-300">
                                     <p class="font-semibold text-gray-700 dark:text-gray-200">Duración de la sesión</p>
-                                    <p class="mt-1 text-gray-600 dark:text-gray-300">{{ props.sessionDuration }} segundos</p>
+                                    <p class="mt-1 text-gray-600 dark:text-gray-300">{{ props.sessionDuration }}
+                                        segundos</p>
                                 </div>
                             </div>
 
-                            <div class="rounded-3xl bg-white p-6 shadow-lg dark:bg-gray-900/80">
-                                <p class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            <div
+                                class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
+                                <p
+                                    class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
                                     Recomendaciones
                                 </p>
                                 <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
@@ -147,17 +151,11 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                             </div>
                         </aside>
 
-                        <section class="rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900/80 sm:p-8">
+                        <section
+                            class="order-1 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
                             <div class="flex flex-col gap-8">
-                                <div class="text-center">
-                                    <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">Chat de voz con IA</h1>
-                                    <p class="mt-3 text-sm text-gray-600 sm:text-base dark:text-gray-300">
-                                        Practica conversaciones guiadas y aprovecha la visualización en tiempo real para ver
-                                        quién está hablando.
-                                    </p>
-                                </div>
-
-                                <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                                <div
+                                    class="order-1 flex flex-col items-center gap-3 sm:flex-row sm:justify-center md:order-2">
                                     <button type="button"
                                         class="inline-flex w-full items-center justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300 dark:bg-sky-500 dark:hover:bg-sky-400 dark:disabled:bg-sky-500/40"
                                         :disabled="isConnecting || isActive" @click="startSessionWithVoice">
@@ -179,7 +177,7 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                 </div>
 
                                 <div
-                                    class="rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10">
+                                    class="order-4 rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10 md:order-3">
                                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                         <div>
                                             <p
@@ -205,17 +203,18 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
 
                                     <div v-if="isActive"
                                         class="mt-4 flex items-center justify-between rounded-xl bg-white/80 px-4 py-3 text-sky-600 shadow-sm dark:bg-gray-900/70 dark:text-sky-300">
-                                        <span class="text-xs font-semibold uppercase tracking-wide">Tiempo restante</span>
+                                        <span class="text-xs font-semibold uppercase tracking-wide">Tiempo
+                                            restante</span>
                                         <span class="text-2xl font-semibold">00:{{ countdownDisplay }}</span>
                                     </div>
                                 </div>
 
                                 <div v-if="errorMessage"
-                                    class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200">
+                                    class="order-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200 md:order-4">
                                     {{ errorMessage }}
                                 </div>
 
-                                <div class="grid gap-6 lg:grid-cols-2">
+                                <div class="order-3 grid gap-6 md:order-5 lg:grid-cols-2">
                                     <div
                                         class="rounded-2xl border border-sky-100 bg-sky-50 p-6 dark:border-sky-500/20 dark:bg-sky-500/10">
                                         <div class="flex items-center justify-between gap-4">
@@ -228,13 +227,12 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                                     {{ userSpeakingState }}
                                                 </p>
                                             </div>
-                                            <span
-                                                :class="[
-                                                    isUserSpeaking
-                                                        ? 'bg-sky-600 text-white'
-                                                        : 'bg-white text-sky-600 dark:bg-sky-500/10 dark:text-sky-300',
-                                                    'rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200'
-                                                ]">
+                                            <span :class="[
+                                                isUserSpeaking
+                                                    ? 'bg-sky-600 text-white'
+                                                    : 'bg-white text-sky-600 dark:bg-sky-500/10 dark:text-sky-300',
+                                                'rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200'
+                                            ]">
                                                 {{ localLevel }}%
                                             </span>
                                         </div>
@@ -260,13 +258,12 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                                     {{ aiSpeakingState }}
                                                 </p>
                                             </div>
-                                            <span
-                                                :class="[
-                                                    isAiSpeaking
-                                                        ? 'bg-indigo-600 text-white'
-                                                        : 'bg-white text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
-                                                    'rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200'
-                                                ]">
+                                            <span :class="[
+                                                isAiSpeaking
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'bg-white text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300',
+                                                'rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200'
+                                            ]">
                                                 {{ remoteLevel }}%
                                             </span>
                                         </div>
