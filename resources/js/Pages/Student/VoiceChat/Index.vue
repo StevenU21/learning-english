@@ -117,9 +117,10 @@ const startSessionWithVoice = () =>
                 ]" gradient-classes="from-sky-600 to-indigo-600" />
         </template>
         <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 pb-24 dark:bg-gray-800 sm:pb-8">
-            <div class="w-full">
-                <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-                    <div class="grid gap-8 lg:grid-cols-[320px,minmax(0,1fr)] xl:grid-cols-[340px,minmax(0,1fr)]">
+            <div class="w-full flex-1">
+                <div class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-4 py-10 sm:px-6 lg:px-8">
+                    <div
+                        class="flex h-full flex-col gap-8 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
                             <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
@@ -165,33 +166,11 @@ const startSessionWithVoice = () =>
                                     {{ selectedLevelDetails.description }}
                                 </p>
                             </div>
-
-                            <!-- <div
-                                class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
-                                <p
-                                    class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                                    Recomendaciones
-                                </p>
-                                <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-wave-square mt-0.5 text-sky-500 dark:text-sky-300"></i>
-                                        Habla con claridad y espera a que la IA termine antes de volver a preguntar.
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-headphones mt-0.5 text-sky-500 dark:text-sky-300"></i>
-                                        Usa audífonos para reducir eco y mejorar el reconocimiento de voz.
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fa-solid fa-rotate-left mt-0.5 text-sky-500 dark:text-sky-300"></i>
-                                        Puedes iniciar otra sesión cuando el tiempo termine.
-                                    </li>
-                                </ul>
-                            </div> -->
                         </aside>
 
                         <section
-                            class="order-1 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
-                            <div class="flex flex-col gap-8">
+                            class="order-1 flex min-h-0 flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
+                            <div class="flex min-h-0 flex-col gap-8">
 
                                 <div
                                     class="order-1 rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10 md:order-2">
