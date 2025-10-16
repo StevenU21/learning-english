@@ -18,13 +18,13 @@ class OpenAIRealtimeService
         ?string $voice = null,
         ?string $instructions = null,
         ?string $model = null,
-        int $expiresIn = 90,
+        int $expiresIn = 120,
         ?string $conversationLevel = null
     ): array {
 
         $model ??= config('openai.realtime_model', 'gpt-realtime-mini');
         $voice ??= config('openai.realtime_voice', 'alloy');
-        $expiresIn = max(1, min($expiresIn, 90));
+        $expiresIn = max(1, min($expiresIn, 120));
 
         if (!$instructions) {
             $instructions = $this->buildInstructions($conversationLevel);

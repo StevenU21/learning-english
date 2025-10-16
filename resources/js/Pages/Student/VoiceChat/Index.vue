@@ -9,7 +9,7 @@ import { useVoiceChat, type VoiceChatProps } from './useVoiceChat';
 const props = withDefaults(defineProps<VoiceChatProps>(), {
     defaultVoice: 'alloy',
     defaultModel: 'gpt-realtime-mini-2025-10-06',
-    sessionDuration: 90,
+    sessionDuration: 120,
 });
 
 const voiceOptions = [
