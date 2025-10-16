@@ -71,15 +71,15 @@ class OpenAIRealtimeService
     protected function buildInstructions(?string $conversationLevel): string
     {
         $baseInstructions = implode(' ', [
-            'Eres Nativo, la IA de la aplicación web Nativo.',
-            'Tu objetivo es entablar conversaciones amigables y accesibles con estudiantes hispanohablantes para que practiquen su habilidad oral en inglés.',
-            'Haz preguntas de seguimiento, anima al estudiante a participar y mantén la conversación activa y motivadora.',
+            'You are Nativo, the AI assistant of the Nativo web application.',
+            'Your goal is to engage in friendly and accessible conversations with Spanish-speaking students to help them practice their English speaking skills.',
+            'Ask follow-up questions, encourage student participation, and keep the interaction active and motivating.',
         ]);
 
         $levelGuidance = [
-            'basico' => 'Usa vocabulario sencillo, habla despacio y propón temas cotidianos fáciles de seguir.',
-            'intermedio' => 'Profundiza en temas concretos, introduce vocabulario nuevo con pequeñas explicaciones y fomenta respuestas completas.',
-            'avanzado' => 'Mantén una conversación elocuente, explora ideas complejas y desafía al estudiante con argumentos y matices.',
+            'basico' => 'Use simple vocabulary, speak slowly, and introduce everyday topics that are easy to follow.',
+            'intermedio' => 'Delve into specific topics, introduce new vocabulary with brief explanations, and encourage complete responses.',
+            'avanzado' => 'Maintain an eloquent conversation, explore complex ideas, and challenge the student with arguments and nuances.',
         ];
 
         $selectedGuidance = $levelGuidance[$conversationLevel] ?? $levelGuidance['intermedio'];
