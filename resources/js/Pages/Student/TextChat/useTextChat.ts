@@ -251,17 +251,14 @@ export const useTextChat = (props: TextChatProps) => {
     }
 
     async function consumeStream(stream: ReadableStream<Uint8Array>, target: ChatMessage): Promise<string | null> {
-        const reader = stream.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let completed = false;
-        let streamError: string | null = null;
-        const replyToken = '"reply"';
-        let replyTokenProgress = 0;
-        let streamStage: 'seekKey' | 'seekColon' | 'seekQuote' | 'streamValue' | 'done' = 'seekKey';
-        let escapeMode: 'none' | 'simple' | 'unicode' = 'none';
-        let unicodeBuffer = '';
-        let replyValue = '';
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let completed = false;
+    let streamError: string | null = null;
+    let accumulatedDelta = '';
+    let replyRawConsumed = 0;
+    let replyValue = '';
 
         const appendReplyText = (text: string) => {
             if (!text) {
@@ -272,145 +269,109 @@ export const useTextChat = (props: TextChatProps) => {
             target.content = replyValue;
         };
 
-        const decodeSimpleEscape = (sequence: string): string => {
-            switch (sequence) {
-                case '"':
-                    return '"';
-                case '\\':
-                    return '\\';
-                case '/':
-                    return '/';
-                case 'b':
-                    return '\b';
-                case 'f':
-                    return '\f';
-                case 'n':
-                    return '\n';
-                case 'r':
-                    return '\r';
-                case 't':
-                    return '\t';
-                default:
-                    return sequence;
+        const escapeForJson = (text: string) =>
+            text
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/\u0008/g, '\\b')
+                .replace(/\u000c/g, '\\f')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r')
+                .replace(/\t/g, '\\t');
+
+        const decodeJsonPrefix = (raw: string): { decoded: string; consumed: number } => {
+            for (let length = raw.length; length > 0; length -= 1) {
+                const candidate = raw.slice(0, length);
+
+                try {
+                    const wrapped = `{"value":"${escapeForJson(candidate)}"}`;
+                    const parsed = JSON.parse(wrapped) as { value: string };
+
+                    return {
+                        decoded: parsed.value,
+                        consumed: length,
+                    };
+                } catch (_error) {
+                    // Continue shrinking the candidate until we decode a valid prefix.
+                }
             }
+
+            return {
+                decoded: '',
+                consumed: 0,
+            };
         };
 
-        const processUnicodeEscape = (char: string) => {
-            if (!/[0-9a-fA-F]/.test(char)) {
-                appendReplyText(`\\u${unicodeBuffer}${char}`);
-                unicodeBuffer = '';
-                escapeMode = 'none';
-                return;
+        const extractReplyRaw = (source: string): string => {
+            const keyIndex = source.indexOf('"reply"');
+
+            if (keyIndex === -1) {
+                return '';
             }
 
-            unicodeBuffer += char;
+            const colonIndex = source.indexOf(':', keyIndex + 7);
 
-            if (unicodeBuffer.length < 4) {
-                return;
+            if (colonIndex === -1) {
+                return '';
             }
 
-            const codePoint = Number.parseInt(unicodeBuffer, 16);
+            const quoteIndex = source.indexOf('"', colonIndex + 1);
 
-            if (Number.isNaN(codePoint)) {
-                appendReplyText(`\\u${unicodeBuffer}`);
-            } else {
-                appendReplyText(String.fromCharCode(codePoint));
+            if (quoteIndex === -1) {
+                return '';
             }
 
-            unicodeBuffer = '';
-            escapeMode = 'none';
+            let escapeNext = false;
+            let result = '';
+
+            for (let index = quoteIndex + 1; index < source.length; index += 1) {
+                const char = source[index];
+
+                if (!escapeNext && char === '"') {
+                    return result;
+                }
+
+                result += char;
+
+                if (escapeNext) {
+                    escapeNext = false;
+                } else if (char === '\\') {
+                    escapeNext = true;
+                }
+            }
+
+            return result;
         };
 
         const processDeltaText = (chunk: string) => {
-            for (let index = 0; index < chunk.length; index += 1) {
-                const char = chunk[index];
+            if (!chunk) {
+                return;
+            }
 
-                if (streamStage === 'done') {
-                    return;
-                }
+            accumulatedDelta += chunk;
 
-                if (streamStage === 'seekKey') {
-                    if (char === replyToken[replyTokenProgress]) {
-                        replyTokenProgress += 1;
+            const rawReply = extractReplyRaw(accumulatedDelta);
 
-                        if (replyTokenProgress === replyToken.length) {
-                            streamStage = 'seekColon';
-                            replyTokenProgress = 0;
-                        }
+            if (rawReply === '') {
+                return;
+            }
 
-                        continue;
-                    }
+            const newRawSegment = rawReply.slice(replyRawConsumed);
 
-                    replyTokenProgress = char === replyToken[0] ? 1 : 0;
-                    continue;
-                }
+            if (!newRawSegment) {
+                return;
+            }
 
-                if (streamStage === 'seekColon') {
-                    if (char === ':') {
-                        streamStage = 'seekQuote';
-                        continue;
-                    }
+            const { decoded, consumed } = decodeJsonPrefix(newRawSegment);
 
-                    if (char.trim() === '') {
-                        continue;
-                    }
+            if (consumed === 0) {
+                return;
+            }
 
-                    streamStage = 'seekKey';
-                    replyTokenProgress = 0;
-                    index -= 1;
-                    continue;
-                }
+            replyRawConsumed += consumed;
 
-                if (streamStage === 'seekQuote') {
-                    if (char === '"') {
-                        streamStage = 'streamValue';
-                        escapeMode = 'none';
-                        unicodeBuffer = '';
-                        continue;
-                    }
-
-                    if (char.trim() === '') {
-                        continue;
-                    }
-
-                    streamStage = 'seekKey';
-                    replyTokenProgress = 0;
-                    index -= 1;
-                    continue;
-                }
-
-                if (streamStage === 'streamValue') {
-                    if (escapeMode === 'simple') {
-                        if (char === 'u') {
-                            escapeMode = 'unicode';
-                            unicodeBuffer = '';
-                            continue;
-                        }
-
-                        appendReplyText(decodeSimpleEscape(char));
-                        escapeMode = 'none';
-                        continue;
-                    }
-
-                    if (escapeMode === 'unicode') {
-                        processUnicodeEscape(char);
-                        continue;
-                    }
-
-                    if (char === '\\') {
-                        escapeMode = 'simple';
-                        continue;
-                    }
-
-                    if (char === '"') {
-                        streamStage = 'done';
-                        escapeMode = 'none';
-                        unicodeBuffer = '';
-                        continue;
-                    }
-
-                    appendReplyText(char);
-                }
+            if (decoded) {
+                appendReplyText(decoded);
             }
         };
 

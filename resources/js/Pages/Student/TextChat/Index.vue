@@ -124,8 +124,8 @@ function handleStarterPrompt(prompt: string) {
 
         <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 pb-24 dark:bg-gray-800 sm:pb-8">
             <div class="w-full">
-                <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-                    <div class="grid gap-8 lg:grid-cols-[320px,minmax(0,1fr)] xl:grid-cols-[340px,minmax(0,1fr)]">
+                <div class="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
+                    <div class="grid gap-6 lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
                             <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
@@ -224,7 +224,7 @@ function handleStarterPrompt(prompt: string) {
                         </aside>
 
                         <section
-                            class="order-1 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-8 lg:order-2">
+                            class="order-1 rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
                             <div class="flex flex-col gap-8">
                                 <div class="order-2 hidden text-center md:block md:order-1">
                                     <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
@@ -241,7 +241,7 @@ function handleStarterPrompt(prompt: string) {
                                     class="order-1 rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
                                     <div class="flex flex-col gap-6">
                                         <div ref="chatContainer"
-                                            class="max-h-[480px] space-y-6 overflow-y-auto pr-2 md:max-h-[520px]">
+                                            class="max-h-[calc(100vh-240px)] space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2">
                                             <div v-for="message in messages" :key="message.id"
                                                 :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
                                                 <div :class="[

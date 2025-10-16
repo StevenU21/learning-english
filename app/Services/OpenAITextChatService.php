@@ -82,6 +82,7 @@ class OpenAITextChatService
         $payload = [
             'model' => $model,
             'temperature' => max(0, min($temperature, 2)),
+            'response_format' => ['type' => 'json_object'],
             'messages' => array_merge([
                 [
                     'role' => 'system',
