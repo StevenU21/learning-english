@@ -46,6 +46,9 @@ return [
     */
 
     'request_timeout' => env('OPENAI_REQUEST_TIMEOUT', 30),
+    'connect_timeout' => env('OPENAI_CONNECT_TIMEOUT', 10),
+    'max_retries' => env('OPENAI_MAX_RETRIES', 2),
+    'retry_delay_ms' => env('OPENAI_RETRY_DELAY_MS', 1000),
 
     /*
     |--------------------------------------------------------------------------

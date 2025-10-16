@@ -117,11 +117,36 @@ class OpenAITextChatService
         if (empty($apiKey)) {
             throw new RuntimeException('OpenAI API key is not configured.');
         }
-        $baseUri = rtrim(Config::get('openai.base_uri', 'https://api.openai.com/v1'), '/');
-        return Http::withHeaders([
+        $baseUri = $this->resolveBaseUri();
+        $timeout = (float) Config::get('openai.request_timeout', 30);
+        $connectTimeout = (float) Config::get('openai.connect_timeout', 10);
+        $maxRetries = max(0, (int) Config::get('openai.max_retries', 2));
+        $retryDelayMs = max(0, (int) Config::get('openai.retry_delay_ms', 1000));
+
+        $client = Http::withHeaders([
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
-        ])->baseUrl($baseUri)->timeout(Config::get('openai.request_timeout', 30));
+        ]);
+
+        if ($maxRetries > 0) {
+            $client = $client->retry($maxRetries, $retryDelayMs, throw: false);
+        }
+
+        return $client
+            ->timeout($timeout)
+            ->connectTimeout($connectTimeout)
+            ->baseUrl($baseUri);
+    }
+
+    protected function resolveBaseUri(): string
+    {
+        $baseUri = Config::get('openai.base_uri');
+
+        if (!is_string($baseUri) || trim($baseUri) === '') {
+            $baseUri = 'https://api.openai.com/v1';
+        }
+
+        return rtrim($baseUri, '/') . '/';
     }
 
 }

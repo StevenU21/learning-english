@@ -53,10 +53,14 @@ class AppServiceProvider extends ServiceProvider
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
                 'OpenAI-Beta' => 'realtime=v1',
-            ])->timeout(config('openai.request_timeout', 30));
-            if ($baseUrl = config('openai.base_uri')) {
-                $client = $client->baseUrl($baseUrl);
+            ])
+                ->timeout((float) config('openai.request_timeout', 30))
+                ->connectTimeout((float) config('openai.connect_timeout', 10));
+            $baseUrl = config('openai.base_uri');
+            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+                $baseUrl = 'https://api.openai.com/v1';
             }
+            $client = $client->baseUrl(rtrim($baseUrl, '/') . '/');
             return $client;
         });
     }
