@@ -244,7 +244,7 @@ function handleStarterPrompt(prompt: string) {
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     <button v-for="prompt in props.starterPrompts" :key="prompt" type="button"
                                         @click="handleStarterPrompt(prompt)"
-                                            class="rounded-2xl border border-violet-100 bg-violet-50 px-3 py-2 text-left text-xs font-medium text-violet-700 transition hover:border-violet-200 hover:bg-violet-100 hover:text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-violet-500/40 dark:bg-violet-500/10 dark:text-violet-200 dark:hover:border-violet-400 dark:hover:bg-violet-500/30 dark:hover:text-white">
+                                        class="rounded-2xl border border-violet-100 bg-violet-50 px-3 py-2 text-left text-xs font-medium text-violet-700 transition hover:border-violet-200 hover:bg-violet-100 hover:text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 dark:border-violet-500/40 dark:bg-violet-500/10 dark:text-violet-200 dark:hover:border-violet-400 dark:hover:bg-violet-500/30 dark:hover:text-white">
                                         {{ prompt }}
                                     </button>
                                 </div>
@@ -375,7 +375,7 @@ function handleStarterPrompt(prompt: string) {
                                             </span>
                                             <button v-for="suggestion in followUpSuggestions" :key="suggestion"
                                                 type="button" @click="handleStarterPrompt(suggestion)"
-                                                class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200">
+                                                class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200 dark:hover:bg-indigo-500/30 dark:hover:text-white">
                                                 {{ suggestion }}
                                             </button>
                                         </div>
