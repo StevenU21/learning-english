@@ -26,6 +26,8 @@ type LegacyNavigator = Navigator & {
     msGetUserMedia?: LegacyGetUserMedia;
 };
 
+type AudioKind = 'local' | 'remote';
+
 export const useVoiceChat = (props: VoiceChatProps) => {
     const statusMessage = ref('Listo para iniciar tu práctica de conversación.');
     const isConnecting = ref(false);
@@ -33,12 +35,21 @@ export const useVoiceChat = (props: VoiceChatProps) => {
     const countdown = ref(props.sessionDuration);
     const errorMessage = ref('');
     const remoteAudioEl: Ref<HTMLAudioElement | null> = ref(null);
+    const localLevel = ref(0);
+    const remoteLevel = ref(0);
+    const localSpectrum = ref<number[]>(Array(12).fill(0));
+    const remoteSpectrum = ref<number[]>(Array(12).fill(0));
 
     let peerConnection: RTCPeerConnection | null = null;
     let localStream: MediaStream | null = null;
     let remoteStream: MediaStream | null = null;
     let countdownInterval: ReturnType<typeof window.setInterval> | null = null;
     let sessionTimeout: ReturnType<typeof window.setTimeout> | null = null;
+    let visualizerFrame: number | null = null;
+
+    const audioContexts: Partial<Record<AudioKind, AudioContext>> = {};
+    const audioAnalysers: Partial<Record<AudioKind, AnalyserNode>> = {};
+    const audioSources: Partial<Record<AudioKind, MediaStreamAudioSourceNode>> = {};
 
     const csrfToken = computed(() => {
         const token = document.head
@@ -64,6 +75,125 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         }
 
         countdown.value = props.sessionDuration;
+    }
+
+    function buildSpectrum(data: Uint8Array) {
+        const bucketCount = 12;
+        const spectrum: number[] = new Array(bucketCount).fill(0);
+        const bucketSize = Math.max(1, Math.floor(data.length / bucketCount));
+
+        for (let bucket = 0; bucket < bucketCount; bucket += 1) {
+            const start = bucket * bucketSize;
+            let sum = 0;
+            let count = 0;
+
+            for (let index = start; index < start + bucketSize && index < data.length; index += 1) {
+                sum += data[index];
+                count += 1;
+            }
+
+            const average = count > 0 ? sum / count : 0;
+            spectrum[bucket] = Math.min(100, Math.round((average / 255) * 100));
+        }
+
+        return spectrum;
+    }
+
+    function updateLevels(kind: AudioKind) {
+        const analyser = audioAnalysers[kind];
+
+        if (!analyser) {
+            if (kind === 'local') {
+                localLevel.value = 0;
+                localSpectrum.value = Array(12).fill(0);
+            } else {
+                remoteLevel.value = 0;
+                remoteSpectrum.value = Array(12).fill(0);
+            }
+
+            return;
+        }
+
+        const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(frequencyData);
+
+        const total = frequencyData.reduce((accumulator, value) => accumulator + value, 0);
+        const average = total / frequencyData.length;
+        const level = Math.min(100, Math.round((average / 255) * 100));
+
+        if (kind === 'local') {
+            localLevel.value = level;
+            localSpectrum.value = buildSpectrum(frequencyData);
+        } else {
+            remoteLevel.value = level;
+            remoteSpectrum.value = buildSpectrum(frequencyData);
+        }
+    }
+
+    function ensureVisualizerRunning() {
+        if (visualizerFrame !== null) {
+            return;
+        }
+
+        const loop = () => {
+            updateLevels('local');
+            updateLevels('remote');
+            visualizerFrame = window.requestAnimationFrame(loop);
+        };
+
+        visualizerFrame = window.requestAnimationFrame(loop);
+    }
+
+    function stopVisualizer() {
+        if (visualizerFrame !== null) {
+            window.cancelAnimationFrame(visualizerFrame);
+            visualizerFrame = null;
+        }
+    }
+
+    function detachAnalyzer(kind: AudioKind) {
+        audioSources[kind]?.disconnect();
+        audioAnalysers[kind]?.disconnect();
+        audioContexts[kind]?.close().catch(() => undefined);
+
+        delete audioSources[kind];
+        delete audioAnalysers[kind];
+        delete audioContexts[kind];
+    }
+
+    function attachAnalyzer(kind: AudioKind, stream: MediaStream | null) {
+        if (!stream) {
+            return;
+        }
+
+        detachAnalyzer(kind);
+
+        try {
+            const context = new AudioContext();
+            const source = context.createMediaStreamSource(stream);
+            const analyser = context.createAnalyser();
+            analyser.fftSize = 256;
+
+            source.connect(analyser);
+
+            audioContexts[kind] = context;
+            audioSources[kind] = source;
+            audioAnalysers[kind] = analyser;
+
+            ensureVisualizerRunning();
+        } catch (error) {
+            console.error('No se pudo inicializar el analizador de audio', error);
+        }
+    }
+
+    function cleanupAnalyzers() {
+        detachAnalyzer('local');
+        detachAnalyzer('remote');
+        stopVisualizer();
+        localLevel.value = 0;
+        remoteLevel.value = 0;
+        localSpectrum.value = Array(12).fill(0);
+        remoteSpectrum.value = Array(12).fill(0);
     }
 
     function cleanupMedia() {
@@ -97,6 +227,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         localStream = null;
         remoteStream = null;
 
+        cleanupAnalyzers();
         resetCountdown();
         isActive.value = false;
     }
@@ -216,7 +347,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         throw new Error('Tu navegador no soporta captura de audio.');
     }
 
-    async function startSession() {
+    async function startSession(voiceOverride?: string) {
         if (isConnecting.value || isActive.value) {
             return;
         }
@@ -227,6 +358,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
 
         try {
             localStream = await getMicrophoneStream();
+            attachAnalyzer('local', localStream);
 
             statusMessage.value = 'Conectando con la IA...';
 
@@ -237,7 +369,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
                     'X-CSRF-TOKEN': csrfToken.value,
                     Accept: 'application/json',
                 },
-                body: JSON.stringify({ voice: props.defaultVoice }),
+                body: JSON.stringify({ voice: voiceOverride ?? props.defaultVoice }),
             });
 
             if (!sessionResponse.ok) {
@@ -258,9 +390,23 @@ export const useVoiceChat = (props: VoiceChatProps) => {
             }
 
             connection.ontrack = (event) => {
-                if (event.track) {
-                    remoteStream?.addTrack(event.track);
+                if (event.streams && event.streams[0]) {
+                    remoteStream = event.streams[0];
+                } else {
+                    if (!remoteStream) {
+                        remoteStream = new MediaStream();
+                    }
+
+                    if (event.track) {
+                        remoteStream.addTrack(event.track);
+                    }
                 }
+
+                if (remoteAudioEl.value) {
+                    remoteAudioEl.value.srcObject = remoteStream;
+                }
+
+                attachAnalyzer('remote', remoteStream);
             };
 
             connection.onconnectionstatechange = () => {
@@ -329,6 +475,9 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         cleanupMedia();
     });
 
+    const isUserSpeaking = computed(() => isActive.value && localLevel.value > 25);
+    const isAiSpeaking = computed(() => isActive.value && remoteLevel.value > 25);
+
     return {
         statusMessage,
         isConnecting,
@@ -338,5 +487,11 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         remoteAudioEl,
         startSession,
         stopSession,
+        localLevel,
+        remoteLevel,
+        localSpectrum,
+        remoteSpectrum,
+        isUserSpeaking,
+        isAiSpeaking,
     } as const;
 };
