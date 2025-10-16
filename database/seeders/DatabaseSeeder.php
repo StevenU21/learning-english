@@ -43,13 +43,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Escucha y responde', 'description' => 'Compara dos audios y responde si son iguales o distintos.']
         ]);
 
-        // Usar Eloquent para disparar eventos de modelo y generar el slug automáticamente
         collect([
             ['name' => 'Básico', 'description' => 'Nivel inicial para comenzar el aprendizaje desde cero.'],
             ['name' => 'Intermedio', 'description' => 'Nivel para reforzar y ampliar conocimientos previos.'],
             ['name' => 'Avanzado', 'description' => 'Nivel para dominar y profundizar en los temas más complejos.'],
         ])->each(fn($data) => Level::create($data));
-        // Unidad y lecciones enfocadas al aprendizaje básico de inglés
+
         $unit = Unit::create([
             'name' => 'Introducción al Inglés',
             'description' => 'Fundamentos iniciales para comenzar a comunicarse en inglés: saludos, presentaciones, números y colores.',
