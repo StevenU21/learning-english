@@ -18,12 +18,17 @@ class OpenAIRealtimeService
         ?string $voice = null,
         ?string $instructions = null,
         ?string $model = null,
-        int $expiresIn = 60
+        int $expiresIn = 60,
+        ?string $conversationLevel = null
     ): array {
 
         $model ??= config('openai.realtime_model', 'gpt-realtime-mini');
         $voice ??= config('openai.realtime_voice', 'alloy');
         $expiresIn = max(1, min($expiresIn, 60));
+
+        if (!$instructions) {
+            $instructions = $this->buildInstructions($conversationLevel);
+        }
 
         $payload = [
             'model' => $model,
@@ -61,5 +66,24 @@ class OpenAIRealtimeService
             'expires_in' => $expiresInResponse ?? $expiresIn,
             'expires_at' => $expiresAt,
         ];
+    }
+
+    protected function buildInstructions(?string $conversationLevel): string
+    {
+        $baseInstructions = implode(' ', [
+            'Eres Nativo, la IA de la aplicación web Nativo.',
+            'Tu objetivo es entablar conversaciones amigables y accesibles con estudiantes hispanohablantes para que practiquen su habilidad oral en inglés.',
+            'Haz preguntas de seguimiento, anima al estudiante a participar y mantén la conversación activa y motivadora.',
+        ]);
+
+        $levelGuidance = [
+            'basico' => 'Usa vocabulario sencillo, habla despacio y propón temas cotidianos fáciles de seguir.',
+            'intermedio' => 'Profundiza en temas concretos, introduce vocabulario nuevo con pequeñas explicaciones y fomenta respuestas completas.',
+            'avanzado' => 'Mantén una conversación elocuente, explora ideas complejas y desafía al estudiante con argumentos y matices.',
+        ];
+
+        $selectedGuidance = $levelGuidance[$conversationLevel] ?? $levelGuidance['intermedio'];
+
+        return $baseInstructions . ' ' . $selectedGuidance;
     }
 }

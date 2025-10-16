@@ -28,6 +28,7 @@ class VoiceChatController extends Controller
         $validated = $request->validate([
             'voice' => ['nullable', 'string', 'max:50'],
             'instructions' => ['nullable', 'string', 'max:1000'],
+            'level' => ['nullable', 'in:basico,intermedio,avanzado'],
         ]);
 
         try {
@@ -36,6 +37,7 @@ class VoiceChatController extends Controller
                 instructions: $validated['instructions'] ?? null,
                 model: null,
                 expiresIn: 60,
+                conversationLevel: $validated['level'] ?? null,
             );
         } catch (\Throwable $exception) {
             report($exception);

@@ -24,10 +24,22 @@ const voiceOptions = [
     { value: 'shimmer', label: 'Shimmer' },
 ] satisfies Array<{ value: string; label: string }>;
 
+const aiLevels = [
+    { value: 'basico', label: 'Básico', description: 'Conversaciones comunes y fáciles de seguir con vocabulario cotidiano.' },
+    { value: 'intermedio', label: 'Intermedio', description: 'Temas más concretos con explicaciones breves y preguntas que invitan a detallar.' },
+    { value: 'avanzado', label: 'Avanzado', description: 'Conversación elocuente con ideas complejas y matices para profundizar.' },
+] satisfies Array<{ value: string; label: string; description: string }>;
+
+const defaultLevel = 'intermedio';
+
 const selectedVoice = ref(
     voiceOptions.find((option) => option.value === props.defaultVoice)?.value ??
     props.defaultVoice ??
     voiceOptions[0].value,
+);
+
+const selectedLevel = ref(
+    aiLevels.find((option) => option.value === defaultLevel)?.value ?? aiLevels[0].value,
 );
 
 const {
@@ -64,6 +76,10 @@ const selectedVoiceLabel = computed(() => {
     return voiceOptions.find((option) => option.value === selectedVoice.value)?.label ?? selectedVoice.value;
 });
 
+const selectedLevelDetails = computed(() => {
+    return aiLevels.find((option) => option.value === selectedLevel.value) ?? aiLevels[0];
+});
+
 const availableVoices = computed(() => {
     if (!selectedVoice.value) {
         return voiceOptions;
@@ -84,7 +100,8 @@ const canChangeVoice = computed(() => !isActive.value && !isConnecting.value);
 const userSpeakingState = computed(() => (isUserSpeaking.value ? 'Hablando' : 'En espera'));
 const aiSpeakingState = computed(() => (isAiSpeaking.value ? 'Respondiendo' : 'En espera'));
 
-const startSessionWithVoice = () => startSession(selectedVoice.value);
+const startSessionWithVoice = () =>
+    startSession({ voice: selectedVoice.value, level: selectedLevel.value });
 </script>
 
 <template>
@@ -106,7 +123,7 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                         <aside class="order-2 space-y-6 lg:order-1">
                             <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
-                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Configuración rápida
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Configuración de voz
                                 </h2>
                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                     Define la voz con la que quieres practicar antes de comenzar la sesión.
@@ -126,6 +143,27 @@ const startSessionWithVoice = () => startSession(selectedVoice.value);
                                     <p class="mt-1 text-gray-600 dark:text-gray-300">{{ props.sessionDuration }}
                                         segundos</p>
                                 </div>
+                            </div>
+
+                            <div
+                                class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Nivel de conversación
+                                </h2>
+                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                    Ajusta la dificultad para que la IA adapte el tono y el vocabulario de la charla.
+                                </p>
+                                <label
+                                    class="mt-6 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                    Selecciona el nivel
+                                </label>
+                                <SelectInput v-model="selectedLevel" class="mt-2 w-full">
+                                    <option v-for="level in aiLevels" :key="level.value" :value="level.value">
+                                        {{ level.label }}
+                                    </option>
+                                </SelectInput>
+                                <p class="mt-4 text-sm text-gray-600 dark:text-gray-300">
+                                    {{ selectedLevelDetails.description }}
+                                </p>
                             </div>
 
                             <div

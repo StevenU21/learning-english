@@ -13,6 +13,12 @@ type VoiceChatSessionData = {
     expires_at?: number | string | null;
 };
 
+type StartSessionOptions = {
+    voice?: string;
+    level?: string;
+    instructions?: string;
+};
+
 type LegacyGetUserMedia = (
     constraints: MediaStreamConstraints,
     successCallback: (stream: MediaStream) => void,
@@ -347,7 +353,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
         throw new Error('Tu navegador no soporta captura de audio.');
     }
 
-    async function startSession(voiceOverride?: string) {
+    async function startSession(options?: StartSessionOptions) {
         if (isConnecting.value || isActive.value) {
             return;
         }
@@ -362,6 +368,18 @@ export const useVoiceChat = (props: VoiceChatProps) => {
 
             statusMessage.value = 'Conectando con la IA...';
 
+            const sessionPayload: Record<string, unknown> = {
+                voice: options?.voice ?? props.defaultVoice,
+            };
+
+            if (options?.level) {
+                sessionPayload.level = options.level;
+            }
+
+            if (options?.instructions) {
+                sessionPayload.instructions = options.instructions;
+            }
+
             const sessionResponse = await fetch(route('student.voice-chat.session'), {
                 method: 'POST',
                 headers: {
@@ -369,7 +387,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
                     'X-CSRF-TOKEN': csrfToken.value,
                     Accept: 'application/json',
                 },
-                body: JSON.stringify({ voice: voiceOverride ?? props.defaultVoice }),
+                body: JSON.stringify(sessionPayload),
             });
 
             if (!sessionResponse.ok) {
