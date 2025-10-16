@@ -42,6 +42,31 @@ const canSendMessage = computed(() => draftMessage.value.trim().length > 0 && !i
 const chatContainer = ref<HTMLDivElement | null>(null);
 const messageInput = ref<ComponentPublicInstance | null>(null);
 
+const lastMessageSignature = computed(() => {
+    const lastMessage = messages.value[messages.value.length - 1];
+
+    if (!lastMessage) {
+        return '';
+    }
+
+    const vocabularySignature = (lastMessage.vocabulary ?? [])
+        .map((item) => `${item.term}:${item.definition}:${item.example ?? ''}`)
+        .join('|');
+
+    const grammarSignature = (lastMessage.grammarTips ?? []).join('|');
+    const followUpSignature = (lastMessage.followUpQuestions ?? []).join('|');
+
+    return [
+        lastMessage.id,
+        lastMessage.role,
+        lastMessage.content,
+        lastMessage.streaming ? 'streaming' : 'done',
+        vocabularySignature,
+        grammarSignature,
+        followUpSignature,
+    ].join('::');
+});
+
 function focusInput() {
     nextTick(() => {
         const element = messageInput.value?.$el as HTMLTextAreaElement | undefined;
@@ -71,30 +96,12 @@ onMounted(() => {
 });
 
 watch(
-    () => messages.value.length,
-    () => {
-        nextTick(() => {
-            scrollToBottom();
-        });
+    lastMessageSignature,
+    async () => {
+        await nextTick();
+        scrollToBottom();
     },
-);
-
-watch(
-    () => messages.value.map((message) => `${message.id}:${message.content.length}:${message.streaming ? 1 : 0}`),
-    () => {
-        nextTick(() => {
-            scrollToBottom();
-        });
-    },
-);
-
-watch(
-    () => followUpSuggestions.value.join('||'),
-    () => {
-        nextTick(() => {
-            scrollToBottom();
-        });
-    },
+    { flush: 'post' },
 );
 
 async function handleSubmit() {
@@ -122,10 +129,12 @@ function handleStarterPrompt(prompt: string) {
                 ]" gradient-classes="from-violet-600 to-indigo-600" />
         </template>
 
-        <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 pb-24 dark:bg-gray-800 sm:pb-8">
-            <div class="w-full">
-                <div class="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
-                    <div class="grid gap-6 lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
+        <div
+            class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8">
+            <div class="w-full flex-1">
+                <div class="mx-auto flex h-full w-full max-w-6xl flex-col px-3 py-2 sm:px-6 sm:py-10 lg:px-8">
+                    <div
+                        class="flex h-full flex-col gap-6 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
                             <div
                                 class="hidden rounded-3xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800/80 md:block">
@@ -224,8 +233,8 @@ function handleStarterPrompt(prompt: string) {
                         </aside>
 
                         <section
-                            class="order-1 rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
-                            <div class="flex flex-col gap-8">
+                            class="order-1 flex min-h-0 flex-1 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
+                            <div class="flex h-full min-h-0 flex-col gap-8">
                                 <div class="order-2 hidden text-center md:block md:order-1">
                                     <h1 class="text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
                                         Práctica de
@@ -238,10 +247,10 @@ function handleStarterPrompt(prompt: string) {
                                 </div>
 
                                 <div
-                                    class="order-1 rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
-                                    <div class="flex flex-col gap-6">
+                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
+                                    <div class="flex flex-1 min-h-0 flex-col gap-6">
                                         <div ref="chatContainer"
-                                            class="max-h-[calc(100vh-240px)] space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2">
+                                            class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 sm:max-h-[calc(100vh-260px)] md:max-h-[520px] md:pr-2">
                                             <div v-for="message in messages" :key="message.id"
                                                 :class="['flex', message.role === 'user' ? 'justify-end' : 'justify-start']">
                                                 <div :class="[
@@ -292,6 +301,7 @@ function handleStarterPrompt(prompt: string) {
 
                                                 </div>
                                             </div>
+                                            <div class="h-px w-px" aria-hidden="true"></div>
                                         </div>
 
                                         <div v-if="followUpSuggestions.length"
