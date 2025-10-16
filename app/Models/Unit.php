@@ -48,18 +48,12 @@ class Unit extends Model
         }
     }
 
-    /**
-     * Computed expected_time based on the sum of all lesson durations.
-     * Prefer eager-loaded withSum alias if available to avoid extra queries.
-     */
     public function getExpectedTimeAttribute(): int
     {
-        // If withSum('lessons', 'duration') was used, Laravel will expose lessons_sum_duration
         if (array_key_exists('lessons_sum_duration', $this->attributes)) {
             return (int) ($this->attributes['lessons_sum_duration'] ?? 0);
         }
 
-        // Fallback: compute with a query
         return (int) $this->lessons()->sum('duration');
     }
 
