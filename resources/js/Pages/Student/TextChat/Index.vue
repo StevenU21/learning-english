@@ -369,7 +369,7 @@ async function handleResetChat() {
                                                     </div>
                                                     <p v-if="message.content"
                                                         class="mt-2 whitespace-pre-line text-sm leading-relaxed">
-                                                        {{ message.content }}
+                                                        {{ message.content }}   
                                                     </p>
 
                                                     <div v-if="message.streaming && !message.content"
