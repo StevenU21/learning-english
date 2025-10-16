@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { computed, nextTick, ref, watch, type ComponentPublicInstance } from 'vue';
+import { computed, nextTick, onMounted, ref, watch, type ComponentPublicInstance } from 'vue';
 import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -49,24 +49,50 @@ function focusInput() {
     });
 }
 
+function scrollToBottom() {
+    const container = chatContainer.value;
+
+    if (!container) {
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+        requestAnimationFrame(() => {
+            container.scrollTop = container.scrollHeight;
+        });
+    });
+}
+
+onMounted(() => {
+    nextTick(() => {
+        scrollToBottom();
+    });
+});
+
 watch(
     () => messages.value.length,
     () => {
         nextTick(() => {
-            if (chatContainer.value) {
-                chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
-            }
+            scrollToBottom();
         });
     },
 );
 
 watch(
-    () => messages.value.map((message) => `${message.id}:${message.content.length}`),
+    () => messages.value.map((message) => `${message.id}:${message.content.length}:${message.streaming ? 1 : 0}`),
     () => {
         nextTick(() => {
-            if (chatContainer.value) {
-                chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
-            }
+            scrollToBottom();
+        });
+    },
+);
+
+watch(
+    () => followUpSuggestions.value.join('||'),
+    () => {
+        nextTick(() => {
+            scrollToBottom();
         });
     },
 );
@@ -264,19 +290,6 @@ function handleStarterPrompt(prompt: string) {
                                                         </ul>
                                                     </div>
 
-                                                    <div v-if="message.followUpQuestions?.length"
-                                                        class="mt-3 space-y-1 text-xs">
-                                                        <p
-                                                            class="font-semibold uppercase tracking-wide text-indigo-400 dark:text-indigo-300">
-                                                            Sugerencias de respuesta
-                                                        </p>
-                                                        <ul class="list-disc pl-4">
-                                                            <li v-for="question in message.followUpQuestions"
-                                                                :key="question">
-                                                                {{ question }}
-                                                            </li>
-                                                        </ul>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,7 +298,7 @@ function handleStarterPrompt(prompt: string) {
                                             class="flex flex-wrap items-center gap-2 rounded-2xl border border-indigo-100 bg-white p-4 text-sm text-gray-700 dark:border-indigo-500/30 dark:bg-gray-900 dark:text-gray-200">
                                             <span
                                                 class="text-xs font-semibold uppercase tracking-wide text-indigo-500 dark:text-indigo-300">
-                                                Prueba con:
+                                                Responde con alguna idea:
                                             </span>
                                             <button v-for="suggestion in followUpSuggestions" :key="suggestion"
                                                 type="button" @click="handleStarterPrompt(suggestion)"

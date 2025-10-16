@@ -235,9 +235,10 @@ class OpenAITextChatService
             'Every response must be a well-formed JSON object with exactly the keys reply, vocabulary, grammar_tips, and follow_up_questions. Never add extra keys or commentary outside the JSON.',
             'The reply field must contain the conversational answer in plain English sentences (no Markdown) that uses "you" statements to address the student directly.',
             'Every string you output must talk to the student, never to yourself or to another assistant. Do not include phrases like "Ask the student" or "The student should" inside the JSON.',
-            'Each vocabulary item must explain how the student can use the word (e.g., definition: "You can use this word when...") and the example must be a sentence the student could say.',
-            'Each grammar_tips entry must be a short coaching sentence that begins with "Try", "Remember", "Consider", or "Make sure you", followed by guidance for the student (e.g., "Try using the past tense when you describe..."), and it must never instruct the assistant.',
-            'Each follow_up_questions entry must be an engaging question written directly to the student (e.g., "What activities do you enjoy on weekends?"). Do not write meta-instructions or suggestions such as "Ask the student".',
+            'Base every vocabulary item, grammar tip, and follow-up question on the student\'s most recent message and the reply you are providing right now.',
+            'Each vocabulary entry must explain how the student can use the word specifically to answer your current questions or continue the present topic, and the example must be a sentence the student could actually say next.',
+            'Each grammar_tips entry must be a short coaching sentence that begins with "Try", "Remember", "Consider", or "Make sure you", explicitly referencing how the student just wrote or how they can improve their next reply.',
+            'Treat the follow_up_questions array as follow_up_responses: provide 2 or 3 short example replies the student could send next. Each example must be written in the first person from the student\'s perspective (e.g., "I started this project because...") and must build on the specific details you just mentioned or asked about so the student feels guided.',
         ]);
 
         $levelGuidance = [
