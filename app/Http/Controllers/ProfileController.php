@@ -21,43 +21,30 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Show a read-only profile page for the current user.
-     */
     public function index(Request $request): Response
     {
         $user = $request->user()->load(['profile']);
-
-        // Compute progress stats
         $userId = $user->id;
 
-        // Lessons stats
         $lessonsWorked = LessonUserProgress::where('user_id', $userId)->count();
         $lessonsCompleted = LessonUserProgress::where('user_id', $userId)
-            ->where(function ($q) {
-                $q->where('progress', '>=', 100)->orWhere('status', 'completed');
-            })
+            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
             ->count();
         $avgLessonProgress = (float) (LessonUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $lessonsTotal = (int) Lesson::count();
 
-        // Units stats
         $unitsWorked = UnitUserProgress::where('user_id', $userId)->count();
         $unitsCompleted = UnitUserProgress::where('user_id', $userId)
-            ->where(function ($q) {
-                $q->where('progress', '>=', 100)->orWhere('status', 'completed');
-            })
+            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
             ->count();
         $avgUnitProgress = (float) (UnitUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $unitsTotal = (int) Unit::count();
 
-        // Exercises attempts
         $totalAttempts = UserExerciseAttempt::where('user_id', $userId)->count();
         $correctAttempts = UserExerciseAttempt::where('user_id', $userId)->where('is_correct', true)->count();
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100, 1) : 0.0;
         $lastActivity = UserExerciseAttempt::where('user_id', $userId)->max('answered_at');
 
-        // Compute today's minutes from finished lesson activities today (sum of minutes), including repeated finishes
         $today = now()->toDateString();
         $todayMinutes = (int) LessonActivity::where('user_id', $userId)
             ->whereDate('created_at', $today)
@@ -66,7 +53,6 @@ class ProfileController extends Controller
         $remainingToday = max(0, $dailyGoal - $todayMinutes);
         $dailyReached = $dailyGoal > 0 ? $todayMinutes >= $dailyGoal : false;
 
-        // Overall progress (use lesson avg as main indicator if available, else unit avg)
         $overallProgress = $avgLessonProgress > 0 ? $avgLessonProgress : $avgUnitProgress;
 
         return Inertia::render('Profile/Index', [
@@ -116,9 +102,6 @@ class ProfileController extends Controller
             ],
         ]);
     }
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): Response
     {
         $user = $request->user()->load(['profile']);
@@ -143,9 +126,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update only the user's main data (first_name, last_name, email).
-     */
     public function updateUser(UserUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
@@ -164,15 +144,11 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit');
     }
 
-    /**
-     * Update only the user's profile data (nickname, birthdate, daily_goal_minutes, total_minutes, streak_days, gender).
-     */
     public function updateProfile(ProfileUpdateRequest $request, FileService $fileService): RedirectResponse
     {
         $user = $request->user();
         if ($user) {
             $profile = $user->profile()->firstOrNew([]);
-            // Normalize optional fields: convert empty strings to null to avoid DB unique/date issues
             $data = $request->only([
                 'nickname',
                 'birthdate',
@@ -202,9 +178,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit');
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validate([
@@ -212,14 +185,10 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return Redirect::to('/');
     }
 }
