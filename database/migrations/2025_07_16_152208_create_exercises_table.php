@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->increments('id');
             $table->string('prompt');
             $table->string('file')->nullable();
+            $table->string('file_b')->nullable();
             $table->json('options')->nullable();
             $table->json('solution');
             $table->string('explanation')->nullable();

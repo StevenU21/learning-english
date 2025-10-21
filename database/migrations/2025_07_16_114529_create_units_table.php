@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('units', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->integer('expected_time');
             $table->string('description')->nullable();
             $table->string('image')->nullable();
             $table->string('slug');
