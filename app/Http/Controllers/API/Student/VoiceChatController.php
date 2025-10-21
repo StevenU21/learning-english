@@ -9,10 +9,6 @@ use Illuminate\Http\JsonResponse;
 
 class VoiceChatController extends Controller
 {
-    public function __construct(private readonly OpenAIRealtimeService $realtimeService)
-    {
-    }
-
     /**
      * Get initial voice chat configuration.
      */
@@ -28,12 +24,12 @@ class VoiceChatController extends Controller
     /**
      * Create a new voice chat session.
      */
-    public function createSession(VoiceChatSessionRequest $request): JsonResponse
+    public function createSession(VoiceChatSessionRequest $request, OpenAIRealtimeService $realtimeService): JsonResponse
     {
         $validated = $request->validated();
 
         try {
-            $session = $this->realtimeService->createVoiceSession(
+            $session = $realtimeService->createVoiceSession(
                 voice: $validated['voice'] ?? null,
                 instructions: $validated['instructions'] ?? null,
                 model: $validated['model'] ?? null,
