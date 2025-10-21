@@ -41,13 +41,13 @@ class GoogleController extends Controller
 
         // Encontrar o crear usuario
         $user = User::where('email', $email)->first();
-        if (! $user) {
+        if (!$user) {
             $user = User::create([
-                'first_name'        => $firstName ?: 'Usuario',
-                'last_name'         => $lastName ?: 'Google',
-                'email'             => $email,
-                'password'          => Hash::make(Str::random(32)),
-                'google_id'         => $googleId,
+                'first_name' => $firstName ?: 'Usuario',
+                'last_name' => $lastName ?: 'Google',
+                'email' => $email,
+                'password' => Hash::make(Str::random(32)),
+                'google_id' => $googleId,
                 'email_verified_at' => now(),
             ]);
             $user->profile()->create();
@@ -81,9 +81,9 @@ class GoogleController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user'         => $user,
+            'user' => $user,
             'access_token' => $token,
-            'token_type'   => 'Bearer',
+            'token_type' => 'Bearer',
         ], 200);
     }
 }

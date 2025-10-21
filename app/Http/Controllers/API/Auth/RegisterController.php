@@ -17,16 +17,16 @@ class RegisterController extends Controller
     {
         $fields = $request->validate([
             'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
-            'email'      => 'required|string|email|max:255|unique:' . User::class,
-            'password'   => ['required', 'confirmed', Rules\Password::defaults()],
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:' . User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'first_name' => $fields['first_name'],
-            'last_name'  => $fields['last_name'],
-            'email'      => $fields['email'],
-            'password'   => Hash::make($fields['password']),
+            'last_name' => $fields['last_name'],
+            'email' => $fields['email'],
+            'password' => Hash::make($fields['password']),
         ]);
 
         // Crear perfil asociado
@@ -37,9 +37,9 @@ class RegisterController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user'         => $user,
+            'user' => $user,
             'access_token' => $token,
-            'token_type'   => 'Bearer',
+            'token_type' => 'Bearer',
         ], 201);
     }
 }

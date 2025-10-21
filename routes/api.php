@@ -12,12 +12,12 @@ use App\Http\Controllers\API\ExerciseController;
 use App\Http\Controllers\API\TextChatController;
 use App\Http\Controllers\API\VoiceChatController;
 
-Route::post('auth/register', [RegisterController::class, 'register']);
-Route::post('auth/login', [LoginController::class, 'login']);
-Route::post('auth/google', [GoogleController::class, 'authenticate']);
+Route::post('register', [RegisterController::class, 'register']);
+Route::post('login', [LoginController::class, 'login']);
+Route::post('google', [GoogleController::class, 'authenticate']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('auth/logout', [LoginController::class, 'logout']);
+    Route::post('logout', [LoginController::class, 'logout']);
 
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
