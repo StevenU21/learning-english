@@ -9,7 +9,6 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Services\FileService;
-use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
