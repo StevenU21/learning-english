@@ -62,8 +62,10 @@ Route::middleware('auth')->group(function () {
         // Lesson summary within a Unit
         Route::get('units/{unit}/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
         Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
+
         Route::get('voice-chat', [\App\Http\Controllers\Student\VoiceChatController::class, 'index'])->name('voice-chat.index');
         Route::post('voice-chat/session', [\App\Http\Controllers\Student\VoiceChatController::class, 'createSession'])->name('voice-chat.session');
+
         Route::get('text-chat', [TextChatController::class, 'index'])->name('text-chat.index');
         Route::post('text-chat/message', [TextChatController::class, 'sendMessage'])->name('text-chat.message');
     });
@@ -73,12 +75,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('units', UnitController::class);
         Route::resource('lessons', LessonController::class);
         Route::resource('resources', ResourceController::class);
+
         Route::get('resources/{resource}/download', [ResourceController::class, 'download'])->name('resources.download');
         Route::resource('exercises', ExerciseController::class);
-        Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
-    });
 
-    Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
+        Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
+        Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
+    });
 
 });
 
