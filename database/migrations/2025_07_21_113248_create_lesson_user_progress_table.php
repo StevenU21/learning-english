@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->bigIncrements('id');
             $table->integer('progress')->default(0);
             $table->enum('status', ['no_comenzado', 'en_progreso', 'completado'])->default('no_comenzado');
+            $table->unsignedInteger('attempts_count')->default(0);
+            $table->dateTime('last_completed_at')->nullable();
 
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
