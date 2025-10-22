@@ -17,6 +17,8 @@ class ExerciseTypeLogic
         'Completar diálogo' => 'validateDialogue',
         'Elige lo que escuchas' => 'validateListenAndChoose',
         'Escucha y responde' => 'validateListenAndRespond',
+        'Escucha y escribe' => 'validateListenAndWrite',
+        'Traduce la oración' => 'validateTranslateSentence',
     ];
 
     public static function validateAndProcess(string $typeName, array $data): array
@@ -47,7 +49,7 @@ class ExerciseTypeLogic
         $solution = collect(Arr::wrap($data->get('solution')));
         $data->put('solution', $solution->toArray());
 
-        $invalid = $solution->reject(static fn ($value) => $options->contains($value));
+        $invalid = $solution->reject(static fn($value) => $options->contains($value));
 
         if ($invalid->isNotEmpty()) {
             $errors->put('solution', 'La solución debe estar entre las opciones.');
@@ -127,6 +129,26 @@ class ExerciseTypeLogic
 
         $data->put('options', ['Igual', 'Distinto']);
         self::ensureSingleSolution($data, $errors, 'La solución debe ser "Igual" o "Distinto".', $data->get('options'));
+    }
+
+    protected static function validateTranslateSentence(Collection $data, Collection $errors): void
+    {
+        if (blank($data->get('prompt'))) {
+            $errors->put('prompt', 'Debes ingresar el texto a traducir.');
+        }
+        if (blank($data->get('solution'))) {
+            $errors->put('solution', 'Debes ingresar la traducción esperada.');
+        }
+    }
+
+    protected static function validateListenAndWrite(Collection $data, Collection $errors): void
+    {
+        if (blank($data->get('file'))) {
+            $errors->put('file', 'Debes subir un archivo de audio.');
+        }
+        if (blank($data->get('solution'))) {
+            $errors->put('solution', 'Debes ingresar la transcripción esperada.');
+        }
     }
 
     /**
