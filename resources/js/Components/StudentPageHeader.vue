@@ -1,0 +1,90 @@
+<script setup>
+import { Link } from '@inertiajs/vue3';
+
+const props = defineProps({
+    title: { type: String, required: true },
+    subtitle: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    breadcrumbs: { type: Array, default: () => [] },
+    gradientClasses: { type: String, default: 'from-purple-600 to-indigo-600' },
+});
+</script>
+
+<template>
+    <!-- Breadcrumbs -->
+    <nav v-if="breadcrumbs && breadcrumbs.length" class="mt-1 mb-2 text-sm text-gray-500 dark:text-gray-400"
+        aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1">
+            <template v-for="(bc, idx) in breadcrumbs" :key="idx">
+                <li v-if="idx === 0">
+                    <component :is="bc.href ? Link : 'span'" :href="bc.href"
+                        class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                        <i v-if="bc.icon" :class="[bc.icon, 'mr-1']"></i>
+                        <span>{{ bc.label }}</span>
+                    </component>
+                </li>
+                <li v-else class="flex items-center">
+                    <span class="text-gray-400 mx-1">/</span>
+                    <component :is="bc.href ? Link : 'span'" :href="bc.href"
+                        :class="bc.href ? 'hover:text-gray-700 dark:hover:text-gray-200 transition-colors' : 'text-gray-700 dark:text-gray-200'">
+                        <i v-if="bc.icon" :class="[bc.icon, 'mr-1']"></i>
+                        <span>{{ bc.label }}</span>
+                    </component>
+                </li>
+            </template>
+        </ol>
+    </nav>
+
+    <!-- Compact Page header card -->
+    <section class="relative overflow-hidden rounded-xl bg-gradient-to-r shadow-md animate-gradient"
+        :class="gradientClasses">
+        <div class="absolute inset-0 opacity-10 pointer-events-none"
+            style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.25), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.15), transparent 40%);">
+        </div>
+        <div class="relative py-2 px-4 min-h-0">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between min-h-0 gap-1">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-1">
+                    <h1
+                        class="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center min-h-0 leading-tight m-0">
+                        <i v-if="icon" :class="[icon, 'text-white/90 mr-2']"></i>
+                        {{ title }}
+                    </h1>
+                    <p v-if="subtitle" class="mt-0 text-white/80 text-sm leading-tight m-0 sm:ml-4">{{ subtitle }}</p>
+                </div>
+                <div class="flex items-center gap-2 min-h-0">
+                    <slot name="actions" />
+                </div>
+            </div>
+            <!-- Optional filters area -->
+            <div v-if="$slots.filters" class="mt-2 sm:mt-0 flex items-center">
+                <slot name="filters" />
+            </div>
+        </div>
+    </section>
+</template>
+
+<style scoped>
+.animate-gradient {
+    background-image: linear-gradient(90deg, #c026d3, #7c3aed, #4f46e5, #c026d3);
+    background-size: 300% 100%;
+    animation: gradientShift 8s linear infinite alternate;
+    filter: saturate(1.1) contrast(1.03);
+    will-change: background-position;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-gradient {
+        animation: none;
+    }
+}
+</style>
