@@ -19,6 +19,7 @@ class ExerciseTypeLogic
         'Escucha y responde' => 'validateListenAndRespond',
         'Escucha y escribe' => 'validateListenAndWrite',
         'Traduce la oración' => 'validateTranslateSentence',
+        'Di la frase' => 'validateSayThePhrase',
     ];
 
     public static function validateAndProcess(string $typeName, array $data): array
@@ -148,6 +149,16 @@ class ExerciseTypeLogic
         }
         if (blank($data->get('solution'))) {
             $errors->put('solution', 'Debes ingresar la transcripción esperada.');
+        }
+    }
+
+    protected static function validateSayThePhrase(Collection $data, Collection $errors): void
+    {
+        if (blank($data->get('prompt'))) {
+            $errors->put('prompt', 'Debes ingresar el texto que el usuario debe decir.');
+        }
+        if (blank($data->get('solution'))) {
+            $errors->put('solution', 'Debes ingresar la frase esperada como solución.');
         }
     }
 
