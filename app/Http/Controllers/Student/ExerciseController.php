@@ -12,10 +12,18 @@ use App\Services\StreakService;
 use App\Services\ActivityService;
 use App\Services\LessonProgressService;
 use App\Services\UnitProgressService;
+use App\Services\SayThePhraseService;
 use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
+    protected $sayThePhraseService;
+
+    public function __construct(SayThePhraseService $sayThePhraseService)
+    {
+        $this->sayThePhraseService = $sayThePhraseService;
+    }
+
     public function showSequence(Unit $unit, Lesson $lesson)
     {
         if ($lesson->unit_id !== $unit->id) {
@@ -40,7 +48,20 @@ class ExerciseController extends Controller
         $attempts = $request->input('attempts');
 
         return DB::transaction(function () use ($request, $userId, $attempts) {
-            foreach ($attempts as $attempt) {
+            foreach ($attempts as &$attempt) {
+                // Detectar tipo de ejercicio "Di la frase" y evaluar con el servicio
+                if (($attempt['type_name'] ?? null) === 'Di la frase' && isset($attempt['audio_path'], $attempt['solution'])) {
+                    $evaluation = $this->sayThePhraseService->processAttempt([
+                        'audio_path' => $attempt['audio_path'],
+                        'solution' => $attempt['solution'],
+                        'language' => $attempt['language'] ?? 'en',
+                    ]);
+                    $attempt['answer_given'] = $evaluation['transcription'] ?? '';
+                    $attempt['is_correct'] = ($evaluation['score'] ?? 0) >= 80;
+                    $attempt['score'] = $evaluation['score'] ?? null;
+                    $attempt['evaluation_result'] = $evaluation['result'] ?? null;
+                }
+
                 $lastAttempt = UserExerciseAttempt::where('user_id', $userId)
                     ->where('exercise_id', $attempt['exercise_id'])
                     ->orderByDesc('attempt_number')
@@ -58,6 +79,7 @@ class ExerciseController extends Controller
                         'is_correct' => $attempt['is_correct'],
                         'started_at' => $attempt['started_at'] ?? now(),
                         'answered_at' => now(),
+                        // Puedes guardar score/evaluation_result si tienes columnas para ello
                     ]
                 );
             }

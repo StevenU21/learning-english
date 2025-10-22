@@ -12,6 +12,7 @@ import ChooseAudioFields from './components/ChooseAudioFields.vue';
 import ListenAndAnswerFields from './components/ListenAndAnswerFields.vue';
 import ListenAndWriteFields from './components/ListenAndWriteFields.vue';
 import TranslateSentenceFields from './components/TranslateSentenceFields.vue';
+import SayThePhraseFields from './components/SayThePhraseFields.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import TextArea from '@/Components/TextArea.vue';
@@ -108,6 +109,8 @@ const componentMap = computed(() => {
             return ListenAndWriteFields;
         case 'Traduce la oración':
             return TranslateSentenceFields;
+        case 'Di la frase':
+            return SayThePhraseFields;
         case 'Respuesta corta':
         case 'Ensayo':
             return ShortAnswerFields;

@@ -34,4 +34,29 @@ class SayThePhraseService
             'expected' => $expected,
         ];
     }
+
+    /**
+     * Procesa el intento del usuario para el ejercicio "Di la frase".
+     * Espera un array con las claves: 'prompt', 'solution', 'audio_path', y opcionalmente 'language'.
+     * Devuelve el resultado de la evaluación y la transcripción.
+     */
+    public function processAttempt(array $data): array
+    {
+        $audioPath = $data['audio_path'] ?? null;
+        $solution = $data['solution'] ?? '';
+        $language = $data['language'] ?? 'en';
+
+        if (!$audioPath || !$solution) {
+            return [
+                'error' => 'Faltan datos requeridos: audio_path o solution.'
+            ];
+        }
+
+        $userText = $this->transcribeAudio($audioPath, $language);
+        $evaluation = $this->evaluate($solution, $userText);
+
+        return array_merge([
+            'transcription' => $userText,
+        ], $evaluation);
+    }
 }
