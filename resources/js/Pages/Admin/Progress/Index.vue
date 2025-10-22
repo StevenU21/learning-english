@@ -10,6 +10,7 @@ import DataTable from '@/Components/DataTable.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 
+
 const props = defineProps({
     units: Array,
     users: Array,
@@ -21,30 +22,22 @@ const props = defineProps({
     selectedStatus: String,
 });
 
-const {
-    units,
-    users,
-    lessons,
-    progress: progressProp,
-    selectedUnit,
-    selectedUser,
-    selectedLesson,
-    selectedStatus,
-} = props;
-// Derive array of items and pagination props
-const progressList = computed(() => Array.isArray(progressProp) ? progressProp : (progressProp.data ?? []));
-const links = computed(() => Array.isArray(progressProp) ? [] : (progressProp.links ?? []));
-const meta = computed(() => Array.isArray(progressProp) ? null : ({
-    from: progressProp.from,
-    to: progressProp.to,
-    total: progressProp.total,
+const progressList = computed(() => {
+    const list = props.progress;
+    return Array.isArray(list) ? list : (list?.data ?? []);
+});
+const links = computed(() => Array.isArray(props.progress) ? [] : (props.progress?.links ?? []));
+const meta = computed(() => Array.isArray(props.progress) ? null : ({
+    from: props.progress?.from,
+    to: props.progress?.to,
+    total: props.progress?.total,
 }));
 
 const form = useForm({
-    unit_id: selectedUnit || '',
-    user_id: selectedUser || '',
-    lesson_id: selectedLesson || '',
-    status: selectedStatus || '',
+    unit_id: props.selectedUnit || '',
+    user_id: props.selectedUser || '',
+    lesson_id: props.selectedLesson || '',
+    status: props.selectedStatus || '',
 });
 
 function applyFilters() {
@@ -77,8 +70,8 @@ watch(() => [form.unit_id, form.user_id, form.lesson_id, form.status],
 
 // Lista de lecciones dependiente de unidad
 const filteredLessons = computed(() => {
-    if (!form.unit_id) return lessons;
-    return lessons.filter(l => String(l.unit_id) === String(form.unit_id));
+    if (!form.unit_id) return props.lessons;
+    return props.lessons.filter(l => String(l.unit_id) === String(form.unit_id));
 });
 
 // Columns for DataTable (similar style to Units)
@@ -92,8 +85,6 @@ const columns = [
     { key: 'progress', label: 'Progreso', icon: 'fa-solid fa-bars-progress', align: 'left', tdClass: 'text-gray-600 dark:text-gray-400' },
     { key: 'status', label: 'Estado', icon: 'fa-solid fa-flag-checkered', align: 'left' },
 ];
-
-
 
 </script>
 
@@ -148,7 +139,8 @@ const columns = [
                 <div
                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
                     <DataTable :items="progressList" :columns="columns"
-                        :empty-text="'No se encontraron registros de progreso.'" show-actions>
+                        :empty-text="'No se encontraron registros de progreso.'" show-actions :links="links"
+                        :meta="meta">
                         <template #cell-status="{ value }">
                             <StatusBadge :status="value" />
                         </template>
@@ -168,9 +160,7 @@ const columns = [
                                 class="w-12 h-12 rounded-full object-cover" />
                         </template>
                     </DataTable>
-                    <div class="border-t border-gray-200 dark:border-gray-700">
-                        <Pagination :links="links" :meta="meta" />
-                    </div>
+                    <!-- La paginación ahora la maneja DataTable -->
                 </div>
             </div>
         </div>
