@@ -12,6 +12,8 @@ import MatchDefinitions from './components/MatchDefinitions.vue';
 import CompleteDialog from './components/CompleteDialog.vue';
 import ChooseAudio from './components/ChooseAudio.vue';
 import ListenAndAnswer from './components/ListenAndAnswer.vue';
+import ListenAndWrite from './components/ListenAndWrite.vue';
+import TranslateSentence from './components/TranslateSentence.vue';
 import Badge from '@/Components/Badge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -156,7 +158,9 @@ const componentMap = {
     'Emparejar definiciones': MatchDefinitions,
     'Completar diálogo': CompleteDialog,
     'Elige lo que escuchas': ChooseAudio,
-    'Escucha y responde': ListenAndAnswer
+    'Escucha y responde': ListenAndAnswer,
+    'Escucha y escribe': ListenAndWrite,
+    'Traduce la oración': TranslateSentence
 };
 
 </script>
