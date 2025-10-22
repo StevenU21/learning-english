@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Handle login request and issue Sanctum token.
-     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -32,9 +29,6 @@ class LoginController extends Controller
         ], 200);
     }
 
-    /**
-     * Handle logout and revoke token.
-     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

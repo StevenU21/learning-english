@@ -12,7 +12,6 @@ use App\Services\FileService;
 
 class GoogleController extends Controller
 {
-
     public function authenticate(Request $request, FileService $fileService)
     {
         $request->validate([

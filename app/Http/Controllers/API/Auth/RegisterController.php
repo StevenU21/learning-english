@@ -10,9 +10,6 @@ use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
-    /**
-     * Handle registration request and issue Sanctum token.
-     */
     public function register(Request $request)
     {
         $fields = $request->validate([
