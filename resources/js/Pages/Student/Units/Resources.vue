@@ -16,7 +16,7 @@ const hasResources = computed(() => props.resources.length > 0);
     <StudentLayout>
 
         <Head :title="'Recursos - ' + unit.name" />
-        <template #header>
+        <!-- <template #header>
             <PageHeader
                 :title="`Recursos de ${unit.name}`"
                 subtitle="Descarga materiales y archivos."
@@ -35,7 +35,7 @@ const hasResources = computed(() => props.resources.length > 0);
                     </Link>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-8">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">

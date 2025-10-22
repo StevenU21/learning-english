@@ -136,18 +136,6 @@ const page = usePage();
                             <div class="text-sm font-medium text-gray-500">{{ $page.props.auth.user.email }}</div>
                         </div>
                         <div class="mt-3 space-y-1">
-                            <Link :href="route('student.units.index')"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
-                            <i class="fa-solid fa-layer-group mr-2"></i>Unidades
-                            </Link>
-                            <Link :href="route('student.voice-chat.index')"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
-                            <i class="fa-solid fa-microphone-lines mr-2"></i>Conversación
-                            </Link>
-                            <Link :href="route('student.text-chat.index')"
-                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
-                            <i class="fa-solid fa-comments mr-2"></i>Chat de texto
-                            </Link>
                             <Link :href="route('profile.index')"
                                 class="block px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900">
                             <i class="fa-solid fa-user mr-2"></i>Perfil

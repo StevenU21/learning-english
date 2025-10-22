@@ -234,14 +234,14 @@ async function handleResetChat() {
     <Head title="Chat de texto" />
 
     <StudentLayout>
-        <template #header>
+        <!-- <template #header>
             <PageHeader title="Chat de texto"
                 subtitle="Practica la escritura y comprensión en inglés con una IA que corrige y sugiere nuevas ideas."
                 icon="fa-solid fa-comments" :breadcrumbs="[
                     { label: 'Inicio', href: route('student.units.index'), icon: 'fa-solid fa-house' },
                     { label: 'Chat de texto' }
                 ]" gradient-classes="from-violet-600 to-indigo-600" />
-        </template>
+        </template> -->
 
         <div
             class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8 lg:h-auto lg:min-h-0">

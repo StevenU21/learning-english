@@ -41,7 +41,7 @@ const genderLabel = computed(() => {
 
         <Head title="Perfil" />
 
-        <template #header>
+        <!-- <template #header>
             <PageHeader title="Perfil" subtitle="Resumen de tu cuenta" icon="fa-solid fa-user" :breadcrumbs="[
                 { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
                 { label: 'Perfil' }
@@ -54,7 +54,7 @@ const genderLabel = computed(() => {
                     </Link>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-6">
             <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">

@@ -165,7 +165,7 @@ const componentMap = {
     <StudentLayout>
 
         <Head :title="`Ejercicios - ${lesson.name}`" />
-        <template #header>
+        <!-- <template #header>
             <PageHeader :title="`Ejercicios de ${lesson.name}`" :subtitle="`${exercises.length} ejercicios`"
                 icon="fa-solid fa-pencil" :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
@@ -180,7 +180,7 @@ const componentMap = {
                     </Link>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-6">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">

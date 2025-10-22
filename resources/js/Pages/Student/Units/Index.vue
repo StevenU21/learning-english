@@ -54,7 +54,7 @@ import SelectInput from '@/Components/SelectInput.vue';
     <StudentLayout>
 
         <Head title="Unidades" />
-        <template #header>
+        <!-- <template #header>
             <PageHeader title="Unidades" subtitle="Explora las unidades disponibles." icon="fa-solid fa-layer-group"
                 :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
@@ -72,7 +72,7 @@ import SelectInput from '@/Components/SelectInput.vue';
                     </div>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-10">
             <div class="w-full px-4 sm:px-6 lg:px-8">

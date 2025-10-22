@@ -14,7 +14,7 @@ const props = defineProps({
 
         <Head :title="`Resumen de ${lesson.name}`" />
 
-        <template #header>
+        <!-- <template #header>
             <PageHeader :title="`Resumen de ${lesson.name}`" :subtitle="`${exercises.length} ejercicios`"
                 icon="fa-solid fa-list" :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
@@ -28,7 +28,7 @@ const props = defineProps({
                     </Link>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-10">
             <div class="w-full px-4 sm:px-6 lg:px-8">

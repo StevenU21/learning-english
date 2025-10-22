@@ -62,7 +62,7 @@ function applyFilter() {
 
         <Head :title="selectedUnit ? `Lecciones - ${selectedUnit.name}` : 'Lecciones'" />
 
-        <template #header>
+        <!-- <template #header>
             <PageHeader title="Lecciones" subtitle="Explora las lecciones disponibles." icon="fa-solid fa-book"
                 :breadcrumbs="[
                     { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
@@ -77,7 +77,7 @@ function applyFilter() {
                     </Link>
                 </template>
             </PageHeader>
-        </template>
+        </template> -->
 
         <div class="py-10">
             <div class="w-full px-4 sm:px-6 lg:px-8">

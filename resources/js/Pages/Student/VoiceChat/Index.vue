@@ -109,13 +109,13 @@ const startSessionWithVoice = () =>
     <Head title="Chat de voz" />
 
     <StudentLayout>
-        <template #header>
+        <!-- <template #header>
             <PageHeader title="Chat de voz" subtitle="Practica tu inglés con una conversación guiada por IA."
                 icon="fa-solid fa-microphone-lines" :breadcrumbs="[
                     { label: 'Inicio', href: route('student.units.index'), icon: 'fa-solid fa-house' },
                     { label: 'Chat de voz' }
                 ]" gradient-classes="from-sky-600 to-indigo-600" />
-        </template>
+        </template> -->
         <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 pb-24 dark:bg-gray-800 sm:pb-8">
             <div class="w-full flex-1">
                 <div class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-4 py-10 sm:px-6 lg:px-8">
