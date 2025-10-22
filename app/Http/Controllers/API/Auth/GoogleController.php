@@ -16,7 +16,7 @@ class GoogleController extends Controller
     public function authenticate(Request $request, FileService $fileService)
     {
         $request->validate([
-            'token' => 'required|string',
+            'token' => ['required', 'string', 'max:255'],
         ]);
 
         try {
