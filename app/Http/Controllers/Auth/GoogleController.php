@@ -26,14 +26,9 @@ class GoogleController extends Controller
         $name = $googleUser->getName() ?: '';
         $avatarUrl = $googleUser->getAvatar();
 
-        // Split name into first and last
-        $firstName = $name;
-        $lastName = '';
-        if (strpos($name, ' ') !== false) {
-            $parts = preg_split('/\s+/', trim($name), 2);
-            $firstName = $parts[0] ?? '';
-            $lastName = $parts[1] ?? '';
-        }
+        $nameParts = collect(explode(' ', trim($name)));
+        $firstName = $nameParts->first() ?: 'Usuario';
+        $lastName = $nameParts->count() > 1 ? $nameParts->slice(1)->implode(' ') : 'Google';
 
         $user = User::where('email', $email)->first();
         if (!$user) {
@@ -45,14 +40,11 @@ class GoogleController extends Controller
                 'google_id' => $googleUser->getId(),
                 'email_verified_at' => now(),
             ]);
-            // Crear perfil asociado vacío
             $user->profile()->create();
-            // Rol por defecto estudiante
             if (method_exists($user, 'assignRole')) {
                 $user->assignRole('student');
             }
         } else {
-            // Asociar google_id si aún no está, y verificar email
             $updates = [];
             if (empty($user->google_id)) {
                 $updates['google_id'] = $googleUser->getId();
@@ -65,7 +57,6 @@ class GoogleController extends Controller
             }
         }
 
-        // Intentar guardar avatar remoto usando FileService si hay URL
         if ($avatarUrl) {
             $profile = $user->profile()->firstOrCreate([]);
             $saved = $fileService->storeRemote($profile, 'avatar', $avatarUrl);

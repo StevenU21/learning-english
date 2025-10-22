@@ -33,13 +33,9 @@ class GithubController extends Controller
         $githubId = $githubUser->getId();
         $githubToken = $githubUser->token ?? null;
 
-        $firstName = $name;
-        $lastName = '';
-        if (strpos($name, ' ') !== false) {
-            $parts = preg_split('/\s+/', trim($name), 2);
-            $firstName = $parts[0] ?? '';
-            $lastName = $parts[1] ?? '';
-        }
+        $nameParts = collect(explode(' ', trim($name)));
+        $firstName = $nameParts->first() ?: 'Usuario';
+        $lastName = $nameParts->count() > 1 ? $nameParts->slice(1)->implode(' ') : 'Github';
 
         $user = User::where('email', $email)->first();
         if (!$user) {
@@ -57,19 +53,15 @@ class GithubController extends Controller
                 $data['github_token'] = $githubToken;
             }
             $user = User::create($data);
-            // Crear perfil asociado vacío
             $user->profile()->create();
-            // Rol por defecto estudiante
             if (method_exists($user, 'assignRole')) {
                 $user->assignRole('student');
             }
         } else {
-            // Asociar github_id/token si las columnas existen y aún no están, y verificar email
             $updates = [];
             if (Schema::hasColumn('users', 'github_id') && empty($user->github_id)) {
                 $updates['github_id'] = $githubId;
             }
-            // Actualizar token si cambia o no existe
             if (Schema::hasColumn('users', 'github_token') && (empty($user->github_token) || $user->github_token !== $githubToken)) {
                 $updates['github_token'] = $githubToken;
             }
@@ -81,7 +73,6 @@ class GithubController extends Controller
             }
         }
 
-        // Intentar guardar avatar remoto usando FileService si hay URL
         if ($avatarUrl) {
             $profile = $user->profile()->firstOrCreate([]);
             $saved = $fileService->storeRemote($profile, 'avatar', $avatarUrl);

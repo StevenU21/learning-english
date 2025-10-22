@@ -5,41 +5,34 @@ namespace App\Http\Controllers\API\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use App\Services\FileService;
 
 class GoogleController extends Controller
 {
-    /**
-     * Handle Google OAuth for mobile clients using a Google access token.
-     */
+
     public function authenticate(Request $request, FileService $fileService)
     {
         $request->validate([
             'token' => 'required|string',
         ]);
 
-        // Verificar id_token con Google Tokeninfo API
-        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $request->token]);
-        if ($response->failed()) {
+        try {
+            $googleUser = Socialite::driver('google')->userFromToken($request->token);
+        } catch (\Exception $e) {
             return response()->json(['message' => 'Token inválido o expirado'], 401);
         }
-        $data = $response->json();
-        $email = $data['email'] ?? null;
-        $name = $data['name'] ?? '';
-        $avatarUrl = $data['picture'] ?? null;
-        $googleId = $data['sub'] ?? null;
+        $email = $googleUser->getEmail();
+        $name = $googleUser->getName() ?? '';
+        $avatarUrl = $googleUser->getAvatar();
+        $googleId = $googleUser->getId();
 
-        // Separar nombre y apellido
-        $firstName = $name;
-        $lastName = '';
-        if (strpos($name, ' ') !== false) {
-            [$firstName, $lastName] = preg_split('/\s+/', trim($name), 2);
-        }
+        $nameParts = collect(explode(' ', trim($name)));
+        $firstName = $nameParts->first() ?: 'Usuario';
+        $lastName = $nameParts->count() > 1 ? $nameParts->slice(1)->implode(' ') : 'Google';
 
-        // Encontrar o crear usuario
         $user = User::where('email', $email)->first();
         if (!$user) {
             $user = User::create([
@@ -62,12 +55,12 @@ class GoogleController extends Controller
             if (empty($user->email_verified_at)) {
                 $updates['email_verified_at'] = now();
             }
+
             if ($updates) {
                 $user->fill($updates)->save();
             }
         }
 
-        // Guardar avatar remoto si existe
         if ($avatarUrl) {
             $profile = $user->profile()->firstOrCreate([]);
             $saved = $fileService->storeRemote($profile, 'avatar', $avatarUrl);
@@ -77,7 +70,6 @@ class GoogleController extends Controller
             }
         }
 
-        // Generar token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
