@@ -35,11 +35,6 @@ class SayThePhraseService
         ];
     }
 
-    /**
-     * Procesa el intento del usuario para el ejercicio "Di la frase".
-     * Espera un array con las claves: 'prompt', 'solution', 'audio_path', y opcionalmente 'language'.
-     * Devuelve el resultado de la evaluación y la transcripción.
-     */
     public function processAttempt(array $data): array
     {
         $audioPath = $data['audio_path'] ?? null;

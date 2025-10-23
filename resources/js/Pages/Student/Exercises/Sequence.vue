@@ -14,6 +14,7 @@ import ChooseAudio from './components/ChooseAudio.vue';
 import ListenAndAnswer from './components/ListenAndAnswer.vue';
 import ListenAndWrite from './components/ListenAndWrite.vue';
 import TranslateSentence from './components/TranslateSentence.vue';
+import SayThePhrase from './components/SayThePhrase.vue';
 import Badge from '@/Components/Badge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -160,7 +161,8 @@ const componentMap = {
     'Elige lo que escuchas': ChooseAudio,
     'Escucha y responde': ListenAndAnswer,
     'Escucha y escribe': ListenAndWrite,
-    'Traduce la oración': TranslateSentence
+    'Traduce la oración': TranslateSentence,
+    'Di la frase': SayThePhrase
 };
 
 </script>
@@ -183,8 +185,8 @@ const componentMap = {
                         <i class="fa-solid fa-arrow-left mr-2"></i>Volver
                     </Link>
                 </template>
-            </PageHeader>
-        </template> -->
+</PageHeader>
+</template> -->
 
         <div class="py-6">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -236,7 +238,7 @@ const componentMap = {
                             <div class="flex justify-between items-center">
                                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
                                     exercise.prompt
-                                }}</span>
+                                    }}</span>
                                 <Badge :type="answered[idx] ? 'success' : 'error'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </Badge>
