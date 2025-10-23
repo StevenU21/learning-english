@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import CustomAudioPlayer from './CustomAudioPlayer.vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -100,7 +101,11 @@ async function submit() {
             <span v-if="isRecording" class="text-xs text-red-500">Grabando... Haz clic para detener</span>
             <span v-else-if="audioUrl" class="text-xs text-green-600">Grabación lista <i
                     class="fa-solid fa-circle-check"></i></span>
-            <audio v-if="audioUrl" :src="audioUrl" controls class="mt-2" />
+            <div v-if="audioUrl" class="w-full flex flex-col items-center mt-2">
+                <div class="w-full max-w-xs">
+                    <CustomAudioPlayer :src="audioUrl" />
+                </div>
+            </div>
             <p v-if="error" class="text-xs text-red-400 mt-2">{{ error }}</p>
         </div>
 
@@ -121,13 +126,6 @@ async function submit() {
                 </svg>
                 <span class="text-xs text-indigo-600 mt-2">Procesando respuesta...</span>
             </div>
-        </div>
-
-        <!-- Feedback Solution -->
-        <div v-if="showSolution()"
-            class="mt-4 p-4 rounded-xl bg-green-50 dark:bg-green-900 text-green-800 dark:text-green-100 border border-green-200 dark:border-green-700 text-lg flex items-center gap-2 shadow-sm">
-            <i class="fa-solid fa-lightbulb text-green-400"></i>
-            <span><strong>Solución esperada:</strong> {{ props.exercise.solution[0] }}</span>
         </div>
     </div>
 </template>
