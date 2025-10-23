@@ -30,6 +30,7 @@ class ProgressController extends Controller
             ->when($userId, fn($q) => $q->where('user_id', $userId))
             ->when($lessonId, fn($q) => $q->where('lesson_id', $lessonId))
             ->when($status, fn($q) => $q->where('status', $status))
+            ->latest()
             ->paginate(10)
             ->appends($request->all());
 

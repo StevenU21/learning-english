@@ -15,7 +15,7 @@ class ExerciseTypeController extends Controller
     public function index()
     {
         $this->authorize('viewAny', ExerciseType::class);
-        $exerciseTypes = ExerciseType::paginate(10);
+        $exerciseTypes = ExerciseType::latest()->paginate(10);
         return Inertia::render('Admin/ExerciseTypes/Index', [
             'exerciseTypes' => $exerciseTypes
         ]);

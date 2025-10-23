@@ -34,6 +34,7 @@ class ExerciseController extends Controller
             ->when($lesson, fn($q) => $q->where('lesson_id', $lesson))
             ->when($unit, fn($q) => $q->whereHas('lesson', fn($q) => $q->where('unit_id', $unit)))
             ->with(['exerciseType', 'lesson'])
+            ->latest()
             ->paginate(10)
             ->appends(request()->all());
 

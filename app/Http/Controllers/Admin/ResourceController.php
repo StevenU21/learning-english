@@ -25,6 +25,7 @@ class ResourceController extends Controller
 
         $resources = Resource::with('unit')
             ->when($request->filled('unit'), fn($q) => $q->where('unit_id', $request->input('unit')))
+            ->latest()
             ->paginate(10)
             ->withQueryString();
 

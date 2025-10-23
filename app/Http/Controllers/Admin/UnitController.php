@@ -18,6 +18,7 @@ class UnitController extends Controller
 
         $units = Unit::with('level')
             ->withSum('lessons as lessons_sum_duration', 'duration')
+            ->latest()
             ->paginate(10);
 
         $units->getCollection()->transform(fn($unit) => [

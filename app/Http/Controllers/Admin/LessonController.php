@@ -22,6 +22,7 @@ class LessonController extends Controller
 
         $lessons = Lesson::with('unit')
             ->when($request->filled('unit'), fn($q) => $q->where('unit_id', $request->input('unit')))
+            ->latest()
             ->paginate(10)
             ->withQueryString();
 
