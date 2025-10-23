@@ -35,19 +35,19 @@ function getButtonClasses(option) {
     const base = 'w-full px-4 py-3 rounded-xl border-2 text-sm font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70';
 
     if (props.showFeedback && selected.value === option) {
-        const isCorrect = Array.isArray(props.exercise.solution) && props.exercise.solution.includes(option);
+        const isCorrect = Array.isArray(props.exercise.solution) ? props.exercise.solution.includes(option) : false;
         return [
             base,
             isCorrect
-                ? 'bg-indigo-100 dark:bg-indigo-900 border-indigo-500 text-indigo-700 dark:text-indigo-300'
-                : 'bg-amber-100 dark:bg-amber-900 border-amber-500 text-amber-700 dark:text-amber-300'
+                ? 'bg-green-100 dark:bg-green-900 border-green-500 text-green-700 dark:text-green-300'
+                : 'bg-red-100 dark:bg-red-900 border-red-500 text-red-700 dark:text-red-300'
         ];
     }
 
     if (selected.value === option) {
         return [
             base,
-            'bg-sky-100 dark:bg-sky-900 border-sky-500 text-sky-700 dark:text-sky-300'
+            'bg-indigo-100 dark:bg-indigo-900 border-indigo-500 text-indigo-700 dark:text-indigo-300'
         ];
     }
 
