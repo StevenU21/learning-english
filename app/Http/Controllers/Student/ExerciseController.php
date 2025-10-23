@@ -17,13 +17,6 @@ use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
-    protected $sayThePhraseService;
-
-    public function __construct(SayThePhraseService $sayThePhraseService)
-    {
-        $this->sayThePhraseService = $sayThePhraseService;
-    }
-
     public function showSequence(Unit $unit, Lesson $lesson)
     {
         if ($lesson->unit_id !== $unit->id) {
@@ -42,16 +35,16 @@ class ExerciseController extends Controller
         ]);
     }
 
-    public function storeAttemptsBatch(UserExerciseAttemptRequest $request)
+    public function storeAttemptsBatch(UserExerciseAttemptRequest $request, SayThePhraseService $sayThePhraseService)
     {
         $userId = $request->user()->id;
         $attempts = $request->input('attempts');
 
-        return DB::transaction(function () use ($request, $userId, $attempts) {
+        return DB::transaction(function () use ($request, $userId, $attempts, $sayThePhraseService) {
             foreach ($attempts as &$attempt) {
-                
+
                 if (($attempt['type_name'] ?? null) === 'Di la frase' && isset($attempt['audio_path'], $attempt['solution'])) {
-                    $evaluation = $this->sayThePhraseService->processAttempt([
+                    $evaluation = $sayThePhraseService->processAttempt([
                         'audio_path' => $attempt['audio_path'],
                         'solution' => $attempt['solution'],
                         'language' => $attempt['language'] ?? 'en',
