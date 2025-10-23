@@ -91,7 +91,13 @@ class SayThePhraseService
         $total = $expectedWords->count() > 0 ? $expectedWords->count() : 1; // evitar división por cero
         $wordScore = collect([($matched / $total) * 100])->map(fn($v) => round($v, 2))->first();
 
-        $finalScore = round(($percent * 0.6) + ($wordScore * 0.4), 2);
+        // Penalización fuerte si la primera palabra no coincide
+        $firstWordExpected = $expectedWords->first();
+        $firstWordUser = $userWords->first();
+        $firstWordPenalty = ($firstWordExpected !== $firstWordUser) ? 0.7 : 1; // penaliza 30% el score final si la primera palabra no coincide
+
+        // Ajustar pesos: 40% global, 60% palabra por palabra
+        $finalScore = round((($percent * 0.4) + ($wordScore * 0.6)) * $firstWordPenalty, 2);
 
         return [
             'score' => $finalScore,
