@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Services\OpenAITextChatService;
 use App\Http\Requests\TextChatMessageRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse as SymfonyStreamedResponse;
 
 class TextChatController extends Controller
 {
