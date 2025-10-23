@@ -51,16 +51,27 @@
                     <i class="fa-solid fa-layer-group w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Unidades</span>
                 </SidebarLink>
-                <SidebarLink :href="route('levels.index')" :active="route().current('levels.index')"
-                    :compact="effectiveCollapsed" titleText="Niveles">
-                    <i class="fa-solid fa-list w-5 text-center"></i>
-                    <span v-show="!effectiveCollapsed">Niveles</span>
-                </SidebarLink>
-                <SidebarLink :href="route('exercise-types.index')" :active="route().current('exercise-types.index')"
-                    :compact="effectiveCollapsed" titleText="Tipos de Ejercicio">
-                    <i class="fa-solid fa-shapes w-5 text-center"></i>
-                    <span v-show="!effectiveCollapsed">Tipos de Ejercicio</span>
-                </SidebarLink>
+                <!-- Catálogo Dropdown -->
+                <SidebarDropdown
+                    :compact="effectiveCollapsed"
+                    icon="fa-solid fa-box-archive"
+                    label="Catálogo"
+                    :items="[
+                        {
+                            href: route('levels.index'),
+                            active: route().current('levels.index'),
+                            icon: 'fa-solid fa-list',
+                            label: 'Niveles'
+                        },
+                        {
+                            href: route('exercise-types.index'),
+                            active: route().current('exercise-types.index'),
+                            icon: 'fa-solid fa-shapes',
+                            label: 'Tipos de Ejercicio'
+                        }
+                    ]"
+                />
+
                 <SidebarLink :href="route('lessons.index')" :active="route().current('lessons.index')"
                     :compact="effectiveCollapsed" titleText="Lecciones">
                     <i class="fa-solid fa-book w-5 text-center"></i>
@@ -132,6 +143,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import SidebarLink from '@/Components/SidebarLink.vue';
+import SidebarDropdown from '@/Components/SidebarDropdown.vue';
 
 const props = defineProps({
     modelValue: { type: Boolean, default: false },
