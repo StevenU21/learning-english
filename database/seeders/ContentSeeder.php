@@ -33,7 +33,5 @@ class ContentSeeder extends Seeder
             'description' => 'Aprende los números básicos y los colores más comunes.',
             'duration' => 2,
         ]);
-
-        // Aquí podrías crear ejercicios de ejemplo si lo deseas.
     }
 }
