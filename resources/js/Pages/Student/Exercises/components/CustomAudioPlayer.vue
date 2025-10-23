@@ -2,9 +2,10 @@
     <div class="flex flex-col items-center w-full">
         <div
             class="flex items-center gap-4 w-full max-w-xs bg-gray-100 dark:bg-gray-800 rounded-xl shadow px-4 py-3 border border-indigo-200 dark:border-gray-700">
-            <button @click="togglePlay" :class="['rounded-full flex items-center justify-center shadow transition-all duration-200',
-                isPlaying ? 'bg-indigo-600 text-white' : 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-indigo-400',
-            ]" style="width: 48px; height: 48px; font-size: 1.5rem;">
+            <button @click="togglePlay" @mouseover="hovering = true" @mouseleave="hovering = false" :class="['rounded-full flex items-center justify-center shadow transition-all duration-200',
+                isPlaying ? 'bg-indigo-600 text-white' : 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+            ]" :style="!isPlaying && hovering ? 'background: #6d6eea; color: #fff; transition: background 0.2s;' : ''"
+                style="width: 48px; height: 48px; font-size: 1.5rem;">
                 <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'" />
             </button>
             <div class="flex-1 grid grid-cols-[auto_1fr_auto] items-center gap-2 w-full">
@@ -21,10 +22,11 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 
+const hovering = ref(false);
+
 const props = defineProps({
     src: { type: String, required: true }
 });
-
 
 const audio = ref(null);
 const isPlaying = ref(false);
