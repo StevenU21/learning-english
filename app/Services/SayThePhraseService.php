@@ -8,6 +8,71 @@ use Illuminate\Support\Str;
 
 class SayThePhraseService
 {
+    public function transcribeAudio(string $audioPath, string $language = 'en'): string
+    {
+        $stream = Storage::readStream($audioPath);
+        if (!$stream) {
+            return '';
+        }
+        $response = OpenAI::audio()->transcribe([
+            'model' => 'whisper-1',
+            'file' => $stream,
+            'language' => $language,
+        ]);
+        return Str::of($response->text)->trim();
+    }
+
+    public function processAttempt(array $data): array
+    {
+        $audioPath = Arr::get($data, 'audio_path');
+        $solution = Arr::get($data, 'solution', '');
+        $language = Arr::get($data, 'language', 'en');
+
+        if (!$audioPath || !$solution) {
+            return [
+                'error' => 'Faltan datos requeridos: audio_path o solution.'
+            ];
+        }
+
+        $userText = $this->transcribeAudio($audioPath, $language);
+        $evaluation = $this->evaluate($solution, $userText);
+
+        return array_merge([
+            'transcription' => $userText,
+        ], $evaluation);
+    }
+
+    public function evaluate(string $expected, string $userText): array
+    {
+        $expected = Str::of($expected)->lower()->trim()->rtrim('.');
+        $userText = Str::of($userText)->lower()->trim()->rtrim('.');
+        $expected = $this->normalizeContractions($expected);
+        $userText = $this->normalizeContractions($userText);
+
+        $expectedWords = explode(' ', $expected);
+        $userWords = explode(' ', $userText);
+
+        $allMatch = count($expectedWords) === count($userWords);
+        if ($allMatch) {
+            foreach ($expectedWords as $i => $word) {
+                if (!isset($userWords[$i]) || $userWords[$i] !== $word) {
+                    $allMatch = false;
+                    break;
+                }
+            }
+        }
+
+        $finalScore = $allMatch ? 100 : 0;
+
+        return [
+            'score' => $finalScore,
+            'score_global' => $finalScore,
+            'score_words' => $finalScore,
+            'user_text' => (string) $userText,
+            'expected' => (string) $expected,
+        ];
+    }
+
     private function normalizeContractions($text)
     {
         $contractions = [
@@ -55,88 +120,5 @@ class SayThePhraseService
             $text = preg_replace($pattern, $replacement, $text);
         }
         return $text;
-    }
-    public function transcribeAudio(string $audioPath, string $language = 'en'): string
-    {
-        $stream = Storage::readStream($audioPath);
-        if (!$stream) {
-            return '';
-        }
-        $response = OpenAI::audio()->transcribe([
-            'model' => 'whisper-1',
-            'file' => $stream,
-            'language' => $language,
-        ]);
-        return Str::of($response->text)->trim();
-    }
-    public function evaluate(string $expected, string $userText): array
-    {
-        $expected = Str::of($expected)->lower()->trim()->rtrim('.');
-        $userText = Str::of($userText)->lower()->trim()->rtrim('.');
-        $expected = $this->normalizeContractions($expected);
-        $userText = $this->normalizeContractions($userText);
-
-        $expectedWords = explode(' ', $expected);
-        $userWords = explode(' ', $userText);
-
-        $allMatch = count($expectedWords) === count($userWords);
-        if ($allMatch) {
-            foreach ($expectedWords as $i => $word) {
-                if (!isset($userWords[$i]) || $userWords[$i] !== $word) {
-                    $allMatch = false;
-                    break;
-                }
-            }
-        }
-
-        $finalScore = $allMatch ? 100 : 0;
-
-        return [
-            'score' => $finalScore,
-            'score_global' => $finalScore,
-            'score_words' => $finalScore,
-            'user_text' => (string) $userText,
-            'expected' => (string) $expected,
-        ];
-    }
-
-    // Calcula la similitud coseno entre dos vectores
-    private function cosineSimilarity(array $vec1, array $vec2): float
-    {
-        if (empty($vec1) || empty($vec2) || count($vec1) !== count($vec2)) {
-            return 0.0;
-        }
-        $dot = 0.0;
-        $normA = 0.0;
-        $normB = 0.0;
-        foreach ($vec1 as $i => $v) {
-            $dot += $v * $vec2[$i];
-            $normA += $v * $v;
-            $normB += $vec2[$i] * $vec2[$i];
-        }
-        if ($normA == 0.0 || $normB == 0.0) {
-            return 0.0;
-        }
-        return $dot / (sqrt($normA) * sqrt($normB));
-    }
-
-    public function processAttempt(array $data): array
-    {
-        $audioPath = Arr::get($data, 'audio_path');
-        $solution = Arr::get($data, 'solution', '');
-        $language = Arr::get($data, 'language', 'en');
-
-        if (!$audioPath || !$solution) {
-            return [
-                'error' => 'Faltan datos requeridos: audio_path o solution.'
-            ];
-        }
-
-        $userText = $this->transcribeAudio($audioPath, $language);
-        $evaluation = $this->evaluate($solution, $userText);
-
-        return array_merge([
-            'transcription' => $userText,
-        ], $evaluation);
     }
 }
