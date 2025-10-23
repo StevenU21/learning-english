@@ -75,4 +75,39 @@ class ProgressController extends Controller
             'attempts' => $attempts
         ]);
     }
+
+    public function report($userId)
+    {
+        $user = User::with('profile')->findOrFail($userId);
+        $units = Unit::all();
+        $lessons = Lesson::with('unit')->get();
+        $lessonProgress = LessonUserProgress::with(['lesson.unit'])
+            ->where('user_id', $userId)
+            ->get();
+        $unitProgress = UnitUserProgress::with(['unit'])
+            ->where('user_id', $userId)
+            ->get();
+        $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
+            ->where('user_id', $userId)
+            ->orderByDesc('created_at')
+            ->get();
+
+        $data = [
+            'user' => array_merge($user->toArray(), [
+                'avatar_url' => optional($user->profile)->avatar_url,
+            ]),
+            'units' => $units,
+            'lessons' => $lessons,
+            'lessonProgress' => $lessonProgress,
+            'unitProgress' => $unitProgress,
+            'attempts' => $attempts
+        ];
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('reports.student_progress', $data);
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="reporte_progreso_estudiante_' . $user->id . '.pdf"'
+        ]);
+    }
 }

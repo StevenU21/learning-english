@@ -159,11 +159,17 @@
                         ]" gradient-classes="from-indigo-600 to-cyan-600">
                         <template #actions>
                             <Link :href="route('admin.progress.index')">
-                            <PrimaryButton>
-                                <i class="fa-solid fa-arrow-left mr-2"></i>
-                                Volver a la lista
-                            </PrimaryButton>
+                                <PrimaryButton>
+                                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                                    Volver a la lista
+                                </PrimaryButton>
                             </Link>
+                            <a :href="route('admin.progress.report', { user: user.id })" target="_blank" rel="noopener">
+                                <PrimaryButton class="ml-2" color="secondary">
+                                    <i class="fa-solid fa-file-pdf mr-2"></i>
+                                    Descargar reporte PDF
+                                </PrimaryButton>
+                            </a>
                         </template>
                     </PageHeader>
                 </template>
