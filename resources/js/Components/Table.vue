@@ -14,7 +14,15 @@ const props = defineProps({
 const emit = defineEmits(['paginate']);
 
 function handlePagination(e) {
-    const href = e.target.closest('a')?.href;
+    // Si el evento es un click en un link, pasar el href directamente
+    let href = null;
+    if (typeof e === 'string') {
+        href = e;
+    } else if (e?.target?.href) {
+        href = e.target.href;
+    } else if (e?.target?.closest) {
+        href = e.target.closest('a')?.href;
+    }
     if (href) emit('paginate', href);
 }
 </script>
@@ -48,6 +56,6 @@ function handlePagination(e) {
                 </tbody>
             </table>
         </div>
-        <Pagination v-if="links && links.length > 0" :links="links" :meta="meta" @click="handlePagination" />
+    <Pagination v-if="links && links.length > 0" :links="links" :meta="meta" @click="handlePagination" />
     </div>
 </template>
