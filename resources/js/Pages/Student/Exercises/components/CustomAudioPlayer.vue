@@ -17,16 +17,36 @@
                     }}</span>
             </div>
         </div>
+        <div class="flex gap-2 mb-2 mt-2">
+            <button v-for="opt in rateOptions" :key="opt.value" type="button" @click="setPlaybackRate(opt.value)"
+                :class="[
+                    'transition-colors duration-150',
+                    playbackRate === opt.value
+                        ? 'bg-indigo-600 text-white border-indigo-700 ring-2 ring-indigo-400'
+                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700',
+                    'border-2',
+                    'px-4 py-2 rounded-lg font-semibold',
+                ]">
+                {{ opt.label }}
+            </button>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import WaveSurfer from 'wavesurfer.js';
 
 const hovering = ref(false);
 const props = defineProps({
-    src: { type: String, required: true }
+    src: { type: String, required: true },
+    playbackRate: { type: Number, default: 1 },
+    rateOptions: {
+        type: Array, default: () => [
+            { label: 'Normal', value: 1 },
+            { label: 'Lento', value: 0.6 }
+        ]
+    },
 });
 
 const waveformRef = ref(null);
@@ -34,6 +54,16 @@ const wavesurfer = ref(null);
 const isPlaying = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
+const playbackRate = ref(props.playbackRate);
+const audioKey = ref(0); // para forzar recarga
+
+function resetState() {
+    playbackRate.value = props.playbackRate;
+    isPlaying.value = false;
+    currentTime.value = 0;
+    duration.value = 0;
+}
+
 
 function formatTime(sec) {
     if (!isFinite(sec)) return '0:00';
@@ -51,7 +81,16 @@ function togglePlay() {
     }
 }
 
+function setPlaybackRate(rate) {
+    playbackRate.value = rate;
+    if (wavesurfer.value) {
+        wavesurfer.value.setPlaybackRate(rate);
+    }
+    audioKey.value++;
+}
+
 onMounted(() => {
+    resetState();
     wavesurfer.value = WaveSurfer.create({
         container: waveformRef.value,
         waveColor: '#a5b4fc',
@@ -64,6 +103,7 @@ onMounted(() => {
         backend: 'mediaelement',
     });
     wavesurfer.value.load(props.src);
+    wavesurfer.value.setPlaybackRate(playbackRate.value);
 
     wavesurfer.value.on('ready', () => {
         duration.value = wavesurfer.value.getDuration();
@@ -96,8 +136,11 @@ onUnmounted(() => {
 watch(() => props.src, (newSrc) => {
     if (wavesurfer.value) {
         wavesurfer.value.load(newSrc);
-        currentTime.value = 0;
-        isPlaying.value = false;
+        resetState();
     }
+});
+
+watch(() => props.playbackRate, (newRate) => {
+    setPlaybackRate(newRate);
 });
 </script>

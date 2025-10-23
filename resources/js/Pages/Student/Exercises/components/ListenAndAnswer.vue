@@ -20,13 +20,14 @@ function choose(value) {
     selected.value = value;
 }
 
-function togglePlay(which = 'a') {
+function togglePlay(which = 'a', rate = 1) {
     const url = which === 'a' ? props.exercise.file_url : props.exercise.file_b_url;
     if (!url) return;
-    // switching track
-    if (!audio || current.value !== which) {
+    // switching track or changing rate
+    if (!audio || current.value !== which || audio.playbackRate !== rate) {
         if (audio) audio.pause();
         audio = new Audio(url);
+        audio.playbackRate = rate;
         audio.addEventListener('ended', () => {
             isPlaying.value = false;
             current.value = null;
@@ -35,7 +36,7 @@ function togglePlay(which = 'a') {
         audio.play();
         isPlaying.value = true;
     } else {
-        // same track toggle play/pause
+        // same track and rate: toggle play/pause
         if (isPlaying.value) {
             audio.pause();
             isPlaying.value = false;
@@ -70,15 +71,27 @@ function btnClass(option) {
 
 <template>
     <div class="space-y-5">
-        <div class="flex items-center justify-center gap-3">
-            <PrimaryButton type="button" @click="togglePlay('a')" class="flex items-center gap-2">
-                <i :class="['fa-solid', current === 'a' && isPlaying ? 'fa-pause' : 'fa-play']"></i>
-                {{ current === 'a' && isPlaying ? 'Pausar audio A' : 'Audio A' }}
-            </PrimaryButton>
-            <PrimaryButton type="button" @click="togglePlay('b')" class="flex items-center gap-2">
-                <i :class="['fa-solid', current === 'b' && isPlaying ? 'fa-pause' : 'fa-play']"></i>
-                {{ current === 'b' && isPlaying ? 'Pausar audio B' : 'Audio B' }}
-            </PrimaryButton>
+        <div class="flex flex-col items-center justify-center gap-3">
+            <div class="flex gap-2">
+                <PrimaryButton type="button" @click="togglePlay('a', 1)" class="flex items-center gap-2">
+                    <i :class="['fa-solid', current === 'a' && isPlaying && audio?.playbackRate === 1 ? 'fa-pause' : 'fa-play']"></i>
+                    {{ current === 'a' && isPlaying && audio?.playbackRate === 1 ? 'Pausar audio A (normal)' : 'Audio A (normal)' }}
+                </PrimaryButton>
+                <PrimaryButton type="button" @click="togglePlay('a', 0.7)" class="flex items-center gap-2">
+                    <i :class="['fa-solid', current === 'a' && isPlaying && audio?.playbackRate === 0.7 ? 'fa-pause' : 'fa-play']"></i>
+                    {{ current === 'a' && isPlaying && audio?.playbackRate === 0.7 ? 'Pausar audio A (lento)' : 'Audio A (lento)' }}
+                </PrimaryButton>
+            </div>
+            <div class="flex gap-2">
+                <PrimaryButton type="button" @click="togglePlay('b', 1)" class="flex items-center gap-2">
+                    <i :class="['fa-solid', current === 'b' && isPlaying && audio?.playbackRate === 1 ? 'fa-pause' : 'fa-play']"></i>
+                    {{ current === 'b' && isPlaying && audio?.playbackRate === 1 ? 'Pausar audio B (normal)' : 'Audio B (normal)' }}
+                </PrimaryButton>
+                <PrimaryButton type="button" @click="togglePlay('b', 0.7)" class="flex items-center gap-2">
+                    <i :class="['fa-solid', current === 'b' && isPlaying && audio?.playbackRate === 0.7 ? 'fa-pause' : 'fa-play']"></i>
+                    {{ current === 'b' && isPlaying && audio?.playbackRate === 0.7 ? 'Pausar audio B (lento)' : 'Audio B (lento)' }}
+                </PrimaryButton>
+            </div>
         </div>
         <div class="space-y-3">
             <button @click="choose('Igual')" :disabled="showFeedback" :class="btnClass('Igual')">Igual</button>

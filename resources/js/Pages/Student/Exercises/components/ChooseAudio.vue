@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, onBeforeUnmount } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import CustomAudioPlayer from './CustomAudioPlayer.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -9,57 +9,27 @@ const props = defineProps({
 const emit = defineEmits(['answered']);
 
 const selected = ref(null);
-const isPlaying = ref(false);
-let audio = null;
-const onEnded = () => {
-    isPlaying.value = false;
-};
+
+const audioKey = ref(0); // para forzar recarga del player
 
 watch(() => props.showFeedback, (v) => {
     if (!v) selected.value = null;
 });
 
-// Initialize audio once and handle play/pause state
-function cleanupAudio() {
-    if (audio) {
-        try {
-            audio.pause();
-        } catch (_) { }
-        audio.removeEventListener?.('ended', onEnded);
-        audio = null;
-    }
-}
+// No se necesita cleanup ni initAudio, el CustomAudioPlayer maneja el audio
 
-function initAudio(url) {
-    cleanupAudio();
-    if (!url) return;
-    audio = new Audio(url);
-    audio.addEventListener('ended', onEnded);
-}
-
-// Reinitialize state and audio whenever the exercise changes
+// Reiniciar selección y velocidad cuando cambia el ejercicio
 watch(
     () => props.exercise,
     (ex) => {
-        // reset state
         selected.value = null;
-        isPlaying.value = false;
-        // re-init audio
-        initAudio(ex?.file_url);
+        playbackRate.value = 1;
+        audioKey.value++;
     },
     { immediate: true }
 );
 
-function togglePlay() {
-    if (!audio) return;
-    if (isPlaying.value) {
-        audio.pause();
-        isPlaying.value = false;
-    } else {
-        audio.play();
-        isPlaying.value = true;
-    }
-}
+// La lógica de playbackRate ahora está en CustomAudioPlayer
 
 function choose(opt) {
     if (props.showFeedback) return;
@@ -68,11 +38,7 @@ function choose(opt) {
 
 function submit() {
     if (props.showFeedback || selected.value === null) return;
-    // Stop audio if still playing
-    if (audio && isPlaying.value) {
-        audio.pause();
-        isPlaying.value = false;
-    }
+    // La lógica de audio está en CustomAudioPlayer
     const isCorrect = Array.isArray(props.exercise.solution) && props.exercise.solution.includes(selected.value);
     emit('answered', isCorrect, selected.value);
 }
@@ -95,11 +61,8 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="space-y-5">
-        <div class="flex items-center justify-center gap-3">
-            <PrimaryButton type="button" @click="togglePlay" class="flex items-center gap-2">
-                <i :class="['fa-solid', isPlaying ? 'fa-pause' : 'fa-play']"></i>
-                {{ isPlaying ? 'Pausar audio' : 'Reproducir audio' }}
-            </PrimaryButton>
+        <div class="flex flex-col items-center gap-2">
+            <CustomAudioPlayer :key="audioKey" :src="props.exercise.file_url" v-if="props.exercise.file_url" />
         </div>
         <div class="space-y-3">
             <button v-for="opt in exercise.options" :key="opt" @click="choose(opt)" :disabled="showFeedback"
