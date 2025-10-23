@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\CollectionHelper;
 use App\Classes\PermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LessonRequest;
@@ -26,14 +27,7 @@ class LessonController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $lessons->getCollection()->transform(fn($lesson) => [
-            'id' => $lesson->id,
-            'name' => $lesson->name,
-            'duration' => (int) $lesson->duration,
-            'description' => $lesson->description,
-            'image_url' => $lesson->image_url,
-            'unit' => $lesson->unit
-        ]);
+        CollectionHelper::transformPaginated($lessons, fn($lesson) => $lesson->toArray());
 
         $units = Unit::all();
         return Inertia::render('Admin/Lessons/Index', [
@@ -50,15 +44,7 @@ class LessonController extends Controller
         $this->authorize('view', $lesson);
         $lesson->load('unit');
         return Inertia::render('Admin/Lessons/Show', [
-            'lesson' => [
-                'id' => $lesson->id,
-                'name' => $lesson->name,
-                'duration' => (int) $lesson->duration,
-                'description' => $lesson->description,
-                'image_url' => $lesson->image_url,
-                'unit' => $lesson->unit,
-                'created_at' => $lesson->created_at,
-            ]
+            'lesson' => $lesson->toArray()
         ]);
     }
 

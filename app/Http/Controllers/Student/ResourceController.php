@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Resource;
+use App\Classes\CollectionHelper;
 use App\Models\Unit;
 use Inertia\Inertia;
 
@@ -14,11 +15,8 @@ class ResourceController extends Controller
         $resources = Resource::where('unit_id', $unit->id)->get();
         return Inertia::render('Student/Units/Resources', [
             'unit' => $unit->only(['id', 'name', 'description']),
-            'resources' => $resources->map(fn($r) => [
-                'id' => $r->id,
-                'name' => $r->name,
-                'description' => $r->description,
-                'file_path' => $r->file_path,
+            'resources' => CollectionHelper::transform($resources, fn($r) => [
+                ...$r->toArray(),
             ])
         ]);
     }

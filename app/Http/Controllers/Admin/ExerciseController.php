@@ -77,37 +77,18 @@ class ExerciseController extends Controller
     public function store(ExerciseRequest $request): RedirectResponse
     {
         $this->authorize('create', Exercise::class);
-        $data = $request->validated();
-
-        $data['file'] = $request->file('file');
-        $data['file_b'] = $request->file('file_b');
-
-        $data['options'] = collect($data['options'] ?? [])
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
-            ->values()->all();
-        $data['solution'] = collect($data['solution'] ?? [])
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
-            ->values()->all();
-
-        $type = ExerciseType::find($data['exercise_type_id']);
+        $data = $this->prepareExerciseData($request);
+        $type = $this->getExerciseTypeOrFail($data['exercise_type_id']);
         if (!$type) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
         }
-
-        $result = ExerciseTypeLogic::validateAndProcess($type->name, $data);
+        $result = $this->validateAndProcessExercise($type->name, $data);
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors'])->withInput();
         }
-
         DB::beginTransaction();
         try {
-            if ($data['file']) {
-                $result['data']['file'] = $data['file']->store('units', 'public');
-            }
-            if ($data['file_b']) {
-                $result['data']['file_b'] = $data['file_b']->store('units', 'public');
-            }
-
+            $result['data'] = $this->handleExerciseFiles($request, $result['data']);
             Exercise::create($result['data']);
             DB::commit();
         } catch (\Exception $e) {
@@ -142,47 +123,18 @@ class ExerciseController extends Controller
     public function update(ExerciseRequest $request, Exercise $exercise): RedirectResponse
     {
         $this->authorize('update', $exercise);
-        $data = $request->validated();
-
-        $data['file'] = $request->file('file');
-        $data['file_b'] = $request->file('file_b');
-
-        $data['options'] = collect($data['options'] ?? [])
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
-            ->values()->all();
-        $data['solution'] = collect($data['solution'] ?? [])
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
-            ->values()->all();
-
-        $type = ExerciseType::find($data['exercise_type_id']);
+        $data = $this->prepareExerciseData($request);
+        $type = $this->getExerciseTypeOrFail($data['exercise_type_id']);
         if (!$type) {
             return back()->withErrors(['exercise_type_id' => 'Tipo de ejercicio inválido.']);
         }
-
-        $result = ExerciseTypeLogic::validateAndProcess($type->name, $data);
+        $result = $this->validateAndProcessExercise($type->name, $data);
         if (!empty($result['errors'])) {
             return back()->withErrors($result['errors'])->withInput();
         }
-
         DB::beginTransaction();
         try {
-            if ($data['file']) {
-                if ($exercise->file) {
-                    Storage::disk('public')->delete($exercise->file);
-                }
-                $result['data']['file'] = $data['file']->store('units', 'public');
-            } else {
-                unset($result['data']['file']);
-            }
-            if ($data['file_b']) {
-                if ($exercise->file_b) {
-                    Storage::disk('public')->delete($exercise->file_b);
-                }
-                $result['data']['file_b'] = $data['file_b']->store('units', 'public');
-            } else {
-                unset($result['data']['file_b']);
-            }
-
+            $result['data'] = $this->handleExerciseFiles($request, $result['data'], $exercise);
             $exercise->update($result['data']);
             DB::commit();
         } catch (\Exception $e) {
@@ -190,6 +142,57 @@ class ExerciseController extends Controller
             return back()->withErrors(['general' => 'Ocurrió un error al actualizar el ejercicio.'])->withInput();
         }
         return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio actualizado correctamente');
+    }
+
+    private function prepareExerciseData($request): array
+    {
+        $data = $request->validated();
+        $data['file'] = $request->file('file');
+        $data['file_b'] = $request->file('file_b');
+        $data['options'] = collect($data['options'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        $data['solution'] = collect($data['solution'] ?? [])
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        return $data;
+    }
+
+    /**
+     * Get ExerciseType or return null if not found.
+     */
+    private function getExerciseTypeOrFail($exerciseTypeId)
+    {
+        return ExerciseType::find($exerciseTypeId);
+    }
+
+    /**
+     * Validate and process exercise data using ExerciseTypeLogic.
+     */
+    private function validateAndProcessExercise($typeName, $data)
+    {
+        return ExerciseTypeLogic::validateAndProcess($typeName, $data);
+    }
+
+    private function handleExerciseFiles($request, array $data, ?Exercise $exercise = null): array
+    {
+        if ($request->file('file')) {
+            if ($exercise && $exercise->file) {
+                Storage::disk('public')->delete($exercise->file);
+            }
+            $data['file'] = $request->file('file')->store('units', 'public');
+        } elseif ($exercise) {
+            unset($data['file']);
+        }
+        if ($request->file('file_b')) {
+            if ($exercise && $exercise->file_b) {
+                Storage::disk('public')->delete($exercise->file_b);
+            }
+            $data['file_b'] = $request->file('file_b')->store('units', 'public');
+        } elseif ($exercise) {
+            unset($data['file_b']);
+        }
+        return $data;
     }
 
     public function destroy(Exercise $exercise): RedirectResponse

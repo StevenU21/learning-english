@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Student;
 
+use App\Classes\CollectionHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Models\Unit;
@@ -24,7 +25,7 @@ class ExerciseController extends Controller
         }
         $lesson->load(['exercises.exerciseType', 'unit']);
 
-        $exercises = $lesson->exercises->map(fn($exercise) => [
+        $exercises = CollectionHelper::transform(collect($lesson->exercises), fn($exercise) => [
             ...$exercise->toArray(),
             'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),
         ]);

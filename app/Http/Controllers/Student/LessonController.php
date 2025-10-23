@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Student;
 
+use App\Classes\CollectionHelper;
 use App\Http\Controllers\Controller;
 
 use App\Models\Unit;
@@ -17,15 +18,8 @@ class LessonController extends Controller
             'lessons.lessonUserProgress' => fn($q) => $q->where('user_id', auth()->id()),
             'lessons.unit:id,slug'
         ]);
-        $lessons = $unit->lessons->map(fn($lesson) => [
-            'id' => $lesson->id,
-            'slug' => $lesson->slug,
-            'unit_id' => $lesson->unit_id,
-            'unit_slug' => optional($lesson->unit)->slug,
-            'name' => $lesson->name,
-            'duration' => (int) $lesson->duration,
-            'description' => $lesson->description,
-            'image_url' => $lesson->image_url,
+        $lessons = CollectionHelper::transform($unit->lessons, fn($lesson) => [
+            ...$lesson->toArray(),
             'progress' => optional($lesson->lessonUserProgress->first())->progress ?? 0,
             'status' => optional($lesson->lessonUserProgress->first())->status ?? 'no_comenzado',
         ]);
@@ -44,7 +38,7 @@ class LessonController extends Controller
             abort(404);
         }
         $lesson->load(['exercises.exerciseType', 'unit']);
-        $exercises = $lesson->exercises->map(fn($exercise) => [
+        $exercises = CollectionHelper::transform(collect($lesson->exercises), fn($exercise) => [
             ...$exercise->toArray(),
             'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),
         ]);

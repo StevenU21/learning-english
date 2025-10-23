@@ -29,14 +29,7 @@ class UnitController extends Controller
             ->withSum('lessons as lessons_sum_duration', 'duration')
             ->get()
             ->map(fn($unit) => [
-                'id' => $unit->id,
-                'slug' => $unit->slug,
-                'level_id' => $unit->level_id,
-                'name' => $unit->name,
-                'description' => $unit->description,
-                'expected_time' => (int) $unit->expected_time,
-                'image_url' => $unit->image_url,
-                'level' => $unit->level,
+                ...$unit->toArray(),
                 'progress' => optional($unit->unitUserProgress->first())->progress ?? 0,
                 'status' => optional($unit->unitUserProgress->first())->status ?? 'no_comenzado',
             ]);

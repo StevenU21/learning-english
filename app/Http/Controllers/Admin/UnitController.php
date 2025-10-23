@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\CollectionHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UnitRequest;
 use App\Models\Level;
@@ -21,14 +22,7 @@ class UnitController extends Controller
             ->latest()
             ->paginate(10);
 
-        $units->getCollection()->transform(fn($unit) => [
-            'id' => $unit->id,
-            'name' => $unit->name,
-            'description' => $unit->description,
-            'expected_time' => (int) $unit->expected_time,
-            'image_url' => $unit->image_url,
-            'level' => $unit->level
-        ]);
+        CollectionHelper::transformPaginated($units, fn($unit) => $unit->toArray());
 
         return Inertia::render('Admin/Units/Index', [
             'units' => $units,
@@ -57,15 +51,7 @@ class UnitController extends Controller
         $unit->load('level')
             ->loadSum('lessons as lessons_sum_duration', 'duration');
         return Inertia::render('Admin/Units/Show', [
-            'unit' => [
-                'id' => $unit->id,
-                'name' => $unit->name,
-                'description' => $unit->description,
-                'expected_time' => (int) $unit->expected_time,
-                'image_url' => $unit->image_url,
-                'level' => $unit->level,
-                'created_at' => $unit->created_at,
-            ]
+            'unit' => $unit->toArray()
         ]);
     }
 
