@@ -10,15 +10,12 @@ const emit = defineEmits(['answered']);
 
 const selected = ref(null);
 
-const audioKey = ref(0); // para forzar recarga del player
+const audioKey = ref(0); 
 
 watch(() => props.showFeedback, (v) => {
     if (!v) selected.value = null;
 });
 
-// No se necesita cleanup ni initAudio, el CustomAudioPlayer maneja el audio
-
-// Reiniciar selección y velocidad cuando cambia el ejercicio
 watch(
     () => props.exercise,
     (ex) => {
@@ -28,8 +25,6 @@ watch(
     },
     { immediate: true }
 );
-
-// La lógica de playbackRate ahora está en CustomAudioPlayer
 
 function choose(opt) {
     if (props.showFeedback) return;

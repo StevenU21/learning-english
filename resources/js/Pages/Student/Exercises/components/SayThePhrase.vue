@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CustomAudioPlayer from './CustomAudioPlayer.vue';
 import Badge from '@/Components/Badge.vue';
 import axios from 'axios';

@@ -76,7 +76,7 @@ function togglePlay() {
     if (!wavesurfer.value) return;
     if (isPlaying.value) {
         wavesurfer.value.pause();
-        // Al pausar, la próxima vez que se reproduzca, volverá al inicio
+
         wavesurfer.value.seekTo(0);
         currentTime.value = 0;
     } else {

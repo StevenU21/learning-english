@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },

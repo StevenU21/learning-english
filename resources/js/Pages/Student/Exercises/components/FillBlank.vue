@@ -1,7 +1,6 @@
 <script setup>
 
 import { ref } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 const props = defineProps({ exercise: Object, showFeedback: Boolean });
 const emit = defineEmits(['answered']);
 const inputVal = ref('');

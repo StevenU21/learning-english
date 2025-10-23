@@ -11,16 +11,10 @@ const emit = defineEmits(['answered']);
 
 const answer = ref('');
 
-
 watch(() => props.showFeedback, (v) => { if (!v) answer.value = ''; });
-
-
-// El audio se controla desde CustomAudioPlayer
 
 function submit() {
     if (props.showFeedback) return;
-    // El audio se controla desde CustomAudioPlayer
-    // La solución es un arreglo, se compara con answer.value (puede ser case-insensitive y trim)
     const expected = Array.isArray(props.exercise.solution) ? props.exercise.solution[0] : '';
     const isCorrect = expected && answer.value.trim().toLowerCase() === expected.trim().toLowerCase();
     emit('answered', isCorrect, answer.value);

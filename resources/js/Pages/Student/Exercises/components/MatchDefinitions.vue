@@ -1,8 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-// Nueva lógica solicitada: selección de pares con validación inmediata e intento único.
-// Ajustado para mantener el contrato de este entorno (emitir 'answered').
 const props = defineProps({
     exercise: Object,
     showFeedback: Boolean,

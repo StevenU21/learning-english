@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
-// Nueva lógica solicitada para Match Columns: selección de pares con comprobación única.
-// Se mantiene el contrato de emitir 'answered' (correcto, respuestaClonada).
+
 const props = defineProps({
     exercise: Object,
     showFeedback: Boolean,
