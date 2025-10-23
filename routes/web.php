@@ -49,25 +49,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/', 'destroy')->name('destroy');
     });
 
-    // Rutas para estudiantes - Unidades
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('units', [\App\Http\Controllers\Student\UnitController::class, 'index'])->name('units.index');
-        // Lessons listing for a Unit
         Route::get('units/{unit}/lessons', [\App\Http\Controllers\Student\LessonController::class, 'index'])->name('units.lessons.index');
-        // Resources for a Unit
         Route::get('units/{unit}/resources', [\App\Http\Controllers\Student\ResourceController::class, 'index'])->name('units.resources.index');
         Route::get('resources/{resource}/download', [\App\Http\Controllers\Student\ResourceController::class, 'download'])->name('resources.download');
-        // Exercise sequence for a Lesson within a Unit
         Route::get('units/{unit}/lessons/{lesson}/exercise', [\App\Http\Controllers\Student\ExerciseController::class, 'showSequence'])->name('units.lessons.sequence');
-        // Lesson summary within a Unit
         Route::get('units/{unit}/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
         Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
-        // Endpoint para SayThePhrase (audio + whisper)
         Route::post('say-the-phrase/attempt', [\App\Http\Controllers\Student\SayThePhraseController::class, 'attempt'])->name('say-the-phrase.attempt');
-
         Route::get('voice-chat', [\App\Http\Controllers\Student\VoiceChatController::class, 'index'])->name('voice-chat.index');
         Route::post('voice-chat/session', [\App\Http\Controllers\Student\VoiceChatController::class, 'createSession'])->name('voice-chat.session');
-
         Route::get('text-chat', [TextChatController::class, 'index'])->name('text-chat.index');
         Route::post('text-chat/message', [TextChatController::class, 'sendMessage'])->name('text-chat.message');
     });
