@@ -6,7 +6,7 @@
             'text-gray-800 dark:text-gray-100',
             'text-[15px] font-normal',
             { 'justify-center px-0': compact },
-            { 'bg-gray-100 dark:bg-gray-800': open }
+            { 'bg-gray-100 dark:bg-gray-800': isActive }
         ]" @click="toggle" :title="label">
             <i :class="[icon, 'w-5 text-center', 'text-gray-500 dark:text-gray-200']"></i>
             <span v-show="!compact" class="ml-2 flex-1">{{ label }}</span>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import SidebarLink from '@/Components/SidebarLink.vue';
 
 const props = defineProps({
@@ -40,6 +40,10 @@ const props = defineProps({
 });
 
 const open = ref(false);
+
+const isActive = computed(() => {
+    return props.items && props.items.some(item => item.active);
+});
 
 function toggle() {
     open.value = !open.value;
