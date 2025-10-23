@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CustomAudioPlayer from './CustomAudioPlayer.vue';
+import Badge from '@/Components/Badge.vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -96,9 +97,14 @@ async function submit() {
                 :disabled="props.showFeedback || isSending">
                 <i :class="isRecording ? 'fa-solid fa-microphone' : 'fa-solid fa-microphone-lines'" />
             </button>
-            <span v-if="isRecording" class="text-xs text-red-500">Grabando... Haz clic para detener</span>
-            <span v-else-if="audioUrl" class="text-xs text-green-600">Grabación lista <i
-                    class="fa-solid fa-circle-check"></i></span>
+            <Badge v-if="isRecording" type="error">
+                <i class="fa-solid fa-microphone mr-1"></i>
+                Grabando... <span class="ml-1 text-xs">Haz clic para detener</span>
+            </Badge>
+            <Badge v-else-if="audioUrl" type="success">
+                <i class="fa-solid fa-circle-check mr-1"></i>
+                Grabación lista
+            </Badge>
             <div v-if="audioUrl" class="w-full flex flex-col items-center mt-2">
                 <div class="w-full max-w-xs">
                     <CustomAudioPlayer :src="audioUrl" />
