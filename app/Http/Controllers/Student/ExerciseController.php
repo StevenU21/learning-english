@@ -49,7 +49,7 @@ class ExerciseController extends Controller
 
         return DB::transaction(function () use ($request, $userId, $attempts) {
             foreach ($attempts as &$attempt) {
-                // Detectar tipo de ejercicio "Di la frase" y evaluar con el servicio
+                
                 if (($attempt['type_name'] ?? null) === 'Di la frase' && isset($attempt['audio_path'], $attempt['solution'])) {
                     $evaluation = $this->sayThePhraseService->processAttempt([
                         'audio_path' => $attempt['audio_path'],
@@ -79,7 +79,6 @@ class ExerciseController extends Controller
                         'is_correct' => $attempt['is_correct'],
                         'started_at' => $attempt['started_at'] ?? now(),
                         'answered_at' => now(),
-                        // Puedes guardar score/evaluation_result si tienes columnas para ello
                     ]
                 );
             }
