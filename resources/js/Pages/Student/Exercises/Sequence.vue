@@ -38,9 +38,9 @@ const total = computed(() => props.exercises.length);
 
 function playSound(type) {
     const srcMap = {
-        success: '/sounds/success.mp3',
+        success: '/sounds/success02.wav',
         error: '/sounds/error.mp3',
-        finish: '/sounds/finish.mp3'
+        finish: '/sounds/finish02.wav'
     };
     const src = type === 'error' ? srcMap.error : type === 'finish' ? srcMap.finish : srcMap.success;
     const audio = new Audio(src);
