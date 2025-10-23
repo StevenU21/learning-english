@@ -9,41 +9,18 @@ const props = defineProps({
 const emit = defineEmits(['answered']);
 
 const answer = ref('');
-const isRecording = ref(false);
-const recognition = ref(null);
+const isRecording = ref(false); // Placeholder for future use
 const error = ref('');
 
 // Mostrar la solución solo si showFeedback está activo
 const showSolution = () => props.showFeedback && props.exercise.solution && props.exercise.solution[0];
 
+// Funciones de grabación deshabilitadas por ahora
 function startRecording() {
-    error.value = '';
-    if (!('webkitSpeechRecognition' in window)) {
-        error.value = 'Tu navegador no soporta reconocimiento de voz.';
-        return;
-    }
-    recognition.value = new window.webkitSpeechRecognition();
-    recognition.value.lang = 'es-ES';
-    recognition.value.interimResults = false;
-    recognition.value.maxAlternatives = 1;
-    recognition.value.onresult = (event) => {
-        answer.value = event.results[0][0].transcript;
-    };
-    recognition.value.onerror = (event) => {
-        error.value = 'Error al grabar: ' + event.error;
-    };
-    recognition.value.onend = () => {
-        isRecording.value = false;
-    };
-    isRecording.value = true;
-    recognition.value.start();
+    error.value = 'Funcionalidad de grabación no disponible.';
 }
-
 function stopRecording() {
-    if (recognition.value) {
-        recognition.value.stop();
-        isRecording.value = false;
-    }
+    // No-op
 }
 
 function submit() {
@@ -60,27 +37,29 @@ function submit() {
                 <i class="fa-solid fa-microphone-lines"></i>
                 Frase que debes decir
             </div>
-            <div class="mt-3 p-4 rounded-xl bg-indigo-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-indigo-100 dark:border-gray-700 text-lg font-medium shadow-sm">
+            <div
+                class="mt-3 p-4 rounded-xl bg-indigo-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-indigo-100 dark:border-gray-700 text-lg font-medium shadow-sm">
                 {{ exercise.prompt }}
             </div>
         </div>
 
+
         <!-- Mic Button & Answer -->
         <div class="flex flex-col items-center gap-4">
-            <button @click="isRecording ? stopRecording() : startRecording()"
-                :class="['rounded-full flex items-center justify-center transition-all duration-200', isRecording ? 'bg-red-500 animate-pulse scale-110' : 'bg-indigo-600 hover:bg-indigo-700 scale-100', props.showFeedback ? 'opacity-50 cursor-not-allowed' : '']"
-                :disabled="props.showFeedback"
-                style="width: 80px; height: 80px; font-size: 2rem;">
-                <i class="fa-solid fa-microphone"></i>
+            <button type="button" @click="startRecording"
+                class="rounded-full flex items-center justify-center transition-all duration-200 bg-gray-300 dark:bg-gray-700 opacity-60 cursor-not-allowed"
+                :disabled="true" style="width: 80px; height: 80px; font-size: 2rem;" title="Grabación no disponible">
+                <i class="fa-solid fa-microphone-slash"></i>
             </button>
-            <span v-if="isRecording" class="text-red-500 font-semibold">Grabando...</span>
+            <span class="text-xs text-gray-400">La grabación de voz no está disponible.</span>
             <p v-if="error" class="text-xs text-red-400 mt-2">{{ error }}</p>
         </div>
 
         <!-- Answer Card -->
         <div class="flex flex-col items-center">
             <div class="w-full max-w-xl">
-                <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-sm flex items-center gap-3">
+                <div
+                    class="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 p-4 shadow-sm flex items-center gap-3">
                     <i class="fa-solid fa-user text-indigo-400"></i>
                     <input v-model="answer" :disabled="props.showFeedback" type="text"
                         class="flex-1 bg-transparent border-none focus:ring-0 text-lg text-gray-900 dark:text-gray-100 placeholder-gray-400"
@@ -90,11 +69,10 @@ function submit() {
         </div>
 
         <!-- Comprobar Button -->
-        <div class="flex justify-center">
-            <PrimaryButton @click="submit" :disabled="props.showFeedback || !answer.trim()" class="w-full max-w-xs mt-2 text-base py-3">
-                <i class="fa-solid fa-check mr-2"></i> Comprobar
-            </PrimaryButton>
-        </div>
+        <button @click="submit" :disabled="props.showFeedback || !answer.trim()"
+            class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full max-w-xs mt-3">
+            <i class="fa-solid fa-check mr-2"></i> Comprobar
+        </button>
 
         <!-- Feedback Solution -->
         <div v-if="showSolution()"
