@@ -20,10 +20,9 @@ class SayThePhraseController extends Controller
 
         $audioFile = $request->file('audio');
         $audioPath = $audioFile->store('temp-audio');
-        $fullPath = Storage::path($audioPath);
 
         $result = $sayThePhraseService->processAttempt([
-            'audio_path' => $fullPath,
+            'audio_path' => $audioPath, // pasar la ruta relativa
             'solution' => $request->input('solution'),
             'language' => $request->input('language', 'en'),
         ]);
