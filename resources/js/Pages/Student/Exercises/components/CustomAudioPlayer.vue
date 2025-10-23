@@ -10,7 +10,7 @@
             <div class="flex-1 grid grid-cols-[auto_1fr_auto] items-center gap-2 w-full">
                 <span class="text-xs text-gray-600 dark:text-gray-300 font-mono">{{ formatTime(currentTime) }}</span>
                 <input type="range" min="0" :max="duration" step="0.01" v-model="currentTime" @input="seek"
-                    class="w-full h-2 rounded-lg appearance-none accent-indigo-500 bg-indigo-200 dark:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+                    class="w-full h-2 rounded-lg appearance-none accent-gray-400 bg-gray-300 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400" />
                 <span class="text-xs text-gray-600 dark:text-gray-300 font-mono text-right">{{ formatTime(duration)
                     }}</span>
             </div>
