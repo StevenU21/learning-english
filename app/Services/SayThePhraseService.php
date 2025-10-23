@@ -76,44 +76,25 @@ class SayThePhraseService
         $expected = $this->normalizeContractions($expected);
         $userText = $this->normalizeContractions($userText);
 
-        // Score tradicional
-        similar_text($expected, $userText, $percent);
-        $percent = round($percent, 2);
+        $expectedWords = explode(' ', $expected);
+        $userWords = explode(' ', $userText);
 
-        $expectedWords = collect(explode(' ', $expected));
-        $userWords = collect(explode(' ', $userText));
-
-        $matched = $expectedWords->filter(function ($word, $i) use ($userWords) {
-            return $userWords->get($i) === $word;
-        })->count();
-        $total = $expectedWords->count() > 0 ? $expectedWords->count() : 1;
-        $wordScore = collect([($matched / $total) * 100])->map(fn($v) => round($v, 2))->first();
-
-        $firstWordExpected = $expectedWords->first();
-        $firstWordUser = $userWords->first();
-        $firstWordPenalty = ($firstWordExpected !== $firstWordUser) ? 0.7 : 1;
-
-        // Embeddings OpenAI
-        try {
-            $embeddings = OpenAI::embeddings()->create([
-                'model' => 'text-embedding-ada-002',
-                'input' => [$expected, $userText],
-            ]);
-            $vec1 = $embeddings['data'][0]['embedding'] ?? [];
-            $vec2 = $embeddings['data'][1]['embedding'] ?? [];
-            $semanticScore = $this->cosineSimilarity($vec1, $vec2) * 100;
-        } catch (\Exception $e) {
-            $semanticScore = 0;
+        $allMatch = count($expectedWords) === count($userWords);
+        if ($allMatch) {
+            foreach ($expectedWords as $i => $word) {
+                if (!isset($userWords[$i]) || $userWords[$i] !== $word) {
+                    $allMatch = false;
+                    break;
+                }
+            }
         }
 
-        // Score final combinando semántica y tradicional
-        $finalScore = round((($percent * 0.2) + ($wordScore * 0.3) + ($semanticScore * 0.5)) * $firstWordPenalty, 2);
+        $finalScore = $allMatch ? 100 : 0;
 
         return [
             'score' => $finalScore,
-            'score_global' => $percent,
-            'score_words' => $wordScore,
-            'score_semantic' => round($semanticScore, 2),
+            'score_global' => $finalScore,
+            'score_words' => $finalScore,
             'user_text' => (string) $userText,
             'expected' => (string) $expected,
         ];

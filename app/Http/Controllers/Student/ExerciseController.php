@@ -61,7 +61,7 @@ class ExerciseController extends Controller
                 'language' => $attempt['language'] ?? 'en',
             ]);
             $attempt['answer_given'] = $evaluation['transcription'] ?? '';
-            $attempt['is_correct'] = ($evaluation['score'] ?? 0) >= 95;
+            $attempt['is_correct'] = ($evaluation['score'] ?? 0) === 100;
             $attempt['score'] = $evaluation['score'] ?? null;
         }
         return $attempt;
