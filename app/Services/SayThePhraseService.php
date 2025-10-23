@@ -69,11 +69,8 @@ class SayThePhraseService
         ]);
         return Str::of($response->text)->trim();
     }
-
     public function evaluate(string $expected, string $userText): array
     {
-
-        // Normalizar: minúsculas, trim, quitar punto final y expandir contracciones
         $expected = Str::of($expected)->lower()->trim()->rtrim('.');
         $userText = Str::of($userText)->lower()->trim()->rtrim('.');
         $expected = $this->normalizeContractions($expected);
@@ -88,15 +85,13 @@ class SayThePhraseService
         $matched = $expectedWords->filter(function ($word, $i) use ($userWords) {
             return $userWords->get($i) === $word;
         })->count();
-        $total = $expectedWords->count() > 0 ? $expectedWords->count() : 1; // evitar división por cero
+        $total = $expectedWords->count() > 0 ? $expectedWords->count() : 1;
         $wordScore = collect([($matched / $total) * 100])->map(fn($v) => round($v, 2))->first();
 
-        // Penalización fuerte si la primera palabra no coincide
         $firstWordExpected = $expectedWords->first();
         $firstWordUser = $userWords->first();
-        $firstWordPenalty = ($firstWordExpected !== $firstWordUser) ? 0.7 : 1; // penaliza 30% el score final si la primera palabra no coincide
+        $firstWordPenalty = ($firstWordExpected !== $firstWordUser) ? 0.7 : 1;
 
-        // Ajustar pesos: 40% global, 60% palabra por palabra
         $finalScore = round((($percent * 0.4) + ($wordScore * 0.6)) * $firstWordPenalty, 2);
 
         return [
