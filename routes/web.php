@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
         // Lesson summary within a Unit
         Route::get('units/{unit}/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
         Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
+        // Endpoint para SayThePhrase (audio + whisper)
+        Route::post('say-the-phrase/attempt', [\App\Http\Controllers\Student\SayThePhraseController::class, 'attempt'])->name('say-the-phrase.attempt');
 
         Route::get('voice-chat', [\App\Http\Controllers\Student\VoiceChatController::class, 'index'])->name('voice-chat.index');
         Route::post('voice-chat/session', [\App\Http\Controllers\Student\VoiceChatController::class, 'createSession'])->name('voice-chat.session');

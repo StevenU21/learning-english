@@ -43,7 +43,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('chat/voice', [VoiceChatController::class, 'index']);
     Route::post('chat/voice', [VoiceChatController::class, 'createSession']);
-
-    // Endpoint para SayThePhrase (audio + whisper)
-    Route::post('say-the-phrase/attempt', [\App\Http\Controllers\API\Student\SayThePhraseController::class, 'attempt']);
 });

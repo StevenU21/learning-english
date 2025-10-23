@@ -69,11 +69,13 @@ async function submit() {
         formData.append('exercise_id', props.exercise.id);
         formData.append('solution', props.exercise.solution[0] || '');
         formData.append('language', props.exercise.language || 'en');
-        // Ajusta la URL según tu backend
-        const response = await axios.post('/api/say-the-phrase/attempt', formData, {
+        const response = await axios.post('/student/say-the-phrase/attempt', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        emit('answered', response.data);
+        // Emit boolean correctness and transcription as user answer
+        const isCorrect = (response.data.score ?? 0) >= 80;
+        const transcription = response.data.transcription || '';
+        emit('answered', isCorrect, transcription);
     } catch (e) {
         error.value = 'Error al enviar el audio.';
     } finally {
