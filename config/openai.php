@@ -59,7 +59,7 @@ return [
     | creating short-lived realtime sessions for voice conversations.
     */
 
-    'realtime_model' => env('OPENAI_REALTIME_MODEL', 'gpt-4o-realtime-preview-2024-12-17'),
+    'realtime_model' => env('OPENAI_REALTIME_MODEL', 'gpt-realtime-mini-2025-10-06'),
     'realtime_voice' => env('OPENAI_REALTIME_VOICE', 'alloy'),
 
     'text_chat_model' => env('OPENAI_TEXT_CHAT_MODEL', 'gpt-4.1'),

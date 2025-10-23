@@ -19,7 +19,7 @@ class OpenAIRealtimeService
         int $expiresIn = 120,
         ?string $conversationLevel = null
     ): array {
-        $model = $model ?? Config::get('openai.realtime_model', 'gpt-realtime-mini');
+        $model = $model ?? Config::get('openai.realtime_model', 'gpt-realtime-mini-2025-10-06');
         $voice = $voice ?? Config::get('openai.realtime_voice', 'alloy');
         $expiresIn = max(1, min($expiresIn, 120));
 
