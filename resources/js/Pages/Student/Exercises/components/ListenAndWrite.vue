@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { ref, watch } from 'vue';
+import CustomAudioPlayer from './CustomAudioPlayer.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -8,39 +8,18 @@ const props = defineProps({
 });
 const emit = defineEmits(['answered']);
 
+
 const answer = ref('');
-const isPlaying = ref(false);
-let audio = null;
+
 
 watch(() => props.showFeedback, (v) => { if (!v) answer.value = ''; });
 
-function togglePlay() {
-    const url = props.exercise.file_url;
-    if (!url) return;
-    if (!audio) {
-        audio = new Audio(url);
-        audio.addEventListener('ended', () => { isPlaying.value = false; });
-    }
-    if (audio.src !== url) {
-        audio.pause();
-        audio = new Audio(url);
-        audio.addEventListener('ended', () => { isPlaying.value = false; });
-    }
-    if (isPlaying.value) {
-        audio.pause();
-        isPlaying.value = false;
-    } else {
-        audio.play();
-        isPlaying.value = true;
-    }
-}
+
+// El audio se controla desde CustomAudioPlayer
 
 function submit() {
     if (props.showFeedback) return;
-    if (audio && isPlaying.value) {
-        audio.pause();
-        isPlaying.value = false;
-    }
+    // El audio se controla desde CustomAudioPlayer
     // La solución es un arreglo, se compara con answer.value (puede ser case-insensitive y trim)
     const expected = Array.isArray(props.exercise.solution) ? props.exercise.solution[0] : '';
     const isCorrect = expected && answer.value.trim().toLowerCase() === expected.trim().toLowerCase();
@@ -50,11 +29,8 @@ function submit() {
 
 <template>
     <div class="space-y-5">
-        <div class="flex items-center justify-center gap-3">
-            <PrimaryButton type="button" @click="togglePlay" class="flex items-center gap-2">
-                <i :class="['fa-solid', isPlaying ? 'fa-pause' : 'fa-play']"></i>
-                {{ isPlaying ? 'Pausar audio' : 'Reproducir audio' }}
-            </PrimaryButton>
+        <div class="flex gap-3">
+            <CustomAudioPlayer v-if="props.exercise.file_url" :src="props.exercise.file_url" />
         </div>
         <div class="space-y-3">
             <textarea v-model="answer" :disabled="showFeedback" rows="3"
