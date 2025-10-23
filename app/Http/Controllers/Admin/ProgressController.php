@@ -51,18 +51,21 @@ class ProgressController extends Controller
     public function show($userId)
     {
         $user = User::with('profile')->findOrFail($userId);
-        $units = Unit::all();
-        $lessons = Lesson::with('unit')->get();
+        $units = Unit::paginate(10)->appends(request()->all());
+        $lessons = Lesson::with('unit')->paginate(10)->appends(request()->all());
         $lessonProgress = LessonUserProgress::with(['lesson.unit'])
             ->where('user_id', $userId)
-            ->get();
+            ->paginate(10)
+            ->appends(request()->all());
         $unitProgress = UnitUserProgress::with(['unit'])
             ->where('user_id', $userId)
-            ->get();
+            ->paginate(10)
+            ->appends(request()->all());
         $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
             ->where('user_id', $userId)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10)
+            ->appends(request()->all());
 
         return Inertia::render('Admin/Progress/Show', [
             'user' => array_merge($user->toArray(), [

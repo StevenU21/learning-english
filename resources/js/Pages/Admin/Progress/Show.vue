@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import StatusBadge from '@/Components/StatusBadge.vue';
 import PageHeader from '@/Components/PageHeader.vue';
@@ -9,14 +9,15 @@ import { usePage } from '@inertiajs/vue3';
 import ExerciseAttemptsModal from './ExerciseAttemptsModal.vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import CorrectBadge from '@/Components/CorrectBadge.vue';
+import Table from '@/Components/Table.vue';
 
 const props = defineProps({
     user: Object,
-    units: Array,
-    lessons: Array,
-    lessonProgress: Array,
-    unitProgress: Array,
-    attempts: Array,
+    units: Object,
+    lessons: Object,
+    lessonProgress: Object,
+    unitProgress: Object,
+    attempts: Object,
 });
 
 const { user, lessonProgress, unitProgress, attempts, units, lessons } = props;
@@ -33,8 +34,8 @@ const attemptSearch = ref('');
 
 // Lecciones dependientes de la unidad seleccionada en el filtro de intentos
 const attemptLessonsForSelectedUnit = computed(() => {
-    if (!attemptUnitFilter.value) return lessons;
-    return lessons.filter(l => String(l.unit?.id ?? l.unit_id) === String(attemptUnitFilter.value));
+    if (!attemptUnitFilter.value) return lessons.data;
+    return lessons.data.filter(l => String(l.unit?.id ?? l.unit_id) === String(attemptUnitFilter.value));
 });
 // Reiniciar selección de lección cuando cambie la unidad
 watch(attemptUnitFilter, () => {
@@ -45,14 +46,16 @@ watch(attemptUnitFilter, () => {
 
 // Computed filtrados
 const filteredUnitProgress = computed(() => {
-    return unitProgress.filter(up => {
+    if (!unitProgress.data) return [];
+    return unitProgress.data.filter(up => {
         if (unitStatusFilter.value && up.status !== unitStatusFilter.value) return false;
         return true;
     });
 });
 
 const filteredLessonProgress = computed(() => {
-    return lessonProgress.filter(lp => {
+    if (!lessonProgress.data) return [];
+    return lessonProgress.data.filter(lp => {
         if (lessonUnitFilter.value && String(lp.lesson.unit.id) !== String(lessonUnitFilter.value)) return false;
         if (lessonStatusFilter.value && lp.status !== lessonStatusFilter.value) return false;
         return true;
@@ -61,7 +64,8 @@ const filteredLessonProgress = computed(() => {
 
 // Lista plana filtrada
 const filteredAttempts = computed(() => {
-    return attempts.filter(att => {
+    if (!attempts.data) return [];
+    return attempts.data.filter(att => {
         // El intento puede tener lesson directo o mediante exercise.lesson
         const lesson = att.lesson || att.exercise?.lesson;
         const unitId = lesson?.unit?.id;
@@ -106,6 +110,14 @@ const groupedByExercise = computed(() => {
         return { ...g, latestAttempt: latest };
     });
 });
+
+// Función para cambiar de página en cualquier recurso paginado
+function goToPage(url) {
+    router.visit(url, {
+        preserveScroll: true,
+        preserveState: true,
+    });
+}
 
 // Modal: Ver detalles de intentos por lección
 const showLessonAttempts = ref(false);
@@ -247,35 +259,25 @@ function closeExerciseAttempts() {
                     </div>
                     <!-- Desktop: table -->
                     <div class="overflow-x-auto hidden md:block">
-                        <table class="w-full min-w-max text-sm">
-                            <thead class="bg-gray-100 dark:bg-gray-900/70">
-                                <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="filteredUnitProgress.length === 0">
-                                    <td colspan="3" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin
-                                        registros
-                                    </td>
-                                </tr>
-                                <tr v-for="up in filteredUnitProgress" :key="up.id"
-                                    class="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
-                                    <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ up.unit.name }}</td>
-                                    <td class="px-4 py-2">
-                                        <ProgressBar :value="up.progress" />
-                                    </td>
-                                    <td class="px-4 py-2">
-                                        <StatusBadge :status="up.status" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <Table
+                            :columns="[
+                                { label: 'Unidad', key: 'unit', icon: 'fa-solid fa-layer-group', render: up => up.unit.name },
+                                { label: 'Progreso', key: 'progress', icon: 'fa-solid fa-bars-progress', render: up => '' },
+                                { label: 'Estado', key: 'status', icon: 'fa-solid fa-flag-checkered', render: up => '' },
+                            ]"
+                            :items="filteredUnitProgress"
+                            :meta="unitProgress.meta"
+                            :links="unitProgress.links"
+                            empty-text="Sin registros"
+                            @paginate="goToPage"
+                        >
+                            <template #progress="{ item }">
+                                <ProgressBar :value="item.progress" />
+                            </template>
+                            <template #status="{ item }">
+                                <StatusBadge :status="item.status" />
+                            </template>
+                        </Table>
                     </div>
                 </div>
 
@@ -290,7 +292,7 @@ function closeExerciseAttempts() {
                             <select v-model="lessonUnitFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Unidad: Todas</option>
-                                <option v-for="u in units" :key="u.id" :value="u.id">{{ u.name }}</option>
+                                <option v-for="u in units.data" :key="u.id" :value="u.id">{{ u.name }}</option>
                             </select>
                             <select v-model="lessonStatusFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -320,39 +322,26 @@ function closeExerciseAttempts() {
                     </div>
                     <!-- Desktop: table -->
                     <div class="overflow-x-auto hidden md:block">
-                        <table class="w-full min-w-max text-sm">
-                            <thead class="bg-gray-100 dark:bg-gray-900/70">
-                                <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-layer-group mr-2"></i>Unidad</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-book-open mr-2"></i>Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-bars-progress mr-2"></i>Progreso</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-flag-checkered mr-2"></i>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="filteredLessonProgress.length === 0">
-                                    <td colspan="4" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin
-                                        registros
-                                    </td>
-                                </tr>
-                                <tr v-for="lp in filteredLessonProgress" :key="lp.id"
-                                    class="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
-                                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ lp.lesson.unit.name }}
-                                    </td>
-                                    <td class="px-4 py-2 text-gray-800 dark:text-gray-200">{{ lp.lesson.name }}</td>
-                                    <td class="px-4 py-2">
-                                        <ProgressBar :value="lp.progress" />
-                                    </td>
-                                    <td class="px-4 py-2">
-                                        <StatusBadge :status="lp.status" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <Table
+                            :columns="[
+                                { label: 'Unidad', key: 'unit', icon: 'fa-solid fa-layer-group', render: lp => lp.lesson.unit.name },
+                                { label: 'Lección', key: 'lesson', icon: 'fa-solid fa-book-open', render: lp => lp.lesson.name },
+                                { label: 'Progreso', key: 'progress', icon: 'fa-solid fa-bars-progress', render: lp => '' },
+                                { label: 'Estado', key: 'status', icon: 'fa-solid fa-flag-checkered', render: lp => '' },
+                            ]"
+                            :items="filteredLessonProgress"
+                            :meta="lessonProgress.meta"
+                            :links="lessonProgress.links"
+                            empty-text="Sin registros"
+                            @paginate="goToPage"
+                        >
+                            <template #progress="{ item }">
+                                <ProgressBar :value="item.progress" />
+                            </template>
+                            <template #status="{ item }">
+                                <StatusBadge :status="item.status" />
+                            </template>
+                        </Table>
                     </div>
                 </div>
 
@@ -367,7 +356,7 @@ function closeExerciseAttempts() {
                             <select v-model="attemptUnitFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Unidad: Todas</option>
-                                <option v-for="u in units" :key="u.id" :value="u.id">{{ u.name }}</option>
+                                <option v-for="u in units.data" :key="u.id" :value="u.id">{{ u.name }}</option>
                             </select>
                             <select v-model="attemptLessonFilter"
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -419,53 +408,32 @@ function closeExerciseAttempts() {
                     </div>
                     <!-- Desktop: table -->
                     <div class="overflow-x-auto hidden md:block">
-                        <table class="w-full min-w-max text-sm">
-                            <thead class="bg-gray-100 dark:bg-gray-900/70">
-                                <tr class="text-left">
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-file-lines mr-2"></i>Ejercicio</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-book-open mr-2"></i>Lección</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-hashtag mr-2"></i>Intentos</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-check mr-2"></i>Estado actual</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-calendar-check mr-2"></i>Respondido</th>
-                                    <th class="px-4 py-3 text-gray-700 dark:text-gray-300"><i
-                                            class="fa-solid fa-eye mr-2"></i>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="groupedByExercise.length === 0">
-                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Sin
-                                        intentos
-                                        registrados</td>
-                                </tr>
-                                <tr v-for="g in groupedByExercise" :key="g.exercise.id"
-                                    class="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
-                                    <td class="px-4 py-2 text-gray-800 dark:text-gray-200 truncate max-w-xs"
-                                        :title="g.exercise?.prompt">{{ g.exercise?.prompt?.slice(0, 60) }}<span
-                                            v-if="g.exercise?.prompt?.length > 60">...</span></td>
-                                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ g.lesson?.name ||
-                                        g.exercise?.lesson?.name }}</td>
-                                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ g.attempts.length }}</td>
-                                    <td class="px-4 py-2">
-                                        <CorrectBadge :correct="g.latestAttempt?.is_correct" />
-                                    </td>
-                                    <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{
-                                        g.latestAttempt?.answered_at ? new
-                                            Date(g.latestAttempt.answered_at).toLocaleString() : '-' }}</td>
-                                    <td class="px-4 py-2">
-                                        <button
-                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-md shadow"
-                                            @click="openExerciseAttempts(g.exercise)">
-                                            <i class="fa-solid fa-eye mr-2"></i> Ver detalles
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <Table
+                            :columns="[
+                                { label: 'Ejercicio', key: 'exercise', icon: 'fa-solid fa-file-lines', render: g => g.exercise?.prompt?.slice(0, 60) + (g.exercise?.prompt?.length > 60 ? '...' : '') },
+                                { label: 'Lección', key: 'lesson', icon: 'fa-solid fa-book-open', render: g => g.lesson?.name || g.exercise?.lesson?.name },
+                                { label: 'Intentos', key: 'attempts', icon: 'fa-solid fa-hashtag', render: g => g.attempts.length },
+                                { label: 'Estado actual', key: 'status', icon: 'fa-solid fa-check', render: g => '' },
+                                { label: 'Respondido', key: 'answered_at', icon: 'fa-solid fa-calendar-check', render: g => g.latestAttempt?.answered_at ? new Date(g.latestAttempt.answered_at).toLocaleString() : '-' },
+                                { label: 'Acciones', key: 'actions', icon: 'fa-solid fa-eye', render: g => '' },
+                            ]"
+                            :items="groupedByExercise"
+                            :meta="attempts.meta"
+                            :links="attempts.links"
+                            empty-text="Sin intentos registrados"
+                            @paginate="goToPage"
+                        >
+                            <template #status="{ item }">
+                                <CorrectBadge :correct="item.latestAttempt?.is_correct" />
+                            </template>
+                            <template #actions="{ item }">
+                                <button
+                                    class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-md shadow"
+                                    @click="openExerciseAttempts(item.exercise)">
+                                    <i class="fa-solid fa-eye mr-2"></i> Ver detalles
+                                </button>
+                            </template>
+                        </Table>
                     </div>
                 </div>
 
