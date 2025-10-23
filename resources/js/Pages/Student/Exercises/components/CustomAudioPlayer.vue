@@ -14,7 +14,7 @@
                     <div ref="waveformRef" class="w-full" style="height: 48px;"></div>
                 </div>
                 <span class="text-xs text-gray-600 dark:text-gray-300 font-mono text-right">{{ formatTime(duration)
-                    }}</span>
+                }}</span>
             </div>
         </div>
         <div class="flex gap-2 mb-2 mt-2">
@@ -76,6 +76,9 @@ function togglePlay() {
     if (!wavesurfer.value) return;
     if (isPlaying.value) {
         wavesurfer.value.pause();
+        // Al pausar, la próxima vez que se reproduzca, volverá al inicio
+        wavesurfer.value.seekTo(0);
+        currentTime.value = 0;
     } else {
         wavesurfer.value.play();
     }

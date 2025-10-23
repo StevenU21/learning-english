@@ -39,7 +39,7 @@ function btnClass(option) {
 
 <template>
     <div class="space-y-5">
-        <div class="flex flex-col items-center justify-center gap-3">
+        <div class="gap-3">
             <div class="flex gap-2">
                 <CustomAudioPlayer v-if="props.exercise.file_url" :src="props.exercise.file_url" />
             </div>
