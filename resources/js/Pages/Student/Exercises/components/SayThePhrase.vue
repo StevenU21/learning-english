@@ -18,6 +18,9 @@ const audioChunks = ref([]);
 const audioBlob = ref(null);
 const isSending = ref(false);
 const audioUrl = ref('');
+const maxSeconds = 10;
+const secondsLeft = ref(maxSeconds);
+let timer = null;
 
 // Mostrar la solución solo si showFeedback está activo
 const showSolution = () => props.showFeedback && props.exercise.solution && props.exercise.solution[0];
@@ -32,6 +35,11 @@ watch(
         error.value = '';
         isRecording.value = false;
         isSending.value = false;
+        secondsLeft.value = maxSeconds;
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
         if (mediaRecorder.value && mediaRecorder.value.state !== 'inactive') {
             mediaRecorder.value.stop();
         }
@@ -44,6 +52,7 @@ async function startRecording() {
     audioChunks.value = [];
     audioBlob.value = null;
     audioUrl.value = '';
+    secondsLeft.value = maxSeconds;
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const recorder = new MediaRecorder(stream);
@@ -56,9 +65,22 @@ async function startRecording() {
         recorder.onstop = () => {
             audioBlob.value = new Blob(audioChunks.value, { type: 'audio/webm' });
             audioUrl.value = URL.createObjectURL(audioBlob.value);
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
         };
         recorder.start();
         isRecording.value = true;
+        // Iniciar contador regresivo
+        timer = setInterval(() => {
+            if (secondsLeft.value > 0) {
+                secondsLeft.value--;
+            }
+            if (secondsLeft.value <= 0) {
+                stopRecording();
+            }
+        }, 1000);
     } catch (err) {
         error.value = 'No se pudo acceder al micrófono.';
     }
@@ -68,6 +90,10 @@ function stopRecording() {
     if (mediaRecorder.value && isRecording.value) {
         mediaRecorder.value.stop();
         isRecording.value = false;
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
     }
 }
 
@@ -115,7 +141,8 @@ async function submit() {
             </button>
             <Badge v-if="isRecording" type="error">
                 <i class="fa-solid fa-microphone mr-1"></i>
-                Grabando... <span class="ml-1 text-xs">Haz clic para detener</span>
+                Grabando... <span class="ml-1 text-xs">{{ secondsLeft }}s</span>
+                <span class="ml-1 text-xs">(máx. {{ maxSeconds }}s)</span>
             </Badge>
             <Badge v-else-if="audioUrl" type="success">
                 <i class="fa-solid fa-circle-check mr-1"></i>

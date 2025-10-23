@@ -12,7 +12,7 @@ class SayThePhraseController extends Controller
     public function attempt(Request $request, SayThePhraseService $sayThePhraseService)
     {
         $request->validate([
-            'audio' => ['required', 'file', 'mimes:webm,wav,mp3,ogg'],
+            'audio' => ['required', 'file', 'mimes:webm,ogg', 'max:460'],
             'solution' => ['required', 'string'],
             'exercise_id' => ['required', 'integer'],
             'language' => ['nullable', 'string'],
