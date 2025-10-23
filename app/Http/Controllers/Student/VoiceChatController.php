@@ -10,10 +10,6 @@ use Inertia\Response;
 
 class VoiceChatController extends Controller
 {
-    public function __construct(private readonly OpenAIRealtimeService $realtimeService)
-    {
-    }
-
     public function index(): Response
     {
         return Inertia::render('Student/VoiceChat/Index', [
@@ -23,11 +19,11 @@ class VoiceChatController extends Controller
         ]);
     }
 
-    public function createSession(VoiceChatSessionRequest $request)
+    public function createSession(VoiceChatSessionRequest $request, OpenAIRealtimeService $realtimeService)
     {
         $validated = $request->validated();
         try {
-            $session = $this->realtimeService->createVoiceSession(
+            $session = $realtimeService->createVoiceSession(
                 voice: $validated['voice'] ?? null,
                 instructions: $validated['instructions'] ?? null,
                 model: null,
