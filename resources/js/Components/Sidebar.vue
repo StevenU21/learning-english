@@ -34,6 +34,16 @@
             effectiveCollapsed ? 'p-2' : 'p-3',
             'space-y-1 overflow-y-auto h-[calc(100vh-4rem)]'
         ]">
+            <!-- Gestión -->
+            <div :class="[
+                'flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 transition-all',
+                effectiveCollapsed ? 'justify-center px-0' : ''
+            ]">
+                <i class="fa-solid fa-briefcase"></i>
+                <span v-show="!effectiveCollapsed">Gestión</span>
+            </div>
+            <hr :class="['my-3 border-gray-200 dark:border-gray-700', effectiveCollapsed ? 'mx-2' : '']" />
+
             <!-- Admin links -->
             <template v-if="hasRole('admin')">
                 <SidebarLink :href="route('units.index')" :active="route().current('units.index')"
@@ -83,8 +93,15 @@
                 </SidebarLink>
             </template>
 
-            <!-- Divider -->
-            <hr class="my-3 border-gray-200 dark:border-gray-700" />
+            <!-- Administración -->
+            <div :class="[
+                'flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 transition-all',
+                effectiveCollapsed ? 'justify-center px-0' : ''
+            ]">
+                <i class="fa-solid fa-gear"></i>
+                <span v-show="!effectiveCollapsed">Administración</span>
+            </div>
+            <hr :class="['my-3 border-gray-200 dark:border-gray-700', effectiveCollapsed ? 'mx-2' : '']" />
 
             <!-- Profile/Logout -->
             <SidebarLink :href="route('profile.edit')" :compact="effectiveCollapsed" titleText="Perfil">
@@ -167,8 +184,6 @@ const desktopToggleStyle = computed(() => ({
 </script>
 
 <style scoped>
-/****/
-/* Removed CDN import, added local font-face */
 @font-face {
     font-family: 'Suez One';
     font-style: normal;
