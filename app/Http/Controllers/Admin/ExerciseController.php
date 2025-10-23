@@ -14,6 +14,7 @@ use App\Models\ExerciseType;
 use App\Classes\ExerciseTypeLogic;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Unit;
+use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
@@ -97,14 +98,21 @@ class ExerciseController extends Controller
             return back()->withErrors($result['errors'])->withInput();
         }
 
-        if ($data['file']) {
-            $result['data']['file'] = $data['file']->store('units', 'public');
-        }
-        if ($data['file_b']) {
-            $result['data']['file_b'] = $data['file_b']->store('units', 'public');
-        }
+        DB::beginTransaction();
+        try {
+            if ($data['file']) {
+                $result['data']['file'] = $data['file']->store('units', 'public');
+            }
+            if ($data['file_b']) {
+                $result['data']['file_b'] = $data['file_b']->store('units', 'public');
+            }
 
-        Exercise::create($result['data']);
+            Exercise::create($result['data']);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['general' => 'Ocurrió un error al crear el ejercicio.'])->withInput();
+        }
         return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio creado correctamente');
     }
 
@@ -155,24 +163,31 @@ class ExerciseController extends Controller
             return back()->withErrors($result['errors'])->withInput();
         }
 
-        if ($data['file']) {
-            if ($exercise->file) {
-                Storage::disk('public')->delete($exercise->file);
+        DB::beginTransaction();
+        try {
+            if ($data['file']) {
+                if ($exercise->file) {
+                    Storage::disk('public')->delete($exercise->file);
+                }
+                $result['data']['file'] = $data['file']->store('units', 'public');
+            } else {
+                unset($result['data']['file']);
             }
-            $result['data']['file'] = $data['file']->store('units', 'public');
-        } else {
-            unset($result['data']['file']);
-        }
-        if ($data['file_b']) {
-            if ($exercise->file_b) {
-                Storage::disk('public')->delete($exercise->file_b);
+            if ($data['file_b']) {
+                if ($exercise->file_b) {
+                    Storage::disk('public')->delete($exercise->file_b);
+                }
+                $result['data']['file_b'] = $data['file_b']->store('units', 'public');
+            } else {
+                unset($result['data']['file_b']);
             }
-            $result['data']['file_b'] = $data['file_b']->store('units', 'public');
-        } else {
-            unset($result['data']['file_b']);
-        }
 
-        $exercise->update($result['data']);
+            $exercise->update($result['data']);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['general' => 'Ocurrió un error al actualizar el ejercicio.'])->withInput();
+        }
         return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio actualizado correctamente');
     }
 
