@@ -22,13 +22,31 @@ class SayThePhraseService
         $expected = strtolower(trim($expected));
         $userText = strtolower(trim($userText));
 
+        // Score global (similar_text)
         similar_text($expected, $userText, $percent);
         $percent = round($percent, 2);
 
-        $result = $percent >= 80 ? 'Aprobado 🎉' : 'Intenta de nuevo 🔁';
+        // Score palabra por palabra
+        $expectedWords = preg_split('/\s+/', $expected);
+        $userWords = preg_split('/\s+/', $userText);
+        $matched = 0;
+        $total = max(count($expectedWords), 1); // evitar división por cero
+        foreach ($expectedWords as $i => $word) {
+            if (isset($userWords[$i]) && $userWords[$i] === $word) {
+                $matched++;
+            }
+        }
+        $wordScore = round(($matched / $total) * 100, 2);
+
+        // Score combinado (puedes ajustar el peso)
+        $finalScore = round(($percent * 0.6) + ($wordScore * 0.4), 2);
+
+        $result = $finalScore >= 80 ? 'Aprobado 🎉' : 'Intenta de nuevo 🔁';
 
         return [
-            'score' => $percent,
+            'score' => $finalScore,
+            'score_global' => $percent,
+            'score_words' => $wordScore,
             'result' => $result,
             'user_text' => $userText,
             'expected' => $expected,
