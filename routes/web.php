@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\ExerciseTypeController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\ProgressController;
@@ -32,7 +33,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/github/redirect', [GithubController::class, 'redirect'])->name('auth.github.redirect');
     Route::get('/auth/github/callback', [GithubController::class, 'callback'])->name('auth.github.callback');
 });
-
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -77,10 +77,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('units', UnitController::class);
         Route::resource('lessons', LessonController::class);
         Route::resource('resources', ResourceController::class);
+        Route::resource('exercise-types', ExerciseTypeController::class);
 
         Route::get('resources/{resource}/download', [ResourceController::class, 'download'])->name('resources.download');
         Route::resource('exercises', ExerciseController::class);
-
         Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
         Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
     });

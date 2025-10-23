@@ -37,32 +37,38 @@
             <!-- Admin links -->
             <template v-if="hasRole('admin')">
                 <SidebarLink :href="route('units.index')" :active="route().current('units.index')"
-                    :compact="effectiveCollapsed" title-text="Unidades">
+                    :compact="effectiveCollapsed" titleText="Unidades">
                     <i class="fa-solid fa-layer-group w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Unidades</span>
                 </SidebarLink>
                 <SidebarLink :href="route('levels.index')" :active="route().current('levels.index')"
-                    :compact="effectiveCollapsed" title-text="Niveles">
+                    :compact="effectiveCollapsed" titleText="Niveles">
                     <i class="fa-solid fa-list w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Niveles</span>
                 </SidebarLink>
+                <SidebarLink :href="route('exercise-types.index')" :active="route().current('exercise-types.index')"
+                    :compact="effectiveCollapsed" titleText="Tipos de Ejercicio">
+                    <i class="fa-solid fa-shapes w-5 text-center"></i>
+                    <span v-show="!effectiveCollapsed">Tipos de Ejercicio</span>
+                </SidebarLink>
                 <SidebarLink :href="route('lessons.index')" :active="route().current('lessons.index')"
-                    :compact="effectiveCollapsed" title-text="Lecciones">
+                    :compact="effectiveCollapsed" titleText="Lecciones">
                     <i class="fa-solid fa-book w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Lecciones</span>
                 </SidebarLink>
                 <SidebarLink :href="route('resources.index')" :active="route().current('resources.index')"
-                    :compact="effectiveCollapsed" title-text="Recursos">
+                    :compact="effectiveCollapsed" titleText="Recursos">
                     <i class="fa-solid fa-user w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Recursos</span>
                 </SidebarLink>
+
                 <SidebarLink :href="route('exercises.index')" :active="route().current('exercises.index')"
-                    :compact="effectiveCollapsed" title-text="Ejercicios">
+                    :compact="effectiveCollapsed" titleText="Ejercicios">
                     <i class="fa-solid fa-pencil w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Ejercicios</span>
                 </SidebarLink>
                 <SidebarLink :href="route('admin.progress.index')" :active="route().current('admin.progress.index')"
-                    :compact="effectiveCollapsed" title-text="Progreso">
+                    :compact="effectiveCollapsed" titleText="Progreso">
                     <i class="fa-solid fa-chart-line w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Progreso</span>
                 </SidebarLink>
@@ -71,7 +77,7 @@
             <!-- Student links -->
             <template v-if="hasRole('student')">
                 <SidebarLink :href="route('student.units.index')" :active="route().current('student.units.index')"
-                    :compact="effectiveCollapsed" title-text="Unidades">
+                    :compact="effectiveCollapsed" titleText="Unidades">
                     <i class="fa-solid fa-layer-group w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Unidades</span>
                 </SidebarLink>
@@ -81,12 +87,12 @@
             <hr class="my-3 border-gray-200 dark:border-gray-700" />
 
             <!-- Profile/Logout -->
-            <SidebarLink :href="route('profile.edit')" :compact="effectiveCollapsed" title-text="Perfil">
+            <SidebarLink :href="route('profile.edit')" :compact="effectiveCollapsed" titleText="Perfil">
                 <i class="fa-solid fa-user w-5 text-center"></i>
                 <span v-show="!effectiveCollapsed">Perfil</span>
             </SidebarLink>
             <SidebarLink :href="route('logout')" method="post" as="button" :compact="effectiveCollapsed"
-                title-text="Cerrar sesión">
+                titleText="Cerrar sesión">
                 <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
                 <span v-show="!effectiveCollapsed">Cerrar sesión</span>
             </SidebarLink>

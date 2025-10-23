@@ -20,4 +20,19 @@ class ExerciseTypePolicy
     {
         return $this->checkPermission($user, 'read exercise_types');
     }
+
+    public function create(User $user): bool
+    {
+        return $this->checkPermission($user, 'create exercise_types');
+    }
+
+    public function update(User $user, ExerciseType $exerciseType): bool
+    {
+        return $this->checkPermission($user, 'update exercise_types');
+    }
+
+    public function destroy(User $user, ExerciseType $exerciseType): bool
+    {
+        return $this->checkPermission($user, 'destroy exercise_types');
+    }
 }
