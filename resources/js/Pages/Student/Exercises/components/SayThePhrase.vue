@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CustomAudioPlayer from './CustomAudioPlayer.vue';
 import Badge from '@/Components/Badge.vue';
@@ -22,6 +22,23 @@ const audioUrl = ref('');
 
 // Mostrar la solución solo si showFeedback está activo
 const showSolution = () => props.showFeedback && props.exercise.solution && props.exercise.solution[0];
+
+// Limpiar el audio cuando cambie el ejercicio
+watch(
+    () => props.exercise.id,
+    () => {
+        audioChunks.value = [];
+        audioBlob.value = null;
+        audioUrl.value = '';
+        error.value = '';
+        isRecording.value = false;
+        isSending.value = false;
+        if (mediaRecorder.value && mediaRecorder.value.state !== 'inactive') {
+            mediaRecorder.value.stop();
+        }
+        mediaRecorder.value = null;
+    }
+);
 
 async function startRecording() {
     error.value = '';
