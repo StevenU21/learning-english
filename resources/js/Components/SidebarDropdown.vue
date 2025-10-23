@@ -4,6 +4,7 @@
             'flex items-center cursor-pointer select-none px-3 py-2 rounded transition',
             'hover:bg-gray-100 dark:hover:bg-gray-800',
             'text-gray-800 dark:text-gray-100',
+            'text-[15px] font-normal',
             { 'justify-center px-0': compact },
             { 'bg-gray-100 dark:bg-gray-800': open }
         ]" @click="toggle" :title="label">
@@ -19,7 +20,7 @@
                     <SidebarLink v-for="item in items" :key="item.href" :href="item.href" :active="item.active"
                         :compact="compact" :titleText="item.label">
                         <i :class="[item.icon, 'w-5 text-center', 'text-gray-500 dark:text-gray-200']"></i>
-                        <span v-show="!compact" class="text-gray-800 dark:text-gray-100">{{ item.label }}</span>
+                        <span v-show="!compact" class="text-gray-800 dark:text-gray-100 text-[15px] font-normal">{{ item.label }}</span>
                     </SidebarLink>
                 </div>
             </div>

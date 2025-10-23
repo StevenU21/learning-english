@@ -52,35 +52,31 @@
                     <span v-show="!effectiveCollapsed">Unidades</span>
                 </SidebarLink>
                 <!-- Catálogo Dropdown -->
-                <SidebarDropdown
-                    :compact="effectiveCollapsed"
-                    icon="fa-solid fa-box-archive"
-                    label="Catálogo"
-                    :items="[
-                        {
-                            href: route('levels.index'),
-                            active: route().current('levels.index'),
-                            icon: 'fa-solid fa-list',
-                            label: 'Niveles'
-                        },
-                        {
-                            href: route('exercise-types.index'),
-                            active: route().current('exercise-types.index'),
-                            icon: 'fa-solid fa-shapes',
-                            label: 'Tipos de Ejercicio'
-                        }
-                    ]"
-                />
+                <SidebarDropdown :compact="effectiveCollapsed" icon="fa-solid fa-box-archive" label="Catálogo" :items="[
+                    {
+                        href: route('levels.index'),
+                        active: route().current('levels.index'),
+                        icon: 'fa-solid fa-list',
+                        label: 'Niveles'
+                    },
+                    {
+                        href: route('exercise-types.index'),
+                        active: route().current('exercise-types.index'),
+                        icon: 'fa-solid fa-shapes',
+                        label: 'Tipos de Ejercicio'
+                    },
+                    {
+                        href: route('resources.index'),
+                        active: route().current('resources.index'),
+                        icon: 'fa-solid fa-user',
+                        label: 'Recursos'
+                    }
+                ]" />
 
                 <SidebarLink :href="route('lessons.index')" :active="route().current('lessons.index')"
                     :compact="effectiveCollapsed" titleText="Lecciones">
                     <i class="fa-solid fa-book w-5 text-center"></i>
                     <span v-show="!effectiveCollapsed">Lecciones</span>
-                </SidebarLink>
-                <SidebarLink :href="route('resources.index')" :active="route().current('resources.index')"
-                    :compact="effectiveCollapsed" titleText="Recursos">
-                    <i class="fa-solid fa-user w-5 text-center"></i>
-                    <span v-show="!effectiveCollapsed">Recursos</span>
                 </SidebarLink>
 
                 <SidebarLink :href="route('exercises.index')" :active="route().current('exercises.index')"
