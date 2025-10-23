@@ -76,6 +76,7 @@ class SayThePhraseService
         $expected = $this->normalizeContractions($expected);
         $userText = $this->normalizeContractions($userText);
 
+        // Score tradicional
         similar_text($expected, $userText, $percent);
         $percent = round($percent, 2);
 
@@ -92,15 +93,50 @@ class SayThePhraseService
         $firstWordUser = $userWords->first();
         $firstWordPenalty = ($firstWordExpected !== $firstWordUser) ? 0.7 : 1;
 
-        $finalScore = round((($percent * 0.4) + ($wordScore * 0.6)) * $firstWordPenalty, 2);
+        // Embeddings OpenAI
+        try {
+            $embeddings = OpenAI::embeddings()->create([
+                'model' => 'text-embedding-ada-002',
+                'input' => [$expected, $userText],
+            ]);
+            $vec1 = $embeddings['data'][0]['embedding'] ?? [];
+            $vec2 = $embeddings['data'][1]['embedding'] ?? [];
+            $semanticScore = $this->cosineSimilarity($vec1, $vec2) * 100;
+        } catch (\Exception $e) {
+            $semanticScore = 0;
+        }
+
+        // Score final combinando semántica y tradicional
+        $finalScore = round((($percent * 0.2) + ($wordScore * 0.3) + ($semanticScore * 0.5)) * $firstWordPenalty, 2);
 
         return [
             'score' => $finalScore,
             'score_global' => $percent,
             'score_words' => $wordScore,
+            'score_semantic' => round($semanticScore, 2),
             'user_text' => (string) $userText,
             'expected' => (string) $expected,
         ];
+    }
+
+    // Calcula la similitud coseno entre dos vectores
+    private function cosineSimilarity(array $vec1, array $vec2): float
+    {
+        if (empty($vec1) || empty($vec2) || count($vec1) !== count($vec2)) {
+            return 0.0;
+        }
+        $dot = 0.0;
+        $normA = 0.0;
+        $normB = 0.0;
+        foreach ($vec1 as $i => $v) {
+            $dot += $v * $vec2[$i];
+            $normA += $v * $v;
+            $normB += $vec2[$i] * $vec2[$i];
+        }
+        if ($normA == 0.0 || $normB == 0.0) {
+            return 0.0;
+        }
+        return $dot / (sqrt($normA) * sqrt($normB));
     }
 
     public function processAttempt(array $data): array
