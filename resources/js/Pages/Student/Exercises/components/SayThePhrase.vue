@@ -31,19 +31,6 @@ function submit() {
 
 <template>
     <div class="space-y-7">
-        <!-- Prompt -->
-        <div class="mb-2">
-            <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-300 text-base font-semibold">
-                <i class="fa-solid fa-microphone-lines"></i>
-                Frase que debes decir
-            </div>
-            <div
-                class="mt-3 p-4 rounded-xl bg-indigo-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-indigo-100 dark:border-gray-700 text-lg font-medium shadow-sm">
-                {{ exercise.prompt }}
-            </div>
-        </div>
-
-
         <!-- Mic Button & Answer -->
         <div class="flex flex-col items-center gap-4">
             <button type="button" @click="startRecording"
@@ -55,24 +42,13 @@ function submit() {
             <p v-if="error" class="text-xs text-red-400 mt-2">{{ error }}</p>
         </div>
 
-        <!-- Answer Card -->
-        <div class="flex flex-col items-center">
-            <div class="w-full max-w-xl">
-                <div
-                    class="rounded-xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 p-4 shadow-sm flex items-center gap-3">
-                    <i class="fa-solid fa-user text-indigo-400"></i>
-                    <input v-model="answer" :disabled="props.showFeedback" type="text"
-                        class="flex-1 bg-transparent border-none focus:ring-0 text-lg text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                        placeholder="Tu respuesta aparecerá aquí..." />
-                </div>
-            </div>
-        </div>
-
         <!-- Comprobar Button -->
-        <button @click="submit" :disabled="props.showFeedback || !answer.trim()"
-            class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full max-w-xs mt-3">
-            <i class="fa-solid fa-check mr-2"></i> Comprobar
-        </button>
+        <div class="flex justify-center">
+            <button @click="submit" :disabled="props.showFeedback || !answer.trim()"
+                class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full max-w-xs mt-3">
+                <i class="fa-solid fa-check mr-2"></i> Comprobar
+            </button>
+        </div>
 
         <!-- Feedback Solution -->
         <div v-if="showSolution()"
