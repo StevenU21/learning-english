@@ -23,6 +23,7 @@
         "vue-tsc": "^2.0.24"
     },
     "dependencies": {
-        "vue-draggable-next": "^2.3.0"
+        "vue-draggable-next": "^2.3.0",
+        "wavesurfer.js": "^7.11.0"
     }
 }

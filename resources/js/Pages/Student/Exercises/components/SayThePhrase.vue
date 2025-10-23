@@ -22,7 +22,6 @@ const audioUrl = ref('');
 // Mostrar la solución solo si showFeedback está activo
 const showSolution = () => props.showFeedback && props.exercise.solution && props.exercise.solution[0];
 
-
 async function startRecording() {
     error.value = '';
     audioChunks.value = [];
@@ -54,7 +53,6 @@ function stopRecording() {
         isRecording.value = false;
     }
 }
-
 
 async function submit() {
     if (props.showFeedback) return;

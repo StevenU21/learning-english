@@ -10,8 +10,9 @@
             </button>
             <div class="flex-1 grid grid-cols-[auto_1fr_auto] items-center gap-2 w-full">
                 <span class="text-xs text-gray-600 dark:text-gray-300 font-mono">{{ formatTime(currentTime) }}</span>
-                <input type="range" min="0" :max="duration" step="0.01" v-model="currentTime" @input="seek"
-                    class="w-full h-2 rounded-lg appearance-none accent-gray-400 bg-gray-300 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400" />
+                <div class="w-full">
+                    <div ref="waveformRef" class="w-full" style="height: 48px;"></div>
+                </div>
                 <span class="text-xs text-gray-600 dark:text-gray-300 font-mono text-right">{{ formatTime(duration)
                     }}</span>
             </div>
@@ -21,14 +22,15 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
+import WaveSurfer from 'wavesurfer.js';
 
 const hovering = ref(false);
-
 const props = defineProps({
     src: { type: String, required: true }
 });
 
-const audio = ref(null);
+const waveformRef = ref(null);
+const wavesurfer = ref(null);
 const isPlaying = ref(false);
 const currentTime = ref(0);
 const duration = ref(0);
@@ -41,53 +43,59 @@ function formatTime(sec) {
 }
 
 function togglePlay() {
-    if (!audio.value) return;
+    if (!wavesurfer.value) return;
     if (isPlaying.value) {
-        audio.value.pause();
+        wavesurfer.value.pause();
     } else {
-        audio.value.play();
-    }
-}
-
-function seek(e) {
-    if (audio.value) {
-        audio.value.currentTime = parseFloat(currentTime.value);
+        wavesurfer.value.play();
     }
 }
 
 onMounted(() => {
-    audio.value = new Audio(props.src);
-    audio.value.addEventListener('loadedmetadata', () => {
-        duration.value = audio.value.duration;
+    wavesurfer.value = WaveSurfer.create({
+        container: waveformRef.value,
+        waveColor: '#a5b4fc',
+        progressColor: '#6366f1',
+        height: 48,
+        barWidth: 2,
+        barRadius: 2,
+        responsive: true,
+        cursorColor: '#6366f1',
+        backend: 'mediaelement',
     });
-    audio.value.addEventListener('timeupdate', () => {
-        currentTime.value = audio.value.currentTime;
+    wavesurfer.value.load(props.src);
+
+    wavesurfer.value.on('ready', () => {
+        duration.value = wavesurfer.value.getDuration();
     });
-    audio.value.addEventListener('play', () => {
+    wavesurfer.value.on('audioprocess', () => {
+        currentTime.value = wavesurfer.value.getCurrentTime();
+    });
+    wavesurfer.value.on('seek', () => {
+        currentTime.value = wavesurfer.value.getCurrentTime();
+    });
+    wavesurfer.value.on('play', () => {
         isPlaying.value = true;
     });
-    audio.value.addEventListener('pause', () => {
+    wavesurfer.value.on('pause', () => {
         isPlaying.value = false;
     });
-    audio.value.addEventListener('ended', () => {
+    wavesurfer.value.on('finish', () => {
         isPlaying.value = false;
         currentTime.value = 0;
     });
 });
 
 onUnmounted(() => {
-    if (audio.value) {
-        audio.value.pause();
-        audio.value.src = '';
-        audio.value = null;
+    if (wavesurfer.value) {
+        wavesurfer.value.destroy();
+        wavesurfer.value = null;
     }
 });
 
 watch(() => props.src, (newSrc) => {
-    if (audio.value) {
-        audio.value.pause();
-        audio.value.src = newSrc;
-        audio.value.load();
+    if (wavesurfer.value) {
+        wavesurfer.value.load(newSrc);
         currentTime.value = 0;
         isPlaying.value = false;
     }
