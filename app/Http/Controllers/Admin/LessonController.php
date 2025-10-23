@@ -27,7 +27,16 @@ class LessonController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        CollectionHelper::transformPaginated($lessons, fn($lesson) => $lesson->toArray());
+        CollectionHelper::transformPaginated($lessons, function ($lesson) {
+            return [
+                'id' => $lesson->id,
+                'name' => $lesson->name,
+                'image_url' => $lesson->image_url,
+                'description' => $lesson->description,
+                'duration' => (int) $lesson->duration,
+                'unit' => $lesson->unit,
+            ];
+        });
 
         $units = Unit::all();
         return Inertia::render('Admin/Lessons/Index', [
@@ -44,7 +53,14 @@ class LessonController extends Controller
         $this->authorize('view', $lesson);
         $lesson->load('unit');
         return Inertia::render('Admin/Lessons/Show', [
-            'lesson' => $lesson->toArray()
+            'lesson' => [
+                'id' => $lesson->id,
+                'name' => $lesson->name,
+                'image_url' => $lesson->image_url,
+                'description' => $lesson->description,
+                'duration' => (int) $lesson->duration,
+                'unit' => $lesson->unit,
+            ]
         ]);
     }
 

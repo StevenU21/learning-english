@@ -22,7 +22,16 @@ class UnitController extends Controller
             ->latest()
             ->paginate(10);
 
-        CollectionHelper::transformPaginated($units, fn($unit) => $unit->toArray());
+        CollectionHelper::transformPaginated($units, function($unit) {
+            return [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'description' => $unit->description,
+                'expected_time' => (int) $unit->expected_time,
+                'image_url' => $unit->image_url,
+                'level' => $unit->level,
+            ];
+        });
 
         return Inertia::render('Admin/Units/Index', [
             'units' => $units,
@@ -50,8 +59,16 @@ class UnitController extends Controller
         $this->authorize('view', $unit);
         $unit->load('level')
             ->loadSum('lessons as lessons_sum_duration', 'duration');
+        $unitData = [
+            'id' => $unit->id,
+            'name' => $unit->name,
+            'description' => $unit->description,
+            'expected_time' => (int) $unit->expected_time,
+            'image_url' => $unit->image_url,
+            'level' => $unit->level,
+        ];
         return Inertia::render('Admin/Units/Show', [
-            'unit' => $unit->toArray()
+            'unit' => $unitData
         ]);
     }
 
