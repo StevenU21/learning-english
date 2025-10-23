@@ -7,7 +7,6 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Carbon;
 
 class OpenAIRealtimeService
@@ -39,7 +38,6 @@ class OpenAIRealtimeService
                 ->post('https://api.openai.com/v1/realtime/sessions', $payload);
             $response->throw();
         } catch (RequestException | ConnectionException $e) {
-            Log::error('OpenAI Realtime API error: ' . $e->getMessage());
             throw $e;
         }
 
