@@ -36,6 +36,11 @@ function handleKeydown(e) {
     const num = parseInt(e.key, 10);
     if (!isNaN(num) && num >= 1 && num <= props.exercise.options.length) {
         choose(props.exercise.options[num - 1]);
+        return;
+    }
+    // Allow Enter to submit if something is selected
+    if (e.key === 'Enter' && selected.value !== null && !props.showFeedback) {
+        submit();
     }
 }
 
