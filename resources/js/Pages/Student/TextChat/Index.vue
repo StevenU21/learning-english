@@ -234,20 +234,11 @@ async function handleResetChat() {
     <Head title="Chat de texto" />
 
     <StudentLayout>
-        <!-- <template #header>
-            <PageHeader title="Chat de texto"
-                subtitle="Practica la escritura y comprensión en inglés con una IA que corrige y sugiere nuevas ideas."
-                icon="fa-solid fa-comments" :breadcrumbs="[
-                    { label: 'Inicio', href: route('student.units.index'), icon: 'fa-solid fa-house' },
-                    { label: 'Chat de texto' }
-                ]" gradient-classes="from-violet-600 to-indigo-600" />
-        </template> -->
 
         <div
-            class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8 lg:h-auto lg:min-h-0">
+            class="flex min-h-[calc(100dvh-56px-64px)] flex-col bg-gray-50 pb-[calc(env(safe-area-inset-bottom)+8px)] dark:bg-gray-800 sm:min-h-[calc(100vh-56px)] sm:pb-8 lg:h-auto lg:min-h-0 px-4 py-10 sm:px-6 lg:px-8">
             <div class="w-full flex-1 lg:h-auto">
-                <div
-                    class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-3 py-2 sm:px-6 sm:py-10 lg:h-auto lg:px-8">
+                <div class="mx-auto flex h-full w-full max-w-[1400px] flex-col">
                     <div
                         class="flex h-full flex-col gap-6 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] lg:gap-8 xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
@@ -323,9 +314,8 @@ async function handleResetChat() {
                         <section
                             class="order-1 flex min-h-0 flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800/80 sm:p-6 lg:order-2 lg:p-8">
                             <div class="flex min-h-0 flex-col gap-8">
-                                <div
-                                    class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl border border-violet-100 bg-violet-50 p-6 text-left dark:border-violet-500/20 dark:bg-violet-500/10 md:order-2">
-                                    <div class="flex flex-1 min-h-0 flex-col gap-6">
+                                <div class="order-1 flex min-h-0 flex-1 flex-col rounded-2xl text-left md:order-2">
+                                    <div class="flex flex-1 min-h-0 flex-col gap-6 px-0 py-0">
                                         <div ref="chatContainer"
                                             class="flex-1 min-h-0 space-y-6 overflow-y-auto pr-0 md:pr-2 max-h-[clamp(320px,calc(100vh-340px),620px)]"
                                             @scroll="handleChatScroll">
