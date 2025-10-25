@@ -246,7 +246,7 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <!-- Finished -->
-                <div v-else class="text-center space-y-6 text-white w-full sm:w-[40vw] max-w-2xl mx-auto">
+                <div v-else class="text-center space-y-6 text-white w-full sm:w-[40vw] max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
                     <h3 class="text-xl font-bold">¡Has terminado la ronda de ejercicios!</h3>
                     <div class="flex flex-col gap-3 w-full mx-auto">
                         <button @click="goToLessons"

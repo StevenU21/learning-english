@@ -162,6 +162,7 @@ function checkAnswer() {
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.concepto === concepto)"
                         :class="[
                             'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
+                            'h-16 min-h-[4rem] max-h-[4rem] flex items-center', // tamaño fijo
                             (isCorrectConcepto(concepto)) ? 'bg-gray-800 border-green-500 text-green-400' : '',
                             (isIncorrectConcepto(concepto)) ? 'bg-gray-800 border-red-500 text-red-400' : '',
                             !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) && selectedConcepto === concepto ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
@@ -183,6 +184,7 @@ function checkAnswer() {
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.definicion === definicion)"
                         :class="[
                             'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
+                            'h-16 min-h-[4rem] max-h-[4rem] flex items-center', // tamaño fijo
                             (isCorrectDefinicion(definicion)) ? 'bg-gray-800 border-green-500 text-green-400' : '',
                             (isIncorrectDefinicion(definicion)) ? 'bg-gray-800 border-red-500 text-red-400' : '',
                             !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion) && selectedDefinicion === definicion ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
