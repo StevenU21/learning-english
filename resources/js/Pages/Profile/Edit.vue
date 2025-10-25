@@ -31,7 +31,7 @@ const layoutComponent = computed(() => (isAdmin.value ? AuthenticatedLayout : St
     <Head title="Perfil" />
 
     <component :is="layoutComponent">
-        <template #header>
+        <template v-if="isAdmin" #header>
             <PageHeader title="Perfil" subtitle="Configuración de tu cuenta" icon="fa-solid fa-user" :breadcrumbs="[
                 { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
                 { label: 'Perfil' }
