@@ -116,9 +116,12 @@ function selectDefinicion(definicion) {
             validated.value = true;
             emit('answered', false, JSON.parse(JSON.stringify(studentMatches.value)));
         }
-        // Si la pareja es correcta, bloquear ese concepto y definicion (ya se marca en verde)
-        if (feedback.value[selectedConcepto.value] === true) {
-            // No hacer nada extra, ya se marca en verde y se bloquea por los disabled
+        // Si todas las parejas están hechas, emitir automáticamente el evento answered
+        const sol = solutionArray();
+        if (studentMatches.value.length === sol.length) {
+            const isCorrect = studentMatches.value.every(pair => sol.some(s => s.concepto === pair.concepto && s.definicion === pair.definicion));
+            validated.value = true;
+            emit('answered', isCorrect, JSON.parse(JSON.stringify(studentMatches.value)));
         }
         selectedConcepto.value = null;
         selectedDefinicion.value = null;
@@ -158,14 +161,14 @@ function checkAnswer() {
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.concepto === concepto)"
                         :class="[
                             'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
-                            props.showFeedback && isCorrectConcepto(concepto) ? 'bg-gray-800 border-green-500 text-green-400' : '',
-                            props.showFeedback && isIncorrectConcepto(concepto) ? 'bg-gray-800 border-red-500 text-red-400' : '',
-                            !props.showFeedback && selectedConcepto === concepto ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
-                            !props.showFeedback && studentMatches.some(p => p.concepto === concepto) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
-                            !props.showFeedback && !studentMatches.some(p => p.concepto === concepto) && selectedConcepto !== concepto ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
+                            (isCorrectConcepto(concepto)) ? 'bg-gray-800 border-green-500 text-green-400' : '',
+                            (isIncorrectConcepto(concepto)) ? 'bg-gray-800 border-red-500 text-red-400' : '',
+                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) && selectedConcepto === concepto ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
+                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) && studentMatches.some(p => p.concepto === concepto) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
+                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) && !studentMatches.some(p => p.concepto === concepto) && selectedConcepto !== concepto ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
                         ]">
                         <span v-if="windowWidth >= 768"
-                            class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-base font-semibold text-gray-300 bg-transparent select-none"
+                            class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-sm font-semibold text-gray-300 bg-transparent select-none"
                             style="min-width:2.2rem;text-align:center;">{{ idx + 1 }}</span>
                         {{ concepto }}
                     </button>
@@ -179,15 +182,17 @@ function checkAnswer() {
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.definicion === definicion)"
                         :class="[
                             'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
-                            props.showFeedback && isCorrectDefinicion(definicion) ? 'bg-gray-800 border-green-500 text-green-400' : '',
-                            props.showFeedback && isIncorrectDefinicion(definicion) ? 'bg-gray-800 border-red-500 text-red-400' : '',
-                            !props.showFeedback && selectedDefinicion === definicion ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
-                            !props.showFeedback && studentMatches.some(p => p.definicion === definicion) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
-                            !props.showFeedback && !studentMatches.some(p => p.definicion === definicion) && selectedDefinicion !== definicion ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
+                            (isCorrectDefinicion(definicion)) ? 'bg-gray-800 border-green-500 text-green-400' : '',
+                            (isIncorrectDefinicion(definicion)) ? 'bg-gray-800 border-red-500 text-red-400' : '',
+                            !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion) && selectedDefinicion === definicion ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
+                            !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion) && studentMatches.some(p => p.definicion === definicion) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
+                            !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion) && !studentMatches.some(p => p.definicion === definicion) && selectedDefinicion !== definicion ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
                         ]">
                         <span v-if="windowWidth >= 768"
-                            class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-base font-semibold text-gray-300 bg-transparent select-none"
-                            style="min-width:2.2rem;text-align:center;">{{ idx + 1 }}</span>
+                            class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-sm font-semibold text-gray-300 bg-transparent select-none"
+                            style="min-width:2.2rem;text-align:center;">
+                            {{ idx + 1 }}
+                        </span>
                         {{ definicion }}
                     </button>
                 </div>
