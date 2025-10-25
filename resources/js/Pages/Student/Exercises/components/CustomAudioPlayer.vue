@@ -27,6 +27,8 @@
                     'border-2',
                     'px-4 py-2 rounded-lg font-semibold',
                 ]">
+                <span v-if="opt.label === 'Normal'" class="mr-2"><i class="fa-solid fa-gauge-high"></i></span>
+                <span v-else-if="opt.label === 'Lento'" class="mr-2"><i class="fa-solid fa-hourglass-half"></i></span>
                 {{ opt.label }}
             </button>
         </div>
