@@ -32,28 +32,31 @@ function submit() {
 }
 
 function getButtonClasses(option) {
-    const base = 'w-full px-4 py-3 rounded-xl border-2 text-sm font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70';
+    const base = 'w-full px-4 py-3 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70';
 
+    // Feedback mode: show correct/incorrect colors
     if (props.showFeedback && selected.value === option) {
         const isCorrect = Array.isArray(props.exercise.solution) ? props.exercise.solution.includes(option) : false;
         return [
             base,
             isCorrect
-                ? 'bg-green-100 dark:bg-green-900 border-green-500 text-green-700 dark:text-green-300'
-                : 'bg-red-100 dark:bg-red-900 border-red-500 text-red-700 dark:text-red-300'
+                ? 'bg-gray-800 border-green-500 text-green-400'
+                : 'bg-gray-800 border-red-500 text-red-400'
         ];
     }
 
+    // Selected but not feedback
     if (selected.value === option) {
         return [
             base,
-            'bg-indigo-100 dark:bg-indigo-900 border-indigo-500 text-indigo-700 dark:text-indigo-300'
+            'bg-gray-800 border-blue-400 text-blue-400'
         ];
     }
 
+    // Not selected
     return [
         base,
-        'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+        'bg-gray-800/80 border-blue-400/30 text-white'
     ];
 }
 </script>
