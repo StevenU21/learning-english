@@ -108,18 +108,16 @@ function getButtonClass(opt) {
                 <span class="flex-1 text-center">{{ opt }}</span>
             </button>
         </div>
-        <div class="flex justify-between mt-4 w-full">
+        <div class="flex flex-row justify-between mt-4 w-full gap-2">
             <!-- Botón Terminar -->
-            <PrimaryButton @click="handleFinish" class="hidden md:flex w-1/3 items-center">
+            <PrimaryButton @click="handleFinish" class="flex w-1/2 items-center">
                 <i class="fa-solid fa-flag-checkered mr-2"></i>
                 <span class="flex-1 text-center">Terminar</span>
             </PrimaryButton>
 
-            <div class="flex-1"></div>
-
             <!-- Botón Comprobar -->
             <PrimaryButton @click="submit" :disabled="showFeedback || selected === null" :class="[
-                'w-full md:w-1/3 flex items-center',
+                'flex w-1/2 items-center',
                 (showFeedback || selected === null) ? 'opacity-60 cursor-not-allowed' : ''
             ]">
                 <span v-if="windowWidth >= 768"
