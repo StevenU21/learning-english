@@ -8,7 +8,8 @@ import axios from 'axios';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
-    showFeedback: { type: Boolean, default: false }
+    showFeedback: { type: Boolean, default: false },
+    unitSlug: { type: [String, Number], required: false }
 });
 const emit = defineEmits(['answered', 'finish']);
 
@@ -57,7 +58,7 @@ function handleFinish() {
 
 function confirmFinish() {
     showConfirm.value = false;
-    router.get(route('student.units.index'));
+    router.get(route('student.units.lessons.index', { unit: props.unitSlug }));
 }
 
 function updateWindowWidth() {

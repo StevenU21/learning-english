@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 const props = defineProps({
     exercise: { type: Object, required: true },
     showFeedback: { type: Boolean, default: false },
+    unitSlug: { type: [String, Number], required: false },
 });
 import { router } from '@inertiajs/vue3';
 import { ref as vueRef } from 'vue';
@@ -57,7 +58,8 @@ function handleFinish() {
 
 function confirmFinish() {
     showConfirm.value = false;
-    router.get(route('student.units.index'));
+    // Usar el unitSlug pasado desde Sequence.vue
+    router.get(route('student.units.lessons.index', { unit: props.unitSlug }));
 }
 
 function choose(opt) {

@@ -209,6 +209,7 @@ onUnmounted(() => {
                         {{ exercises[current].prompt }}
                     </p>
                     <component :is="componentMap[exercises[current].exercise_type?.name]" :exercise="exercises[current]"
+                        :unitSlug="lesson.unit?.slug || lesson.unit_slug || lesson.unit_id"
                         :showFeedback="showFeedback" :lastAnswer="lastAnswer" @answered="handleAnswer" />
                     <div class="mt-5 flex flex-col gap-3 text-center">
                         <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise" class="w-full">

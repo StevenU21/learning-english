@@ -6,7 +6,8 @@ import { router } from '@inertiajs/vue3';
 const props = defineProps({
     exercise: Object,
     showFeedback: Boolean,
-    lastAnswer: Array
+    lastAnswer: Array,
+    unitSlug: { type: [String, Number], required: false }
 });
 const emit = defineEmits(['answered', 'finish']);
 
@@ -52,7 +53,7 @@ function handleFinish() {
 
 function confirmFinish() {
     showConfirm.value = false;
-    router.get(route('student.units.index'));
+    router.get(route('student.units.lessons.index', { unit: props.unitSlug }));
 }
 
 function handleKeydown(e) {

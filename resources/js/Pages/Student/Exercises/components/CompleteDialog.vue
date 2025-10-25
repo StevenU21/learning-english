@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { router } from '@inertiajs/vue3';
-const props = defineProps({ exercise: Object, showFeedback: Boolean });
+const props = defineProps({ exercise: Object, showFeedback: Boolean, unitSlug: { type: [String, Number], required: false } });
 const emit = defineEmits(['answered']);
 
 const selected = ref([]);
@@ -54,7 +54,7 @@ function handleFinish() {
 
 function confirmFinish() {
     showConfirm.value = false;
-    router.get(route('student.units.index'));
+    router.get(route('student.units.lessons.index', { unit: props.unitSlug }));
 }
 
 function handleKeydown(e) {
