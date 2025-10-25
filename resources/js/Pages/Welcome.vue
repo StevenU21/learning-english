@@ -12,14 +12,14 @@ defineProps({
 <template>
 
     <Head title="Bienvenido" />
-    <div class="bg-gray-50 text-black/50 dark:bg-gray-900 dark:text-white/50 min-h-screen flex flex-col">
+    <div class="bg-gray-50 text-black/50 dark:bg-gray-800 dark:text-white/50 min-h-screen flex flex-col">
         <div
             class="relative flex flex-col flex-1 items-center justify-center selection:bg-blue-500 selection:text-white px-6">
 
             <!-- Hero Card -->
             <div class="w-full max-w-2xl">
                 <div
-                    class="rounded-2xl bg-white/80 dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 shadow-xl p-4 sm:p-8 text-center backdrop-blur flex flex-col items-center gap-2">
+                    class="rounded-2xl bg-white/80 dark:bg-gray-800 border border-solid border-gray-400/40 dark:border-gray-600 shadow-xl p-4 sm:p-8 text-center backdrop-blur flex flex-col items-center gap-2">
                     <h2 class="text-2xl sm:text-3xl font-nativo text-gray-900 dark:text-white tracking-wide mb-1">
                         Bienvenidos a
                     </h2>
