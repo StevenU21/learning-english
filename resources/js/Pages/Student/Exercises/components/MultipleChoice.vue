@@ -116,8 +116,10 @@ function getButtonClass(opt) {
             <div class="flex-1"></div>
 
             <!-- Botón Comprobar -->
-            <PrimaryButton @click="submit" :disabled="showFeedback || selected === null"
-                class="w-full md:w-1/3 flex items-center">
+            <PrimaryButton @click="submit" :disabled="showFeedback || selected === null" :class="[
+                'w-full md:w-1/3 flex items-center',
+                (showFeedback || selected === null) ? 'opacity-60 cursor-not-allowed' : ''
+            ]">
                 <span v-if="windowWidth >= 768"
                     class="inline-flex items-center justify-center px-2 py-1 rounded border border-blue-400/60 text-base font-bold text-gray-800 bg-gray-100 select-none"
                     style="min-width:2.2rem; height:2.2rem; margin-right:0.75rem;">
