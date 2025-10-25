@@ -1,9 +1,14 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { router } from '@inertiajs/vue3';
 const props = defineProps({ exercise: Object, showFeedback: Boolean });
 const emit = defineEmits(['answered']);
 
 const selected = ref([]);
+const showConfirm = ref(false);
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+const numberedOptions = ref([]); // [{text, num}]
 
 function toggle(option) {
     if (props.showFeedback) return;
@@ -33,21 +38,105 @@ function getButtonClass(opt) {
     }
     return 'bg-gray-800/80 border-blue-400/30 text-white';
 }
+
+function updateWindowWidth() {
+    windowWidth.value = window.innerWidth;
+}
+
+function initializeOptions() {
+    numberedOptions.value = (props.exercise.options || []).map((opt, idx) => ({ text: opt, num: idx + 1 }));
+}
+initializeOptions();
+
+function handleFinish() {
+    showConfirm.value = true;
+}
+
+function confirmFinish() {
+    showConfirm.value = false;
+    router.get(route('student.units.index'));
+}
+
+function handleKeydown(e) {
+    if (props.showFeedback || showConfirm.value) return;
+    if (window.innerWidth < 768) return;
+    if (/^[1-9]$/.test(e.key)) {
+        const num = parseInt(e.key, 10);
+        const optObj = numberedOptions.value.find(o => o.num === num);
+        if (optObj) toggle(optObj.text);
+        return;
+    }
+    if (e.key === 'Enter' && selected.value.length > 0) {
+        submit();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('resize', updateWindowWidth);
+    updateWindowWidth();
+});
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('resize', updateWindowWidth);
+});
 </script>
 <template>
-    <div class="space-y-3">
-        <div class="space-y-3">
-            <button v-for="opt in props.exercise.options" :key="opt" @click="toggle(opt)" :disabled="showFeedback"
-                :class="[
+    <div class="flex flex-col gap-6 w-full">
+        <div class="flex flex-col gap-2 w-full">
+            <button v-for="(optObj, idx) in numberedOptions" :key="optObj.text" @click="toggle(optObj.text)"
+                :disabled="showFeedback" :class="[
                     'w-full text-center px-4 py-3 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
-                    getButtonClass(opt)
-                ]">
-                {{ opt }}
+                    getButtonClass(optObj.text)
+                ]" style="display: flex; align-items: center;">
+                <span v-if="windowWidth >= 768"
+                    class="inline-block px-2 py-1 rounded border border-blue-400/30 text-base font-semibold text-gray-300 bg-transparent select-none"
+                    style="min-width:2.2rem;text-align:center; margin-right:0.75rem;">
+                    {{ optObj.num }}
+                </span>
+                <span style="flex:1; text-align:center;">{{ optObj.text }}</span>
             </button>
         </div>
-        <button @click="submit" :disabled="showFeedback || selected.length === 0"
-            class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full">
-            <i class="fa-solid fa-check mr-2"></i> Comprobar
-        </button>
+        <div class="flex justify-between mt-4 w-full">
+            <PrimaryButton @click="handleFinish" class="hidden md:flex w-1/3 items-center">
+                <i class="fa-solid fa-flag-checkered mr-2"></i>
+                <span class="flex-1 text-center">Terminar</span>
+            </PrimaryButton>
+            <div class="flex-1"></div>
+            <PrimaryButton @click="submit" :disabled="showFeedback || selected.length === 0" :class="[
+                'w-full md:w-1/3 flex items-center',
+                (showFeedback || selected.length === 0) ? 'opacity-60 cursor-not-allowed' : ''
+            ]">
+                <span v-if="windowWidth >= 768"
+                    class="inline-flex items-center justify-center px-2 py-1 rounded border border-blue-400/60 text-base font-bold text-gray-800 bg-gray-100 select-none"
+                    style="min-width:2.2rem; height:2.2rem; margin-right:0.75rem;">
+                    ⏎
+                </span>
+                <span v-else class="inline-flex items-center">
+                    <i class="fa-solid fa-check mr-2"></i>
+                    Comprobar
+                </span>
+                <span v-if="windowWidth >= 768" class="flex-1 text-center">Comprobar</span>
+            </PrimaryButton>
+        </div>
+        <div v-if="showConfirm" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div class="bg-[#18232a] rounded-lg shadow-lg p-6 max-w-sm w-full border border-gray-700">
+                <h2 class="text-lg font-semibold mb-2 text-white">¿Salir de la lección?</h2>
+                <p class="mb-4 text-gray-300">Si sales ahora, tu avance no se guardará. ¿Estás seguro que quieres salir?
+                </p>
+                <div class="flex gap-3 justify-center">
+                    <button @click="showConfirm = false"
+                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                        <i class="fa-solid fa-xmark mr-2"></i>
+                        Cancelar
+                    </button>
+                    <button @click="confirmFinish"
+                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                        <i class="fa-solid fa-flag-checkered mr-2"></i>
+                        Salir sin guardar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
