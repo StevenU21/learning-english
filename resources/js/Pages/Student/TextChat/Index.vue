@@ -5,6 +5,8 @@ import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import TextArea from '@/Components/TextArea.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useTextChat, type TextChatProps } from './useTextChat';
 
 const props = withDefaults(defineProps<TextChatProps>(), {
@@ -398,15 +400,13 @@ async function handleResetChat() {
                                                     {{ errorMessage }}
                                                 </div>
                                                 <div class="flex items-center gap-3">
-                                                    <button type="button" @click="handleResetChat" :disabled="isSending"
-                                                        class="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-gray-300 hover:text-gray-900 disabled:opacity-60 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:hover:text-white">
+                                                    <SecondaryButton type="button" @click="handleResetChat" :disabled="isSending">
                                                         <i class="fa-solid fa-rotate-right mr-2"></i>Reiniciar chat
-                                                    </button>
-                                                    <button type="submit" :disabled="!canSendMessage"
-                                                        class="inline-flex items-center rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-400 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+                                                    </SecondaryButton>
+                                                    <PrimaryButton type="submit" :disabled="!canSendMessage">
                                                         <i class="fa-solid fa-paper-plane mr-2"></i>
                                                         <span>{{ isSending ? 'Enviando...' : 'Enviar mensaje' }}</span>
-                                                    </button>
+                                                    </PrimaryButton>
                                                 </div>
                                             </div>
                                         </form>

@@ -4,6 +4,8 @@ import StudentLayout from '@/Layouts/StudentLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref, watch } from 'vue';
 import SelectInput from '@/Components/SelectInput.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useVoiceChat, type VoiceChatProps } from './useVoiceChat/index';
 
 const props = withDefaults(defineProps<VoiceChatProps>(), {
@@ -201,9 +203,7 @@ const startSessionWithVoice = () =>
                                         </div>
 
                                         <div class="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                                            <button type="button"
-                                                class="inline-flex w-full items-center justify-center rounded-full bg-sky-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300 dark:bg-sky-500 dark:hover:bg-sky-400 dark:disabled:bg-sky-500/40"
-                                                :disabled="isConnecting || isActive" @click="startSessionWithVoice">
+                                            <PrimaryButton type="button" :disabled="isConnecting || isActive" @click="startSessionWithVoice" class="w-full">
                                                 <span v-if="isConnecting" class="flex items-center gap-2">
                                                     <i class="fa-solid fa-spinner animate-spin"></i>
                                                     Conectando...
@@ -212,13 +212,11 @@ const startSessionWithVoice = () =>
                                                     <i class="fa-solid fa-microphone"></i>
                                                     Iniciar sesión
                                                 </span>
-                                            </button>
-                                            <button v-if="isActive" type="button"
-                                                class="inline-flex w-full items-center justify-center rounded-full border border-gray-200 px-6 py-3 text-base font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-                                                @click="stopSession('Sesión finalizada por ti.')">
+                                            </PrimaryButton>
+                                            <SecondaryButton v-if="isActive" type="button" @click="stopSession('Sesión finalizada por ti.')" class="w-full">
                                                 <i class="fa-solid fa-phone-slash mr-2"></i>
                                                 Finalizar
-                                            </button>
+                                            </SecondaryButton>
                                         </div>
 
                                         <div v-if="isActive"
