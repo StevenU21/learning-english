@@ -27,27 +27,27 @@ const page = usePage();
                             <div class="hidden md:flex items-center gap-6">
                                 <Link :href="route('student.units.index')" :class="[
                                     'inline-flex items-center text-sm font-medium transition-colors',
-                                    route().current('student.units.*')
-                                        ? 'text-gray-900 dark:text-white'
-                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                        route().current('student.units.*')
+                                            ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                                 ]">
                                 <i class="fa-solid fa-layer-group mr-2"></i>
                                 Unidades
                                 </Link>
                                 <Link :href="route('student.voice-chat.index')" :class="[
                                     'inline-flex items-center text-sm font-medium transition-colors',
-                                    route().current('student.voice-chat.*')
-                                        ? 'text-gray-900 dark:text-white'
-                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                        route().current('student.voice-chat.*')
+                                            ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                                 ]">
                                 <i class="fa-solid fa-microphone-lines mr-2"></i>
                                 Conversación
                                 </Link>
                                 <Link :href="route('student.text-chat.index')" :class="[
                                     'inline-flex items-center text-sm font-medium transition-colors',
-                                    route().current('student.text-chat.*')
-                                        ? 'text-gray-900 dark:text-white'
-                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                                        route().current('student.text-chat.*')
+                                            ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                            : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                                 ]">
                                 <i class="fa-solid fa-comments mr-2"></i>
                                 Chat de texto
@@ -166,22 +166,42 @@ const page = usePage();
                 class="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white/95 backdrop-blur dark:border-gray-700 dark:bg-gray-800/95 sm:hidden">
                 <div class="grid grid-cols-4 text-center text-sm">
                     <Link :href="route('student.units.index')"
-                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                        :class="[
+                            'py-2.5',
+                            route().current('student.units.*')
+                                ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                        ]">
                     <i class="fa-solid fa-layer-group"></i>
                     <div class="text-[11px]">Unidades</div>
                     </Link>
                     <Link :href="route('student.voice-chat.index')"
-                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                        :class="[
+                            'py-2.5',
+                            route().current('student.voice-chat.*')
+                                ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                        ]">
                     <i class="fa-solid fa-microphone-lines"></i>
                     <div class="text-[11px]">Conversar</div>
                     </Link>
                     <Link :href="route('student.text-chat.index')"
-                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                        :class="[
+                            'py-2.5',
+                            route().current('student.text-chat.*')
+                                ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                        ]">
                     <i class="fa-solid fa-comments"></i>
                     <div class="text-[11px]">Chat</div>
                     </Link>
                     <Link :href="route('profile.index')"
-                        class="py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                        :class="[
+                            'py-2.5',
+                            route().current('profile.index')
+                                ? 'text-gray-900 dark:text-white hover:text-gray-900 dark:hover:text-white'
+                                : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                        ]">
                     <i class="fa-solid fa-user"></i>
                     <div class="text-[11px]">Perfil</div>
                     </Link>
