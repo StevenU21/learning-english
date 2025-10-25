@@ -178,7 +178,7 @@ const componentMap = {
         <div class="flex flex-col items-center justify-center min-h-[70vh]">
             <div class="w-full sm:w-[40vw] max-w-2xl mx-auto">
                 <!-- Active Exercise -->
-                <div v-if="!finished && !showSummary" class="space-y-4">
+                <div v-if="!finished && !showSummary" class="space-y-4 px-3">
                     <div class="text-center text-xs text-gray-400 mb-2">
                         Ejercicio {{ current + 1 }} / {{ total }}
                     </div>
@@ -201,7 +201,7 @@ const componentMap = {
                     </div>
                 </div>
                 <!-- Summary -->
-                <div v-else-if="showSummary" class="space-y-6 text-white w-full w-[40vw] max-w-2xl mx-auto">
+                <div v-else-if="showSummary" class="space-y-6 text-white w-full sm:w-[40vw] max-w-2xl mx-auto px-3">
                     <h3 class="text-lg font-bold flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-gray-400"></i>
                         Resumen de tus respuestas
@@ -225,14 +225,14 @@ const componentMap = {
                     </div>
                 </div>
                 <!-- Finished -->
-                <div v-else class="text-center space-y-6 text-white w-full w-[40vw] max-w-2xl mx-auto">
+                <div v-else class="text-center space-y-6 text-white w-full sm:w-[40vw] max-w-2xl mx-auto">
                     <h3 class="text-xl font-bold">¡Has terminado la ronda de ejercicios!</h3>
-                    <div class="flex flex-col gap-3 w-full max-w-lg mx-auto">
+                    <div class="flex flex-col gap-3 w-full mx-auto">
                         <button @click="goToLessons"
-                            class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Volver
+                            class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 w-full">Volver
                             a lecciones</button>
                         <button @click="goToUnits"
-                            class="flex-1 inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">Unidades</button>
+                            class="flex-1 inline-flex items-center justify-center rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 w-full">Unidades</button>
                     </div>
                 </div>
             </div>

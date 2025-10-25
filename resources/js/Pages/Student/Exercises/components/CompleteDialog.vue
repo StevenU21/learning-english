@@ -7,8 +7,11 @@ const selected = ref([]);
 
 function toggle(option) {
     if (props.showFeedback) return;
-    const idx = selected.value.indexOf(option);
-    if (idx >= 0) selected.value.splice(idx, 1); else selected.value.push(option);
+    if (selected.value.includes(option)) {
+        selected.value = [];
+    } else {
+        selected.value = [option];
+    }
 }
 
 function submit() {
@@ -17,17 +20,27 @@ function submit() {
     const correct = JSON.stringify([...selected.value].sort()) === JSON.stringify([...target].sort());
     emit('answered', correct, selected.value);
 }
+
+function getButtonClass(opt) {
+    if (props.showFeedback && selected.value.includes(opt)) {
+        const isCorrect = Array.isArray(props.exercise.solution) ? props.exercise.solution.includes(opt) : false;
+        return isCorrect
+            ? 'bg-gray-800 border-green-500 text-green-400'
+            : 'bg-gray-800 border-red-500 text-red-400';
+    }
+    if (selected.value.includes(opt)) {
+        return 'bg-gray-800 border-blue-400 text-blue-400';
+    }
+    return 'bg-gray-800/80 border-blue-400/30 text-white';
+}
 </script>
 <template>
     <div class="space-y-3">
         <div class="space-y-3">
             <button v-for="opt in props.exercise.options" :key="opt" @click="toggle(opt)" :disabled="showFeedback"
                 :class="[
-                    'w-full text-center px-4 py-3 rounded-xl border-2 text-sm font-bold transition-colors duration-150',
-                    'disabled:cursor-not-allowed disabled:opacity-70',
-                    selected.includes(opt)
-                        ? 'bg-indigo-600 text-white border-indigo-600 dark:bg-indigo-900 dark:border-indigo-900'
-                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    'w-full text-center px-4 py-3 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
+                    getButtonClass(opt)
                 ]">
                 {{ opt }}
             </button>

@@ -62,9 +62,14 @@ function selectDefinicion(definicion) {
             studentMatches.value.push({ concepto: selectedConcepto.value, definicion: selectedDefinicion.value });
         }
         feedback.value[selectedConcepto.value] = validatePair(selectedConcepto.value, selectedDefinicion.value);
+        // Si la pareja es incorrecta, validar y emitir respuesta incorrecta
         if (feedback.value[selectedConcepto.value] === false && !validated.value) {
             validated.value = true;
             emit('answered', false, JSON.parse(JSON.stringify(studentMatches.value)));
+        }
+        // Si la pareja es correcta, bloquear ese concepto y definicion (ya se marca en verde)
+        if (feedback.value[selectedConcepto.value] === true) {
+            // No hacer nada extra, ya se marca en verde y se bloquea por los disabled
         }
         selectedConcepto.value = null;
         selectedDefinicion.value = null;
@@ -95,7 +100,7 @@ function checkAnswer() {
 </script>
 
 <template>
-    <div class="space-y-4">
+    <div class="space-y-4 mx-2 sm:mx-0">
         <div v-if="conceptos.length && definiciones.length" class="grid grid-cols-2 gap-4 text-xs sm:text-sm">
             <!-- Conceptos -->
             <div class="space-y-2">
@@ -103,12 +108,12 @@ function checkAnswer() {
                     <button v-for="concepto in conceptos" :key="concepto" @click="selectConcepto(concepto)"
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.concepto === concepto)"
                         :class="[
-                            'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
-                            selectedConcepto === concepto ? 'ring-2 ring-indigo-500 border-indigo-500 text-indigo-500' : 'border-gray-200 dark:border-gray-600',
-                            isCorrectConcepto(concepto) ? 'bg-green-500 text-white border-green-500' : '',
-                            isIncorrectConcepto(concepto) ? 'bg-red-500 text-white border-red-500' : '',
-                            !isCorrectConcepto(concepto) && !isIncorrectConcepto(concepto) ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600' : '',
-                            'disabled:opacity-50 disabled:cursor-not-allowed'
+                            'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
+                            props.showFeedback && isCorrectConcepto(concepto) ? 'bg-gray-800 border-green-500 text-green-400' : '',
+                            props.showFeedback && isIncorrectConcepto(concepto) ? 'bg-gray-800 border-red-500 text-red-400' : '',
+                            !props.showFeedback && selectedConcepto === concepto ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
+                            !props.showFeedback && studentMatches.some(p => p.concepto === concepto) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
+                            !props.showFeedback && !studentMatches.some(p => p.concepto === concepto) && selectedConcepto !== concepto ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
                         ]">
                         {{ concepto }}
                     </button>
@@ -120,16 +125,12 @@ function checkAnswer() {
                     <button v-for="definicion in definiciones" :key="definicion" @click="selectDefinicion(definicion)"
                         :disabled="props.showFeedback || validated || studentMatches.some(p => p.definicion === definicion)"
                         :class="[
-                            'w-full text-left px-3 py-2 rounded-md border text-xs sm:text-sm font-medium transition',
-                            selectedDefinicion === definicion ? 'ring-2 ring-indigo-500 border-indigo-500 text-indigo-500' : 'border-gray-200 dark:border-gray-600',
-                            isCorrectDefinicion(definicion) ? 'bg-green-500 text-white border-green-500' : '',
-                            isIncorrectDefinicion(definicion) ? 'bg-red-500 text-white border-red-500' : '',
-                            !isCorrectDefinicion(definicion) && !isIncorrectDefinicion(definicion)
-                                ? (studentMatches.some(p => p.definicion === definicion)
-                                    ? 'bg-indigo-600 text-white border-indigo-600'
-                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600')
-                                : '',
-                            'disabled:opacity-50 disabled:cursor-not-allowed'
+                            'w-full text-left px-3 py-2 rounded-xl border-2 text-lg font-bold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70',
+                            props.showFeedback && isCorrectDefinicion(definicion) ? 'bg-gray-800 border-green-500 text-green-400' : '',
+                            props.showFeedback && isIncorrectDefinicion(definicion) ? 'bg-gray-800 border-red-500 text-red-400' : '',
+                            !props.showFeedback && selectedDefinicion === definicion ? 'bg-gray-800 border-blue-400 text-blue-400' : '',
+                            !props.showFeedback && studentMatches.some(p => p.definicion === definicion) ? 'bg-gray-800/80 border-blue-400/30 text-white' : '',
+                            !props.showFeedback && !studentMatches.some(p => p.definicion === definicion) && selectedDefinicion !== definicion ? 'bg-gray-800/80 border-blue-400/30 text-white' : ''
                         ]">
                         {{ definicion }}
                     </button>
@@ -137,9 +138,9 @@ function checkAnswer() {
             </div>
         </div>
 
-
         <div class="flex flex-col sm:flex-row gap-3">
-            <button @click="checkAnswer" :disabled="props.showFeedback || validated || !studentMatches.length" class="flex-1 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button @click="checkAnswer" :disabled="props.showFeedback || validated || !studentMatches.length"
+                class="flex-1 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i class="fa-solid fa-check mr-2"></i> Comprobar respuesta
             </button>
         </div>
