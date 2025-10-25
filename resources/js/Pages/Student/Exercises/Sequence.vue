@@ -1,5 +1,6 @@
 <script setup>
-import StudentLayout from '@/Layouts/StudentLayout.vue';
+import ExerciseResolverLayout from '@/Layouts/ExerciseResolverLayout.vue';
+import ProgressBar from '@/Components/ProgressBar.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
 import { ref, computed } from 'vue';
@@ -168,98 +169,65 @@ const componentMap = {
 </script>
 
 <template>
-    <StudentLayout>
+    <ExerciseResolverLayout :progress="Math.round((answered.filter(a => a !== undefined).length / total) * 100)">
+        <template #progress>
+            <ProgressBar :value="Math.round((answered.filter(a => a !== undefined).length / total) * 100)" />
+        </template>
 
         <Head :title="`Ejercicios - ${lesson.name}`" />
-        <!-- <template #header>
-            <PageHeader :title="`Ejercicios de ${lesson.name}`" :subtitle="`${exercises.length} ejercicios`"
-                icon="fa-solid fa-pencil" :breadcrumbs="[
-                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
-                    { label: 'Unidades', href: route('student.units.index') },
-                    { label: 'Lección' },
-                    { label: 'Ejercicios' }
-                ]" gradient-classes="from-purple-600 to-indigo-600">
-                <template #actions>
-                    <Link :href="route('student.units.lessons.index', { unit: lesson.unit?.slug || lesson.unit_slug || lesson.unit_id })"
-                        class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Volver
-                    </Link>
-                </template>
-</PageHeader>
-</template> -->
-
-        <div class="py-6">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-center min-h-[70vh]">
+            <div class="w-full sm:w-[40vw] max-w-2xl mx-auto">
                 <!-- Active Exercise -->
                 <div v-if="!finished && !showSummary" class="space-y-4">
-                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                        <span>Ejercicio {{ current + 1 }} / {{ total }}</span>
-                        <Badge v-if="answered[current] !== undefined" :type="answered[current] ? 'success' : 'error'">
-                            {{ answered[current] ? 'Correcto' : 'Incorrecto' }}
-                        </Badge>
+                    <div class="text-center text-xs text-gray-400 mb-2">
+                        Ejercicio {{ current + 1 }} / {{ total }}
                     </div>
-
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-                        <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-2 text-sm uppercase tracking-wide">
-                            {{ exercises[current].exercise_type?.name }}
-                        </h3>
-                        <p class="text-gray-700 dark:text-gray-300 text-base mb-4 leading-relaxed">
-                            {{ exercises[current].prompt }}
-                        </p>
-
-                        <component :is="componentMap[exercises[current].exercise_type?.name]"
-                            :exercise="exercises[current]" :showFeedback="showFeedback" :lastAnswer="lastAnswer"
-                            @answered="handleAnswer" />
-
-                        <div class="mt-5 flex flex-col sm:flex-row gap-3 sm:justify-center text-center">
-                            <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise"
-                                class="w-full sm:flex-1">
-                                <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
-                            </PrimaryButton>
-                            <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise"
-                                class="w-full sm:flex-1">
-                                <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
-                            </PrimaryButton>
-                        </div>
+                    <h3 class="font-bold text-white mb-2 text-sm uppercase tracking-wide">
+                        {{ exercises[current].exercise_type?.name }}
+                    </h3>
+                    <p class="text-gray-200 text-base mb-4 leading-relaxed">
+                        {{ exercises[current].prompt }}
+                    </p>
+                    <component :is="componentMap[exercises[current].exercise_type?.name]" :exercise="exercises[current]"
+                        :showFeedback="showFeedback" :lastAnswer="lastAnswer" @answered="handleAnswer" />
+                    <div class="mt-5 flex flex-col gap-3 text-center">
+                        <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise" class="w-full">
+                            <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
+                        </PrimaryButton>
+                        <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise"
+                            class="w-full">
+                            <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
+                        </PrimaryButton>
                     </div>
                 </div>
-
                 <!-- Summary -->
-                <div v-else-if="showSummary"
-                    class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm space-y-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                <div v-else-if="showSummary" class="space-y-6 text-white w-full w-[40vw] max-w-2xl mx-auto">
+                    <h3 class="text-lg font-bold flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-gray-400"></i>
                         Resumen de tus respuestas
                     </h3>
                     <div class="space-y-2 text-sm">
                         <div v-for="(exercise, idx) in exercises" :key="exercise.id"
-                            class="flex flex-col gap-1 border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0">
+                            class="flex flex-col gap-1 border-b border-[#26313a] pb-2 last:border-0">
                             <div class="flex justify-between items-center">
-                                <span class="font-medium text-gray-700 dark:text-gray-300">{{ idx + 1 }}. {{
-                                    exercise.prompt
-                                    }}</span>
+                                <span class="font-medium">{{ idx + 1 }}. {{ exercise.prompt }}</span>
                                 <Badge :type="answered[idx] ? 'success' : 'error'">
                                     {{ answered[idx] ? 'Correcto' : 'Incorrecto' }}
                                 </Badge>
                             </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">Tu respuesta: {{
-                                formatAnswer(userAnswers[idx]) }}</div>
+                            <div class="text-xs text-gray-400">Tu respuesta: {{ formatAnswer(userAnswers[idx]) }}</div>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <PrimaryButton @click="saveSummary" :disabled="saving" class="w-full sm:flex-1">
+                    <div class="flex flex-col gap-3">
+                        <PrimaryButton @click="saveSummary" :disabled="saving" class="w-full">
                             <i class="fa-solid fa-flag-checkered mr-2"></i> Finalizar
                         </PrimaryButton>
                     </div>
                 </div>
-
                 <!-- Finished -->
-                <div v-else class="text-center space-y-6">
-                    <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">¡Has terminado la ronda de
-                        ejercicios!
-                    </h3>
-                    <div class="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+                <div v-else class="text-center space-y-6 text-white w-full w-[40vw] max-w-2xl mx-auto">
+                    <h3 class="text-xl font-bold">¡Has terminado la ronda de ejercicios!</h3>
+                    <div class="flex flex-col gap-3 w-full max-w-lg mx-auto">
                         <button @click="goToLessons"
                             class="flex-1 inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">Volver
                             a lecciones</button>
@@ -269,5 +237,5 @@ const componentMap = {
                 </div>
             </div>
         </div>
-    </StudentLayout>
+    </ExerciseResolverLayout>
 </template>

@@ -1,12 +1,24 @@
 <script setup>
 import { ref } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
     showFeedback: { type: Boolean, default: false },
 });
-const emit = defineEmits(['answered']);
+import { router } from '@inertiajs/vue3';
+import { ref as vueRef } from 'vue';
+const emit = defineEmits(['answered', 'finish']);
 const selected = ref(null);
+const showConfirm = vueRef(false);
+function handleFinish() {
+    showConfirm.value = true;
+}
+
+function confirmFinish() {
+    showConfirm.value = false;
+    router.get(route('student.units.index'));
+}
 
 function choose(opt) {
     if (props.showFeedback) return;
@@ -29,27 +41,47 @@ function getButtonClass(opt) {
             : 'bg-red-100 dark:bg-red-900 border-red-500 text-red-700 dark:text-red-300';
     }
     if (selected.value === opt) {
-        return 'bg-indigo-100 dark:bg-indigo-900 border-indigo-500 text-indigo-700 dark:text-indigo-300';
+        return 'bg-gray-800 border-blue-400 text-blue-400';
     }
-    return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700';
+    // No seleccionado: borde azul claro con opacidad y fondo gris oscuro con opacidad
+    return 'bg-gray-800/80 border-blue-400/30 text-white';
 }
 </script>
 
 <template>
-    <div class="space-y-6">
-        <p class="text-lg font-semibold text-gray-800 dark:text-gray-200 text-center">{{ exercise.text }}</p>
-        <div class="space-y-3">
+    <div class="flex flex-col gap-6 w-full">
+        <p class="text-base font-semibold text-white text-center">{{ exercise.text }}</p>
+        <div class="flex flex-col gap-2 w-full">
             <button v-for="opt in exercise.options" :key="opt" @click="choose(opt)" :disabled="showFeedback" :class="[
-                'w-full text-center px-4 py-3 rounded-xl border-2 text-sm font-bold transition-colors duration-150',
+                'w-full text-center px-8 py-3 rounded-xl border-2 text-lg font-bold transition-colors duration-150',
                 'disabled:cursor-not-allowed disabled:opacity-70',
                 getButtonClass(opt)
             ]">
                 {{ opt }}
             </button>
         </div>
-        <button @click="submit" :disabled="showFeedback || selected === null"
-            class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full mt-3">
-            <i class="fa-solid fa-check mr-2"></i> Comprobar
-        </button>
+        <div class="flex justify-between mt-4 w-full">
+            <PrimaryButton @click="handleFinish" class="hidden md:block w-1/3">
+                <i class="fa-solid fa-flag-checkered mr-2"></i> Terminar
+            </PrimaryButton>
+            <div class="flex-1"></div>
+            <PrimaryButton @click="submit" :disabled="showFeedback || selected === null" class="w-full md:w-1/3">
+                <i class="fa-solid fa-check mr-2"></i> Comprobar
+            </PrimaryButton>
+        </div>
+        <div v-if="showConfirm" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div class="bg-[#18232a] rounded-lg shadow-lg p-6 max-w-sm w-full border border-gray-700">
+                <h2 class="text-lg font-semibold mb-2 text-white">¿Salir de la lección?</h2>
+                <p class="mb-4 text-gray-300">Si sales ahora, tu avance no se guardará. ¿Estás seguro que quieres salir?
+                </p>
+                <div class="flex gap-3 justify-end">
+                    <button @click="showConfirm = false"
+                        class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">Cancelar</button>
+                    <button @click="confirmFinish"
+                        class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold">Salir sin
+                        guardar</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
