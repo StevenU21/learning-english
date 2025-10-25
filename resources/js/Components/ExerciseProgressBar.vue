@@ -1,7 +1,7 @@
 <template>
-  <div class="relative w-full flex justify-center">
-    <div class="w-[60vw] max-w-4xl min-w-[200px]">
-      <div class="w-full h-5 bg-[#26313a] rounded-full overflow-hidden">
+  <div class="relative w-full">
+    <div class="w-full">
+  <div class="w-full h-8 bg-[#26313a] rounded-full overflow-hidden">
         <div class="h-full transition-all duration-300" :style="{
           width: pct + '%',
           backgroundColor: barColor
