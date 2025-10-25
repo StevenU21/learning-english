@@ -37,8 +37,8 @@ function getButtonClass(opt) {
     if (props.showFeedback && selected.value === opt) {
         const isCorrect = Array.isArray(props.exercise.solution) ? props.exercise.solution.includes(opt) : false;
         return isCorrect
-            ? 'bg-green-100 dark:bg-green-900 border-green-500 text-green-700 dark:text-green-300'
-            : 'bg-red-100 dark:bg-red-900 border-red-500 text-red-700 dark:text-red-300';
+            ? 'bg-gray-800 border-green-500 text-green-400'
+            : 'bg-gray-800 border-red-500 text-red-400';
     }
     if (selected.value === opt) {
         return 'bg-gray-800 border-blue-400 text-blue-400';
