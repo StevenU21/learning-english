@@ -13,10 +13,16 @@ function submit() {
     emit('answered', correct, inputVal.value);
     isDisabled.value = true;
 }
+
+function handleKeydown(e) {
+    if (e.key === 'Enter' && !isDisabled.value) {
+        submit();
+    }
+}
 </script>
 <template>
     <div class="space-y-3">
-        <input v-model="inputVal" type="text"
+        <input v-model="inputVal" type="text" @keydown="handleKeydown"
             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 text-sm"
             placeholder="Escribe tu respuesta" />
         <button @click="submit" :disabled="isDisabled"
