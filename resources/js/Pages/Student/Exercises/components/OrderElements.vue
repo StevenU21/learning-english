@@ -9,8 +9,9 @@ const props = defineProps({
 });
 const emit = defineEmits(['answered', 'finish']);
 
-const userAnswerWords = ref([]);
-const availableWords = ref([]);
+const allWords = ref([]); // [{text, num}]
+const userAnswerWords = ref([]); // [{text, num}]
+const availableWords = ref([]); // [{text, num}]
 const showConfirm = ref(false);
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
@@ -21,6 +22,20 @@ function updateWindowWidth() {
 function handleKeydown(e) {
     if (props.showFeedback || showConfirm.value) return;
     if (window.innerWidth < 768) return;
+    // Seleccionar palabra del banco con número
+    if (/^[1-9]$/.test(e.key)) {
+        const num = parseInt(e.key, 10);
+        const idxBank = availableWords.value.findIndex(w => w.num === num);
+        if (idxBank !== -1) {
+            selectWord(availableWords.value[idxBank], idxBank);
+            return;
+        }
+        const idxAnswer = userAnswerWords.value.findIndex(w => w.num === num);
+        if (idxAnswer !== -1) {
+            deselectWord(userAnswerWords.value[idxAnswer], idxAnswer);
+            return;
+        }
+    }
     if (e.key === 'Enter' && userAnswerWords.value.length > 0) {
         submit();
     }
@@ -37,20 +52,21 @@ onUnmounted(() => {
 });
 
 function initializeState() {
+    allWords.value = (props.exercise.options || []).map((w, idx) => ({ text: w, num: idx + 1 }));
     userAnswerWords.value = [];
-    availableWords.value = [...(props.exercise.options || [])].sort(() => Math.random() - 0.5);
+    availableWords.value = [...allWords.value].sort(() => Math.random() - 0.5);
 }
 watch(() => props.exercise, initializeState, { immediate: true });
 
-function selectWord(word, index) {
+function selectWord(wordObj, index) {
     if (props.showFeedback) return;
-    userAnswerWords.value.push(word);
+    userAnswerWords.value.push(wordObj);
     availableWords.value.splice(index, 1);
 }
 
-function deselectWord(word, index) {
+function deselectWord(wordObj, index) {
     if (props.showFeedback) return;
-    availableWords.value.push(word);
+    availableWords.value.push(wordObj);
     userAnswerWords.value.splice(index, 1);
 }
 
@@ -66,8 +82,9 @@ function confirmFinish() {
 function submit() {
     if (props.showFeedback || userAnswerWords.value.length === 0) return;
     const solution = Array.isArray(props.exercise.solution) ? props.exercise.solution : [];
-    const isCorrect = JSON.stringify(userAnswerWords.value) === JSON.stringify(solution);
-    emit('answered', isCorrect, userAnswerWords.value);
+    const userTextArr = userAnswerWords.value.map(w => w.text);
+    const isCorrect = JSON.stringify(userTextArr) === JSON.stringify(solution);
+    emit('answered', isCorrect, userTextArr);
 }
 </script>
 
@@ -79,19 +96,25 @@ function submit() {
         <!-- Área de respuesta del usuario -->
         <div
             class="min-h-[4rem] w-full border-b-2 border-gray-300 dark:border-gray-600 flex flex-wrap items-center gap-2 pb-2">
-            <button v-for="(word, index) in userAnswerWords" :key="`${word}-${index}`"
-                @click="deselectWord(word, index)" :disabled="showFeedback"
+            <button v-for="(wordObj, index) in userAnswerWords" :key="`ans-${wordObj.num}`"
+                @click="deselectWord(wordObj, index)" :disabled="showFeedback"
                 class="px-3 py-1.5 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ word }}
+                <span v-if="windowWidth >= 768"
+                    class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-base font-semibold text-gray-300 bg-transparent select-none"
+                    style="min-width:2.2rem;text-align:center;">{{ wordObj.num }}</span>
+                {{ wordObj.text }}
             </button>
         </div>
 
         <!-- Banco de palabras disponibles -->
         <div class="flex flex-wrap justify-center gap-2">
-            <button v-for="(word, index) in availableWords" :key="`${word}-${index}`" @click="selectWord(word, index)"
+            <button v-for="(wordObj, index) in availableWords" :key="`bank-${wordObj.num}`" @click="selectWord(wordObj, index)"
                 :disabled="showFeedback"
                 class="px-3 py-1.5 rounded-xl bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-b-4 border-gray-300 dark:border-gray-600 font-semibold hover:bg-gray-100 dark:hover:bg-gray-600 transform active:translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ word }}
+                <span v-if="windowWidth >= 768"
+                    class="inline-block mr-2 px-2 py-1 rounded border border-blue-400/30 text-base font-semibold text-gray-300 bg-transparent select-none"
+                    style="min-width:2.2rem;text-align:center;">{{ wordObj.num }}</span>
+                {{ wordObj.text }}
             </button>
         </div>
 
