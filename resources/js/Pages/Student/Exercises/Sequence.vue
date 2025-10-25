@@ -212,11 +212,11 @@ onUnmounted(() => {
                         :showFeedback="showFeedback" :lastAnswer="lastAnswer" @answered="handleAnswer" />
                     <div class="mt-5 flex flex-col gap-3 text-center">
                         <PrimaryButton v-if="showFeedback && current < total - 1" @click="nextExercise" class="w-full">
-                            <i class="fa-solid fa-arrow-right mr-2"></i> Siguiente
+                            <i class="fa-solid fa-keyboard mr-2"></i> Siguiente
                         </PrimaryButton>
                         <PrimaryButton v-else-if="showFeedback && current === total - 1" @click="nextExercise"
                             class="w-full">
-                            <i class="fa-solid fa-list-check mr-2"></i> Ver resumen
+                            <i class="fa-solid fa-keyboard mr-2"></i> Ver resumen
                         </PrimaryButton>
                     </div>
                 </div>
