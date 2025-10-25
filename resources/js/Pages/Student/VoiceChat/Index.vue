@@ -116,9 +116,9 @@ const startSessionWithVoice = () =>
                     { label: 'Chat de voz' }
                 ]" gradient-classes="from-sky-600 to-indigo-600" />
         </template> -->
-        <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 pb-24 dark:bg-gray-800 sm:pb-8">
+    <div class="flex min-h-[calc(100vh-56px)] flex-col bg-gray-50 dark:bg-gray-800">
             <div class="w-full flex-1">
-                <div class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-4 py-10 sm:px-6 lg:px-8">
+                <div class="mx-auto flex h-full w-full max-w-[1400px] flex-col px-4 sm:px-6 lg:px-8 py-10">
                     <div
                         class="flex h-full flex-col gap-8 lg:grid lg:grid-cols-[320px,minmax(0,1fr)] xl:grid-cols-[340px,minmax(0,1fr)]">
                         <aside class="order-2 space-y-6 lg:order-1">
@@ -173,8 +173,8 @@ const startSessionWithVoice = () =>
                             <div class="flex min-h-0 flex-col gap-8">
 
                                 <div
-                                    class="order-1 rounded-2xl border border-sky-100 bg-sky-50 p-6 text-left dark:border-sky-500/20 dark:bg-sky-500/10 md:order-2">
-                                    <div class="flex flex-col gap-6">
+                                    class="order-1 rounded-2xl text-left md:order-2">
+                                    <div class="flex flex-col gap-6 px-0 py-0">
 
                                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                             <div>
