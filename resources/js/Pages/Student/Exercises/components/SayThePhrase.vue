@@ -1,14 +1,16 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import CustomAudioPlayer from './CustomAudioPlayer.vue';
 import Badge from '@/Components/Badge.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
     showFeedback: { type: Boolean, default: false }
 });
-const emit = defineEmits(['answered']);
+const emit = defineEmits(['answered', 'finish']);
 
 const answer = ref('');
 const isRecording = ref(false);
@@ -21,6 +23,8 @@ const audioUrl = ref('');
 const maxSeconds = 10;
 const secondsLeft = ref(maxSeconds);
 let timer = null;
+const showConfirm = ref(false);
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
 // Mostrar la solución solo si showFeedback está activo
 const showSolution = () => props.showFeedback && props.exercise.solution && props.exercise.solution[0];
@@ -46,6 +50,37 @@ watch(
         mediaRecorder.value = null;
     }
 );
+
+function handleFinish() {
+    showConfirm.value = true;
+}
+
+function confirmFinish() {
+    showConfirm.value = false;
+    router.get(route('student.units.index'));
+}
+
+function updateWindowWidth() {
+    windowWidth.value = window.innerWidth;
+}
+
+function handleKeydown(e) {
+    if (props.showFeedback || showConfirm.value) return;
+    if (window.innerWidth < 768) return;
+    if (e.key === 'Enter' && audioBlob.value && !isRecording.value && !isSending.value) {
+        submit();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+    window.addEventListener('resize', updateWindowWidth);
+    updateWindowWidth();
+});
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('resize', updateWindowWidth);
+});
 
 async function startRecording() {
     error.value = '';
@@ -127,7 +162,7 @@ async function submit() {
 </script>
 
 <template>
-    <div class="space-y-7">
+    <div class="flex flex-col gap-6 w-full">
         <!-- Mic Button & Audio Controls -->
         <div class="flex flex-col items-center gap-4">
             <button type="button" @click="isRecording ? stopRecording() : startRecording()" :class="[
@@ -156,24 +191,52 @@ async function submit() {
             <p v-if="error" class="text-xs text-red-400 mt-2">{{ error }}</p>
         </div>
 
-        <!-- Comprobar Button -->
-        <div class="flex flex-col items-center justify-center">
-            <button @click="submit" :disabled="props.showFeedback || !audioBlob || isRecording || isSending"
-                class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed w-full max-w-xs mt-3">
-                <template v-if="isSending">
-                    <svg class="animate-spin h-5 w-5 text-white mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                    </svg>
-                    Procesando...
-                </template>
-                <template v-else>
+        <div class="flex flex-col md:flex-row justify-between mt-4 w-full gap-2">
+            <!-- Botón Terminar -->
+            <PrimaryButton @click="handleFinish" class="hidden md:flex w-full md:w-1/3 items-center">
+                <i class="fa-solid fa-flag-checkered mr-2"></i>
+                <span class="flex-1 text-center">Terminar</span>
+            </PrimaryButton>
+
+            <div class="hidden md:flex flex-1"></div>
+
+            <!-- Botón Comprobar -->
+            <PrimaryButton @click="submit" :disabled="props.showFeedback || !audioBlob || isRecording || isSending"
+                :class="[
+                    'w-full md:w-1/3 flex items-center',
+                    (props.showFeedback || !audioBlob || isRecording || isSending) ? 'opacity-60 cursor-not-allowed' : ''
+                ]">
+                <span v-if="windowWidth >= 768"
+                    class="inline-flex items-center justify-center px-2 py-1 rounded border border-blue-400/60 text-base font-bold text-gray-800 bg-gray-100 select-none"
+                    style="min-width:2.2rem; height:2.2rem; margin-right:0.75rem;">
+                    ⏎
+                </span>
+                <span v-else class="inline-flex items-center">
                     <i class="fa-solid fa-check mr-2"></i>
                     Comprobar
-                </template>
-            </button>
+                </span>
+                <span v-if="windowWidth >= 768" class="flex-1 text-center">Comprobar</span>
+            </PrimaryButton>
+        </div>
+
+        <div v-if="showConfirm" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div class="bg-[#18232a] rounded-lg shadow-lg p-6 max-w-full md:max-w-sm w-full border border-gray-700">
+                <h2 class="text-lg font-semibold mb-2 text-white">¿Salir de la lección?</h2>
+                <p class="mb-4 text-gray-300">Si sales ahora, tu avance no se guardará. ¿Estás seguro que quieres salir?
+                </p>
+                <div class="flex gap-3 justify-center">
+                    <button @click="showConfirm = false"
+                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                        <i class="fa-solid fa-xmark mr-2"></i>
+                        Cancelar
+                    </button>
+                    <button @click="confirmFinish"
+                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                        <i class="fa-solid fa-flag-checkered mr-2"></i>
+                        Salir sin guardar
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
