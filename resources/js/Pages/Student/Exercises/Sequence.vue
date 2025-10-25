@@ -195,7 +195,7 @@ onUnmounted(() => {
         </template>
 
         <Head :title="`Ejercicios - ${lesson.name}`" />
-        <div class="flex flex-col items-center justify-center min-h-[70vh]">
+        <div class="flex flex-col items-center justify-center min-h-[70vh] w-full">
             <div class="w-full sm:w-[40vw] max-w-2xl mx-auto">
                 <!-- Active Exercise -->
                 <div v-if="!finished && !showSummary" class="space-y-4 px-3">
