@@ -3,7 +3,7 @@ import ExerciseResolverLayout from '@/Layouts/ExerciseResolverLayout.vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import MultipleChoice from './components/MultipleChoice.vue';
 import TrueFalse from './components/TrueFalse.vue';
 import FillBlank from './components/FillBlank.vue';
@@ -166,6 +166,26 @@ const componentMap = {
     'Di la frase': SayThePhrase
 };
 
+// Listener para avanzar con barra espaciadora (Space)
+function handleNextKey(e) {
+    if (
+        showFeedback.value &&
+        answered.value[current.value] !== undefined &&
+        !showSummary.value &&
+        !finished.value &&
+        (e.code === 'Space' || e.key === ' ')
+    ) {
+        e.preventDefault();
+        nextExercise();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', handleNextKey);
+});
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleNextKey);
+});
 </script>
 
 <template>
