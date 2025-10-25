@@ -1,10 +1,10 @@
 <script setup>
-
 import { ref, onMounted, onUnmounted } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { router } from '@inertiajs/vue3';
 const props = defineProps({ exercise: Object, showFeedback: Boolean });
 const emit = defineEmits(['answered', 'finish']);
+const inputRef = ref(null);
 const inputVal = ref('');
 const isDisabled = ref(false);
 const showConfirm = ref(false);
@@ -15,9 +15,9 @@ function updateWindowWidth() {
 onMounted(() => {
     window.addEventListener('resize', updateWindowWidth);
     updateWindowWidth();
-});
-onUnmounted(() => {
-    window.removeEventListener('resize', updateWindowWidth);
+    if (inputRef.value) {
+        inputRef.value.focus();
+    }
 });
 
 function handleFinish() {
@@ -45,14 +45,14 @@ function handleKeydown(e) {
     }
 }
 </script>
+
 <template>
     <div class="flex flex-col gap-6 w-full">
-        <input v-model="inputVal" type="text" @keydown="handleKeydown"
+        <input ref="inputRef" v-model="inputVal" type="text" @keydown="handleKeydown"
             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 text-sm"
             placeholder="Escribe tu respuesta" />
 
         <div class="flex justify-between mt-4 w-full">
-            <!-- Botón Terminar -->
             <PrimaryButton @click="handleFinish" class="hidden md:flex w-1/3 items-center">
                 <i class="fa-solid fa-flag-checkered mr-2"></i>
                 <span class="flex-1 text-center">Terminar</span>
@@ -60,7 +60,6 @@ function handleKeydown(e) {
 
             <div class="flex-1"></div>
 
-            <!-- Botón Comprobar -->
             <PrimaryButton @click="submit" :disabled="props.showFeedback || isDisabled.value || inputVal.trim() === ''"
                 :class="[
                     'w-full md:w-1/3 flex items-center',
