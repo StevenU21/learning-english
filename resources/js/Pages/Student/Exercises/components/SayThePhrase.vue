@@ -1,10 +1,12 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
 import CustomAudioPlayer from './CustomAudioPlayer.vue';
 import Badge from '@/Components/Badge.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -194,10 +196,10 @@ async function submit() {
 
         <div class="flex flex-col md:flex-row justify-between mt-4 w-full gap-2">
             <!-- Botón Terminar -->
-            <PrimaryButton @click="handleFinish" class="hidden md:flex w-full md:w-1/3 items-center">
+            <DangerButton @click="handleFinish" class="hidden md:flex w-full md:w-1/3 items-center">
                 <i class="fa-solid fa-flag-checkered mr-2"></i>
                 <span class="flex-1 text-center">Terminar</span>
-            </PrimaryButton>
+            </DangerButton>
 
             <div class="hidden md:flex flex-1"></div>
 
@@ -226,16 +228,14 @@ async function submit() {
                 <p class="mb-4 text-gray-300">Si sales ahora, tu avance no se guardará. ¿Estás seguro que quieres salir?
                 </p>
                 <div class="flex gap-3 justify-center">
-                    <button @click="showConfirm = false"
-                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                    <SecondaryButton @click="showConfirm = false" class="w-auto px-4 py-2">
                         <i class="fa-solid fa-xmark mr-2"></i>
                         Cancelar
-                    </button>
-                    <button @click="confirmFinish"
-                        class="flex items-center px-4 py-2 rounded bg-gray-700 hover:bg-gray-800 text-gray-200 font-semibold">
+                    </SecondaryButton>
+                    <DangerButton @click="confirmFinish" class="w-auto px-4 py-2">
                         <i class="fa-solid fa-flag-checkered mr-2"></i>
                         Salir sin guardar
-                    </button>
+                    </DangerButton>
                 </div>
             </div>
         </div>

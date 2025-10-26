@@ -33,18 +33,18 @@ defineProps({
                         <div v-if="!$page.props.auth.user"
                             class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 w-full">
                             <Link :href="route('login')"
-                                class="w-full sm:w-auto rounded-lg px-4 py-2 sm:px-6 sm:py-3 text-sm font-semibold text-blue-500 bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition flex items-center justify-center">
+                                class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                             <i class="fas fa-sign-in-alt mr-2"></i> Iniciar sesión
                             </Link>
                             <Link v-if="canRegister" :href="route('register')"
-                                class="w-full sm:w-auto rounded-lg px-4 py-2 sm:px-6 sm:py-3 text-sm font-semibold text-blue-500 bg-white ring-1 ring-blue-500/40 hover:ring-blue-500 dark:bg-transparent dark:text-white dark:ring-white/30 dark:hover:ring-white/60 transition flex items-center justify-center">
+                                class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
                             <i class="fas fa-user-plus mr-2"></i> Crear cuenta
                             </Link>
                         </div>
                         <div v-else class="mt-2 sm:mt-4 w-full flex justify-center">
                             <Link
                                 :href="route($page.props.auth.user.roles.includes('admin') ? 'units.index' : 'student.units.index')"
-                                class="inline-flex items-center gap-2 rounded-lg px-4 py-2 sm:px-6 sm:py-3 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 shadow-md transition">
+                                class="inline-flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 gap-2">
                             Ir al Panel
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-4 h-4">
@@ -54,16 +54,20 @@ defineProps({
                             </Link>
                         </div>
                     </div>
-                    <div class="mt-4 sm:mt-8 text-center text-xs sm:text-base uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wide">
+                    <div
+                        class="mt-4 sm:mt-8 text-center text-xs sm:text-base uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wide">
                         <div>Integrantes de Tesis:</div>
                         <div>Arelis Antonia Ortez Bucardo</div>
                         <div>Madeling Haidee Perez Moreno</div>
                         <div>Andy Ruppert Ulloa Gutierrez</div>
                         <div class="mt-2">Desarrollador:</div>
                         <div>
-                            <a href="https://github.com/StevenU21" target="_blank" class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 text-xs font-semibold shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 mr-1">
-                                    <path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.987 1.029-2.687-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.594 1.028 2.687 0 3.847-2.337 4.695-4.566 4.944.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .267.18.578.688.48C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2Z"/>
+                            <a href="https://github.com/StevenU21" target="_blank"
+                                class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 text-xs font-semibold shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                    class="w-4 h-4 mr-1">
+                                    <path
+                                        d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.987 1.029-2.687-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.594 1.028 2.687 0 3.847-2.337 4.695-4.566 4.944.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .267.18.578.688.48C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2Z" />
                                 </svg>
                                 StevenU21
                             </a>

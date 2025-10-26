@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -110,10 +112,10 @@ function getButtonClass(opt) {
         </div>
         <div class="flex flex-row justify-between mt-4 w-full gap-2">
             <!-- Botón Terminar -->
-            <PrimaryButton @click="handleFinish" class="flex w-1/2 items-center">
+            <DangerButton @click="handleFinish" class="flex w-1/2 items-center">
                 <i class="fa-solid fa-flag-checkered mr-2"></i>
-                <span class="flex-1 text-center">Terminar</span>
-            </PrimaryButton>
+                <span class="flex-1 text-center">Salir</span>
+            </DangerButton>
 
             <!-- Botón Comprobar -->
             <PrimaryButton @click="submit" :disabled="showFeedback || selected === null" :class="[
@@ -140,14 +142,14 @@ function getButtonClass(opt) {
                     salir?
                 </p>
                 <div class="flex gap-2 justify-center">
-                    <PrimaryButton @click="showConfirm = false" class="w-auto px-3 py-2">
+                    <SecondaryButton @click="showConfirm = false" class="w-auto px-3 py-2">
                         <i class="fa-solid fa-xmark mr-2"></i>
                         Cancelar
-                    </PrimaryButton>
-                    <PrimaryButton @click="confirmFinish" class="w-auto px-3 py-2">
+                    </SecondaryButton>
+                    <DangerButton @click="confirmFinish" class="w-auto px-3 py-2">
                         <i class="fa-solid fa-flag-checkered mr-2"></i>
                         Salir sin guardar
-                    </PrimaryButton>
+                    </DangerButton>
                 </div>
             </div>
         </div>

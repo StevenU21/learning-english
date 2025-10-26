@@ -46,19 +46,21 @@ class LessonController extends Controller
         if ($lesson->unit_id !== $unit->id) {
             abort(404);
         }
-        $lesson->load(['exercises.exerciseType', 'unit']);
+        $lesson->load(['exercises.exerciseType', 'unit.level']);
         $lessonData = [
             'id' => $lesson->id,
             'name' => $lesson->name,
             'description' => $lesson->description,
             'duration' => (int) $lesson->duration,
             'unit' => $lesson->unit,
+            'difficulty' => optional($lesson->unit->level)->name,
         ];
         $exercises = CollectionHelper::transform(collect($lesson->exercises), function ($exercise) {
             return [
                 'id' => $exercise->id,
                 'name' => $exercise->name,
                 'description' => $exercise->description,
+                'prompt' => $exercise->prompt,
                 'type' => $exercise->type,
                 'exercise_type' => $exercise->exerciseType,
                 'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),

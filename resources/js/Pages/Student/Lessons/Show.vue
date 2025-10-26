@@ -2,10 +2,22 @@
 import StudentLayout from '@/Layouts/StudentLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/Components/PageHeader.vue';
+import Badge from '@/Components/Badge.vue';
+import { computed } from 'vue';
 
 const props = defineProps({
     lesson: { type: Object, required: true },
     exercises: { type: Array, required: true },
+});
+
+// Estadísticas de tipos de ejercicio
+const exerciseTypeSummary = computed(() => {
+    const summary = {};
+    props.exercises.forEach(ex => {
+        const type = ex.exercise_type?.name || 'Otro';
+        summary[type] = (summary[type] || 0) + 1;
+    });
+    return summary;
 });
 </script>
 
@@ -13,37 +25,56 @@ const props = defineProps({
     <StudentLayout>
 
         <Head :title="`Resumen de ${lesson.name}`" />
-
-        <!-- <template #header>
-            <PageHeader :title="`Resumen de ${lesson.name}`" :subtitle="`${exercises.length} ejercicios`"
-                icon="fa-solid fa-list" :breadcrumbs="[
-                    { label: 'Inicio', href: '#', icon: 'fa-solid fa-house' },
-                    { label: 'Unidades', href: route('student.units.index') },
-                    { label: 'Lección' }
-                ]" gradient-classes="from-purple-600 to-indigo-600">
-                <template #actions>
-                    <Link :href="route('student.units.lessons.index', { unit: lesson.unit?.slug || lesson.unit_slug || lesson.unit_id })"
-                        class="inline-flex w-34 items-center justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                    <i class="fa-solid fa-arrow-left mr-2"></i>Volver
-                    </Link>
-                </template>
-            </PageHeader>
-        </template> -->
-
         <div class="py-10">
             <div class="w-full px-4 sm:px-6 lg:px-8">
+                <!-- Estadísticas rápidas y resumen -->
+                <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        <div class="mb-2">
+                            <i class="fas fa-clock h-7 w-7 text-blue-500 dark:text-blue-400"></i>
+                        </div>
+                        <div class="text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold mb-1">Duración
+                        </div>
+                        <div class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ lesson.duration }} min</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        <div class="mb-2">
+                            <i class="fas fa-signal h-7 w-7 text-green-500 dark:text-green-400"></i>
+                        </div>
+                        <div class="text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold mb-1">Dificultad
+                        </div>
+                        <div class="text-lg font-bold text-green-600 dark:text-green-400">{{ lesson.difficulty ?? 'N/A'
+                            }}</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        <div class="mb-2">
+                            <i class="fas fa-tasks h-7 w-7 text-purple-500 dark:text-purple-400"></i>
+                        </div>
+                        <div class="text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold mb-1">Ejercicios
+                        </div>
+                        <div class="text-lg font-bold text-purple-600 dark:text-purple-400">{{ exercises.length }}</div>
+                    </div>
+                </div>
+                <!-- Fin estadísticas rápidas -->
                 <div v-if="exercises.length" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <div v-for="ex in exercises" :key="ex.id"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition border border-gray-200 dark:border-gray-700">
-                        <h3 class="font-semibold text-gray-800 dark:text-gray-200">
-                            {{ ex.exercise_type.name }}
-                        </h3>
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-gray-200">
+                                {{ ex.exercise_type.name }}
+                            </h3>
+                            <Badge type="info">Intento: {{ ex.attempt_number ?? 1 }}</Badge>
+                        </div>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             {{ ex.prompt }}
                         </p>
                     </div>
                 </div>
-                <div v-else class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-400/40 dark:border-gray-600 text-gray-600 dark:text-gray-400">
+                <div v-else
+                    class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-400/40 dark:border-gray-600 text-gray-600 dark:text-gray-400">
                     No hay ejercicios en esta lección.
                 </div>
             </div>

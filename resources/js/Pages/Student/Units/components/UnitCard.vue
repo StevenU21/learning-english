@@ -25,8 +25,12 @@
             </p>
             <div class="flex flex-wrap gap-2 mt-auto">
                 <span v-if="unit.level?.name"
-                    class="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold">
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
                     <i class="fa-solid fa-signal"></i> {{ unit.level.name }}
+                </span>
+                <span v-if="unit.expected_time"
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                    <i class="fa-solid fa-clock"></i> {{ unit.expected_time }} min
                 </span>
                 <span :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide font-semibold border',
@@ -52,16 +56,16 @@
                 class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
             <i class="fa-solid fa-play mr-2"></i> Ingresar
             </Link>
-            <Link :href="route('student.units.resources.index', { unit: unit.slug })"
-                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-            <i class="fa-solid fa-book-open mr-2"></i> Recursos
-            </Link>
+            <SecondaryButton :is="Link" :href="route('student.units.resources.index', { unit: unit.slug })" class="items-center">
+                <i class="fa-solid fa-book-open mr-2"></i> Recursos
+            </SecondaryButton>
         </div>
     </div>
 </template>
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 const props = defineProps({ unit: Object });
 
 function statusConfig(status) {
