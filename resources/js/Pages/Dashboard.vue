@@ -4,6 +4,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import Card from '@/Components/Card.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import CardSection from '@/Components/CardSection.vue';
+import DashboardCharts from '@/Components/DashboardCharts.vue';
 
 const props = defineProps({
     stats: {
@@ -40,6 +41,9 @@ const props = defineProps({
                 ]" :key="card.label" :label="card.label" :value="card.value" :icon="card.icon"
                     :gradient="card.gradient" :iconColor="card.iconColor" />
             </div>
+            <DashboardCharts :correctAttempts="props.stats.correct_attempts"
+                :incorrectAttempts="props.stats.incorrect_attempts" :learningByMonth="props.stats.learning_by_month"
+                :topExercises="props.stats.top_exercises" />
         </CardSection>
     </AuthenticatedLayout>
 </template>

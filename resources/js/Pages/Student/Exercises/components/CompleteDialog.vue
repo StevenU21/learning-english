@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { router } from '@inertiajs/vue3';
 const props = defineProps({ exercise: Object, showFeedback: Boolean, unitSlug: { type: [String, Number], required: false } });
 const emit = defineEmits(['answered']);

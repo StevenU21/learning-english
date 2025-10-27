@@ -75,6 +75,7 @@ Route::middleware('auth')->group(function () {
         Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
         Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
         Route::get('/admin/progress/{user}/reporte', [ProgressController::class, 'report'])->name('admin.progress.report');
+        Route::get('/admin/progress/{user}/exercise/{exercise}/attempts', [ProgressController::class, 'exerciseAttempts']);
     });
 });
 

@@ -61,11 +61,25 @@ class ProgressController extends Controller
             ->where('user_id', $userId)
             ->paginate(10)
             ->appends(request()->all());
-        $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
+        // Obtener solo el último intento por ejercicio para el usuario
+        $latestAttempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
             ->where('user_id', $userId)
-            ->orderByDesc('created_at')
-            ->paginate(10)
-            ->appends(request()->all());
+            ->select('user_exercise_attempts.*')
+            ->join(
+                // Subconsulta para obtener el último attempt_number por ejercicio
+                \DB::raw('(
+                    SELECT exercise_id, MAX(attempt_number) as max_attempt
+                    FROM user_exercise_attempts
+                    WHERE user_id = ' . (int) $userId . '
+                    GROUP BY exercise_id
+                ) as latest'),
+                function ($join) {
+                    $join->on('user_exercise_attempts.exercise_id', '=', 'latest.exercise_id')
+                        ->on('user_exercise_attempts.attempt_number', '=', 'latest.max_attempt');
+                }
+            )
+            ->orderByDesc('answered_at')
+            ->get();
 
         return Inertia::render('Admin/Progress/Show', [
             'user' => array_merge($user->toArray(), [
@@ -75,8 +89,18 @@ class ProgressController extends Controller
             'lessons' => $lessons,
             'lessonProgress' => $lessonProgress,
             'unitProgress' => $unitProgress,
-            'attempts' => $attempts
+            'attempts' => ['data' => $latestAttempts]
         ]);
+    }
+
+    public function exerciseAttempts($userId, $exerciseId)
+    {
+        $attempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
+            ->where('user_id', $userId)
+            ->where('exercise_id', $exerciseId)
+            ->orderBy('attempt_number')
+            ->get();
+        return response()->json($attempts);
     }
 
     public function report($userId)

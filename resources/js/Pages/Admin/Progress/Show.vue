@@ -84,31 +84,30 @@ const filteredAttempts = computed(() => {
     });
 });
 
-// Agrupado por ejercicio (para mostrar cantidad de intentos por ejercicio)
+// Agrupado por ejercicio (solo el último intento para la tabla)
 const groupedByExercise = computed(() => {
     const map = new Map();
     for (const att of filteredAttempts.value) {
         const ex = att.exercise;
         if (!ex) continue;
         if (!map.has(ex.id)) {
-            map.set(ex.id, { exercise: ex, lesson: att.lesson || ex.lesson, attempts: [] });
-        }
-        map.get(ex.id).attempts.push(att);
-    }
-    // Aplanar y calcular el último intento por ejercicio
-    return Array.from(map.values()).map(g => {
-        const latest = g.attempts.reduce((prev, curr) => {
-            // Priorizar por attempt_number, fallback a answered_at
-            if (!prev) return curr;
-            if ((curr.attempt_number ?? 0) !== (prev.attempt_number ?? 0)) {
-                return (curr.attempt_number ?? 0) > (prev.attempt_number ?? 0) ? curr : prev;
+            map.set(ex.id, { exercise: ex, lesson: att.lesson || ex.lesson, latestAttempt: att });
+        } else {
+            // Si el intento actual es más reciente, actualizar
+            const prev = map.get(ex.id).latestAttempt;
+            if ((att.attempt_number ?? 0) > (prev.attempt_number ?? 0)) {
+                map.get(ex.id).latestAttempt = att;
+            } else if ((att.attempt_number ?? 0) === (prev.attempt_number ?? 0)) {
+                // Si el número es igual, comparar fecha
+                const prevTime = prev.answered_at ? new Date(prev.answered_at).getTime() : 0;
+                const currTime = att.answered_at ? new Date(att.answered_at).getTime() : 0;
+                if (currTime > prevTime) {
+                    map.get(ex.id).latestAttempt = att;
+                }
             }
-            const prevTime = prev.answered_at ? new Date(prev.answered_at).getTime() : 0;
-            const currTime = curr.answered_at ? new Date(curr.answered_at).getTime() : 0;
-            return currTime > prevTime ? curr : prev;
-        }, null);
-        return { ...g, latestAttempt: latest };
-    });
+        }
+    }
+    return Array.from(map.values());
 });
 
 // Handlers de paginación independientes para cada tabla
@@ -173,17 +172,23 @@ function closeLessonAttempts() {
 // Modal: Ver detalles por ejercicio (intentos y solución)
 const showExerciseAttempts = ref(false);
 const selectedExercise = ref(null);
-const selectedExerciseAttempts = computed(() => {
-    if (!selectedExercise.value) return [];
-    return groupedByExercise.value.find(g => String(g.exercise.id) === String(selectedExercise.value.id))?.attempts || [];
-});
-function openExerciseAttempts(exercise) {
+const selectedExerciseAttempts = ref([]);
+
+async function openExerciseAttempts(exercise) {
     selectedExercise.value = exercise;
     showExerciseAttempts.value = true;
+    // Fetch all attempts for this exercise and user from backend
+    const response = await fetch(`/admin/progress/${user.id}/exercise/${exercise.id}/attempts`);
+    if (response.ok) {
+        selectedExerciseAttempts.value = await response.json();
+    } else {
+        selectedExerciseAttempts.value = [];
+    }
 }
 function closeExerciseAttempts() {
     showExerciseAttempts.value = false;
     selectedExercise.value = null;
+    selectedExerciseAttempts.value = [];
 }
 
 </script>
@@ -235,7 +240,7 @@ function closeExerciseAttempts() {
                             <h4 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">{{ user.name }}</h4>
                             <div class="flex items-center space-x-6 text-gray-500 dark:text-gray-400">
                                 <span class="flex items-center"><i class="fa-solid fa-envelope mr-2"></i>{{ user.email
-                                    }}</span>
+                                }}</span>
                                 <span class="flex items-center"><i class="fa-solid fa-calendar-days mr-2"></i>{{ new
                                     Date(user.created_at).toLocaleDateString() }}</span>
                             </div>
@@ -351,8 +356,8 @@ function closeExerciseAttempts() {
                             { label: 'Lección', key: 'lesson', icon: 'fa-solid fa-book-open', render: lp => lp.lesson.name },
                             { label: 'Progreso', key: 'progress', icon: 'fa-solid fa-bars-progress', render: lp => '' },
                             { label: 'Estado', key: 'status', icon: 'fa-solid fa-flag-checkered', render: lp => '' },
-                        ]" :items="filteredLessonProgress" :meta="lessonProgress.meta"
-                            :links="lessonProgress.links" empty-text="Sin registros" @paginate="goToLessonProgressPage">
+                        ]" :items="filteredLessonProgress" :meta="lessonProgress.meta" :links="lessonProgress.links"
+                            empty-text="Sin registros" @paginate="goToLessonProgressPage">
                             <template #progress="{ item }">
                                 <ProgressBar :value="item.progress" />
                             </template>
@@ -380,7 +385,7 @@ function closeExerciseAttempts() {
                                 class="border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Lección: Todas</option>
                                 <option v-for="l in attemptLessonsForSelectedUnit" :key="l.id" :value="l.id">{{ l.name
-                                    }}
+                                }}
                                 </option>
                             </select>
                             <select v-model="attemptCorrectFilter"
@@ -408,7 +413,7 @@ function closeExerciseAttempts() {
                             <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Lección: {{ att.lesson?.name ||
                                 att.exercise?.lesson?.name }}</div>
                             <div class="mt-1 text-sm text-gray-600 dark:text-gray-300">Intento: #{{ att.attempt_number
-                            }}</div>
+                                }}</div>
                             <div class="mt-2 flex items-center justify-between text-sm">
                                 <CorrectBadge :correct="att.is_correct" />
                                 <span class="text-gray-500 dark:text-gray-400">{{ att.answered_at ? new
@@ -429,7 +434,7 @@ function closeExerciseAttempts() {
                         <Table :columns="[
                             { label: 'Ejercicio', key: 'exercise', icon: 'fa-solid fa-file-lines', render: g => g.exercise?.prompt?.slice(0, 60) + (g.exercise?.prompt?.length > 60 ? '...' : '') },
                             { label: 'Lección', key: 'lesson', icon: 'fa-solid fa-book-open', render: g => g.lesson?.name || g.exercise?.lesson?.name },
-                            { label: 'Intentos', key: 'attempts', icon: 'fa-solid fa-hashtag', render: g => g.attempts.length },
+                            { label: 'Intento actual', key: 'attempt_number', icon: 'fa-solid fa-hashtag', render: g => `#${g.latestAttempt?.attempt_number ?? '-'}` },
                             { label: 'Estado actual', key: 'status', icon: 'fa-solid fa-check', render: g => '' },
                             { label: 'Respondido', key: 'answered_at', icon: 'fa-solid fa-calendar-check', render: g => g.latestAttempt?.answered_at ? new Date(g.latestAttempt.answered_at).toLocaleString() : '-' },
                             { label: 'Acciones', key: 'actions', icon: 'fa-solid fa-eye', render: g => '' },
