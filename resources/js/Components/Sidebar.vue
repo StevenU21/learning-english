@@ -46,6 +46,13 @@
 
             <!-- Admin links -->
             <template v-if="hasRole('admin')">
+
+                <SidebarLink :href="route('dashboard')" :active="route().current('dashboard')"
+                    :compact="effectiveCollapsed" titleText="Dashboard">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <span v-show="!effectiveCollapsed">Dashboard</span>
+                </SidebarLink>
+
                 <SidebarLink :href="route('units.index')" :active="route().current('units.index')"
                     :compact="effectiveCollapsed" titleText="Unidades">
                     <i class="fa-solid fa-layer-group w-5 text-center"></i>

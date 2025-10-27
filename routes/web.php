@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\ProgressController;
 use App\Http\Controllers\Admin\ResourceController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Student\TextChatController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Auth\GithubController;
@@ -34,9 +35,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/github/callback', [GithubController::class, 'callback'])->name('auth.github.callback');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
@@ -71,13 +69,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('resources', ResourceController::class);
         Route::resource('exercise-types', ExerciseTypeController::class);
 
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('resources/{resource}/download', [ResourceController::class, 'download'])->name('resources.download');
         Route::resource('exercises', ExerciseController::class);
         Route::get('progress', [ProgressController::class, 'index'])->name('admin.progress.index');
         Route::get('/admin/progress/{user}', [ProgressController::class, 'show'])->name('admin.progress.show');
         Route::get('/admin/progress/{user}/reporte', [ProgressController::class, 'report'])->name('admin.progress.report');
     });
-
 });
 
 require __DIR__ . '/auth.php';
