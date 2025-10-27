@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
 import GenericModal from '@/Components/GenericModal.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
     exercise: { type: Object, required: true },
@@ -107,10 +108,7 @@ function fmt(val) {
         </div>
 
         <template #footer>
-            <button @click="close"
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md shadow">
-                Cerrar
-            </button>
+            <PrimaryButton @click="close" icon="fa-solid fa-xmark mr-2">Cerrar</PrimaryButton>
         </template>
     </GenericModal>
 </template>

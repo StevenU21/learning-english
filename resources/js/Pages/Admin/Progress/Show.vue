@@ -439,11 +439,9 @@ function closeExerciseAttempts() {
                                 <CorrectBadge :correct="item.latestAttempt?.is_correct" />
                             </template>
                             <template #actions="{ item }">
-                                <button
-                                    class="inline-flex items-center px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-md shadow"
-                                    @click="openExerciseAttempts(item.exercise)">
+                                <PrimaryButton @click="openExerciseAttempts(item.exercise)">
                                     <i class="fa-solid fa-eye mr-2"></i> Ver detalles
-                                </button>
+                                </PrimaryButton>
                             </template>
                         </Table>
                     </div>
