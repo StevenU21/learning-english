@@ -61,12 +61,11 @@ class ProgressController extends Controller
             ->where('user_id', $userId)
             ->paginate(10)
             ->appends(request()->all());
-        // Obtener solo el último intento por ejercicio para el usuario
-        $latestAttempts = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
+        // Obtener solo el último intento por ejercicio para el usuario, paginado
+        $latestAttemptsQuery = UserExerciseAttempt::with(['lesson.unit', 'exercise.lesson.unit'])
             ->where('user_id', $userId)
             ->select('user_exercise_attempts.*')
             ->join(
-                // Subconsulta para obtener el último attempt_number por ejercicio
                 \DB::raw('(
                     SELECT exercise_id, MAX(attempt_number) as max_attempt
                     FROM user_exercise_attempts
@@ -78,8 +77,9 @@ class ProgressController extends Controller
                         ->on('user_exercise_attempts.attempt_number', '=', 'latest.max_attempt');
                 }
             )
-            ->orderByDesc('answered_at')
-            ->get();
+            ->orderByDesc('answered_at');
+
+        $latestAttempts = $latestAttemptsQuery->paginate(10)->appends(request()->all());
 
         return Inertia::render('Admin/Progress/Show', [
             'user' => array_merge($user->toArray(), [
@@ -89,7 +89,7 @@ class ProgressController extends Controller
             'lessons' => $lessons,
             'lessonProgress' => $lessonProgress,
             'unitProgress' => $unitProgress,
-            'attempts' => ['data' => $latestAttempts]
+            'attempts' => $latestAttempts
         ]);
     }
 

@@ -48,8 +48,8 @@ const props = defineProps({
                 <TopTable title="Top 5 estudiantes por lecciones"
                     :columns="[{ label: 'Estudiante', key: 'name' }, { label: 'Lecciones', key: 'lessons', align: 'right' }]"
                     :items="props.stats.top_students_lessons" />
-                <TopTable title="Top 5 ejercicios con más errores"
-                    :columns="[{ label: 'Ejercicio', key: 'exercise' }, { label: 'Errores', key: 'errors', align: 'right' }]"
+                <TopTable title="Top 5 tipos de ejercicios con más errores"
+                    :columns="[{ label: 'Tipo de ejercicio', key: 'type' }, { label: 'Errores', key: 'errors', align: 'right' }]"
                     :items="props.stats.top_exercises_errors" />
                 <TopTable title="Top 3 lecciones más populares"
                     :columns="[{ label: 'Lección', key: 'lesson' }, { label: 'Completadas', key: 'completions', align: 'right' }]"
@@ -57,8 +57,8 @@ const props = defineProps({
                 <TopTable title="Top 3 estudiantes con mayor precisión"
                     :columns="[{ label: 'Estudiante', key: 'name' }, { label: 'Precisión (%)', key: 'accuracy', align: 'right' }]"
                     :items="props.stats.top_students_accuracy" />
-                <TopTable title="Top 3 ejercicios más realizados"
-                    :columns="[{ label: 'Ejercicio', key: 'exercise' }, { label: 'Intentos', key: 'attempts', align: 'right' }]"
+                <TopTable title="Top 3 tipos de ejercicios más realizados"
+                    :columns="[{ label: 'Tipo de ejercicio', key: 'type' }, { label: 'Intentos', key: 'attempts', align: 'right' }]"
                     :items="props.stats.top_exercises_most_attempted" />
             </div>
         </CardSection>
