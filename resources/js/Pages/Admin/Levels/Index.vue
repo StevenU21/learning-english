@@ -9,6 +9,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import { computed, ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import Form from './Form.vue';
+import CardSection from '@/Components/CardSection.vue';
 
 const props = defineProps({
     levels: {
@@ -119,40 +120,35 @@ function deleteLevel(id) {
             </PageHeader>
         </template>
 
-        <div class="py-0">
-            <div class="w-full px-4 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
-                    <DataTable :items="levelList" :columns="columns" :empty-text="'No se encontraron niveles.'"
-                        show-actions>
-                        <!-- Descripción truncada -->
-                        <template #cell-description="{ value }">
-                            <span class="text-gray-600 dark:text-gray-400">
-                                {{ value && value.length > 60 ? value.slice(0, 60) + '…' : value }}
-                            </span>
-                        </template>
+        <CardSection>
+            <DataTable :items="levelList" :columns="columns" :empty-text="'No se encontraron niveles.'"
+                show-actions>
+                <!-- Descripción truncada -->
+                <template #cell-description="{ value }">
+                    <span class="text-gray-600 dark:text-gray-400">
+                        {{ value && value.length > 60 ? value.slice(0, 60) + '…' : value }}
+                    </span>
+                </template>
 
-                        <!-- Acciones -->
-                        <template #actions="{ row }">
-                            <Link :href="route('levels.show', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-eye mr-2"></i> Ver
-                            </PrimaryButton>
-                            </Link>
-                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                            </PrimaryButton>
-                            <DangerButton @click="deleteLevel(row.id)">
-                                <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                            </DangerButton>
-                        </template>
-                    </DataTable>
-                    <div class="border-t border-gray-200 dark:border-gray-700">
-                        <Pagination :links="links" :meta="meta" />
-                    </div>
-                </div>
+                <!-- Acciones -->
+                <template #actions="{ row }">
+                    <Link :href="route('levels.show', row.id)">
+                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-eye mr-2"></i> Ver
+                    </PrimaryButton>
+                    </Link>
+                    <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                    </PrimaryButton>
+                    <DangerButton @click="deleteLevel(row.id)">
+                        <i class="fa-solid fa-trash mr-2"></i> Eliminar
+                    </DangerButton>
+                </template>
+            </DataTable>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                <Pagination :links="links" :meta="meta" />
             </div>
-        </div>
+        </CardSection>
 
         <!-- Create Modal -->
         <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">

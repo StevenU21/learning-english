@@ -12,6 +12,7 @@ import Modal from '@/Components/Modal.vue';
 import Form from './Form.vue';
 import Badge from '@/Components/Badge.vue';
 import LevelBadge from '@/Components/LevelBadge.vue';
+import CardSection from '@/Components/CardSection.vue';
 
 const props = defineProps({
     units: {
@@ -147,57 +148,52 @@ function deleteUnit(id) {
             </PageHeader>
         </template>
 
-        <div class="py-0">
-            <div class="w-full px-4 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
-                    <DataTable :items="unitList" :columns="columns" :empty-text="'No se encontraron unidades.'"
-                        show-actions>
-                        <!-- Imagen -->
-                        <template #cell-image="{ row }">
-                            <div class="px-0 py-0">
-                                <ImageCell :src="row.image_url || row.image" alt="Imagen de la unidad" />
-                            </div>
-                        </template>
-
-                        <!-- Descripción truncada -->
-                        <template #cell-description="{ value }">
-                            <span class="text-gray-600 dark:text-gray-400">
-                                {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
-                            </span>
-                        </template>
-
-                        <!-- Duración con Badge info -->
-                        <template #cell-expected_time="{ value }">
-                            <Badge type="info">{{ value }}</Badge>
-                        </template>
-
-                        <!-- Nivel con LevelBadge -->
-                        <template #cell-level.name="{ row }">
-                            <LevelBadge :level="row.level.name" />
-                        </template>
-
-                        <!-- Acciones -->
-                        <template #actions="{ row }">
-                            <Link :href="route('units.show', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-eye mr-2"></i> Ver
-                            </PrimaryButton>
-                            </Link>
-                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                            </PrimaryButton>
-                            <DangerButton @click="deleteUnit(row.id)">
-                                <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                            </DangerButton>
-                        </template>
-                    </DataTable>
-                    <div class="border-t border-gray-200 dark:border-gray-700">
-                        <Pagination :links="links" :meta="meta" />
+        <CardSection>
+            <DataTable :items="unitList" :columns="columns" :empty-text="'No se encontraron unidades.'"
+                show-actions>
+                <!-- Imagen -->
+                <template #cell-image="{ row }">
+                    <div class="px-0 py-0">
+                        <ImageCell :src="row.image_url || row.image" alt="Imagen de la unidad" />
                     </div>
-                </div>
+                </template>
+
+                <!-- Descripción truncada -->
+                <template #cell-description="{ value }">
+                    <span class="text-gray-600 dark:text-gray-400">
+                        {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
+                    </span>
+                </template>
+
+                <!-- Duración con Badge info -->
+                <template #cell-expected_time="{ value }">
+                    <Badge type="info">{{ value }}</Badge>
+                </template>
+
+                <!-- Nivel con LevelBadge -->
+                <template #cell-level.name="{ row }">
+                    <LevelBadge :level="row.level.name" />
+                </template>
+
+                <!-- Acciones -->
+                <template #actions="{ row }">
+                    <Link :href="route('units.show', row.id)">
+                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-eye mr-2"></i> Ver
+                    </PrimaryButton>
+                    </Link>
+                    <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                    </PrimaryButton>
+                    <DangerButton @click="deleteUnit(row.id)">
+                        <i class="fa-solid fa-trash mr-2"></i> Eliminar
+                    </DangerButton>
+                </template>
+            </DataTable>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                <Pagination :links="links" :meta="meta" />
             </div>
-        </div>
+        </CardSection>
 
         <!-- Create Modal -->
         <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">

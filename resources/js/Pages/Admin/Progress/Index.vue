@@ -9,6 +9,7 @@ import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import PageHeader from '@/Components/PageHeader.vue';
+import CardSection from '@/Components/CardSection.vue';
 
 
 const props = defineProps({
@@ -134,35 +135,28 @@ const columns = [
             </PageHeader>
         </template>
 
-        <div class="py-0">
-            <div class="w-full px-4 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
-                    <DataTable :items="progressList" :columns="columns"
-                        :empty-text="'No se encontraron registros de progreso.'" show-actions :links="links"
-                        :meta="meta">
-                        <template #cell-status="{ value }">
-                            <StatusBadge :status="value" />
-                        </template>
-                        <template #cell-progress="{ value }">
-                            <ProgressBar :value="value" />
-                        </template>
-                        <template #actions="{ row }">
-                            <Link :href="route('admin.progress.show', row.user.id)">
-                            <PrimaryButton>
-                                <i class="fa-solid fa-eye mr-2"></i>
-                                Ver detalle
-                            </PrimaryButton>
-                            </Link>
-                        </template>
-                        <template #cell-avatar_url="{ row }">
-                            <img :src="row.avatar_url || '/img/logo03.png'" alt="Avatar"
-                                class="w-12 h-12 rounded-full object-cover" />
-                        </template>
-                    </DataTable>
-                    <!-- La paginación ahora la maneja DataTable -->
-                </div>
-            </div>
-        </div>
+        <CardSection>
+            <DataTable :items="progressList" :columns="columns" :empty-text="'No se encontraron registros de progreso.'"
+                show-actions :links="links" :meta="meta">
+                <template #cell-status="{ value }">
+                    <StatusBadge :status="value" />
+                </template>
+                <template #cell-progress="{ value }">
+                    <ProgressBar :value="value" />
+                </template>
+                <template #actions="{ row }">
+                    <Link :href="route('admin.progress.show', row.user.id)">
+                    <PrimaryButton>
+                        <i class="fa-solid fa-eye mr-2"></i>
+                        Ver detalle
+                    </PrimaryButton>
+                    </Link>
+                </template>
+                <template #cell-avatar_url="{ row }">
+                    <img :src="row.avatar_url || '/img/logo03.png'" alt="Avatar"
+                        class="w-12 h-12 rounded-full object-cover" />
+                </template>
+            </DataTable>
+        </CardSection>
     </AuthenticatedLayout>
 </template>

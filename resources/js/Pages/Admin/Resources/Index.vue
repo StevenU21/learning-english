@@ -10,6 +10,7 @@ import SelectInput from '@/Components/SelectInput.vue';
 import { computed, ref, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import Form from './Form.vue';
+import CardSection from '@/Components/CardSection.vue';
 
 const props = defineProps({
     resources: {
@@ -169,53 +170,48 @@ function submitEdit() {
             </PageHeader>
         </template>
 
-        <div class="py-0">
-            <div class="w-full px-4 sm:px-6 lg:px-8">
-                <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg ring-1 ring-gray-200 dark:ring-gray-700">
-                    <DataTable :items="resourceList" :columns="columns" :empty-text="'No se encontraron recursos.'"
-                        show-actions>
-                        <!-- Archivo (columna visible en md+) -->
-                        <template #cell-download="{ row }">
-                            <a :href="route('resources.download', row.id)"
-                                class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                                <i class="fa-solid fa-download mr-2"></i> Descargar
-                            </a>
-                        </template>
+        <CardSection>
+            <DataTable :items="resourceList" :columns="columns" :empty-text="'No se encontraron recursos.'"
+                show-actions>
+                <!-- Archivo (columna visible en md+) -->
+                <template #cell-download="{ row }">
+                    <a :href="route('resources.download', row.id)"
+                        class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                        <i class="fa-solid fa-download mr-2"></i> Descargar
+                    </a>
+                </template>
 
-                        <!-- Descripción truncada -->
-                        <template #cell-description="{ value }">
-                            <span class="text-gray-600 dark:text-gray-400">
-                                {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
-                            </span>
-                        </template>
+                <!-- Descripción truncada -->
+                <template #cell-description="{ value }">
+                    <span class="text-gray-600 dark:text-gray-400">
+                        {{ value && value.length > 12 ? value.slice(0, 12) + '…' : value }}
+                    </span>
+                </template>
 
-                        <!-- Acciones -->
-                        <template #actions="{ row }">
-                            <Link :href="route('resources.show', row.id)">
-                            <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-eye mr-2"></i> Ver
-                            </PrimaryButton>
-                            </Link>
-                            <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
-                                <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
-                            </PrimaryButton>
-                            <!-- Descargar (solo visible en móvil dentro del dropdown) -->
-                            <a :href="route('resources.download', row.id)"
-                                class="md:hidden inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
-                                <i class="fa-solid fa-download mr-2"></i> Descargar
-                            </a>
-                            <DangerButton @click="deleteResource(row.id)">
-                                <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                            </DangerButton>
-                        </template>
-                    </DataTable>
-                    <div class="border-t border-gray-200 dark:border-gray-700">
-                        <Pagination :links="links" :meta="meta" />
-                    </div>
-                </div>
+                <!-- Acciones -->
+                <template #actions="{ row }">
+                    <Link :href="route('resources.show', row.id)">
+                    <PrimaryButton class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-eye mr-2"></i> Ver
+                    </PrimaryButton>
+                    </Link>
+                    <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
+                        <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
+                    </PrimaryButton>
+                    <!-- Descargar (solo visible en móvil dentro del dropdown) -->
+                    <a :href="route('resources.download', row.id)"
+                        class="md:hidden inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300">
+                        <i class="fa-solid fa-download mr-2"></i> Descargar
+                    </a>
+                    <DangerButton @click="deleteResource(row.id)">
+                        <i class="fa-solid fa-trash mr-2"></i> Eliminar
+                    </DangerButton>
+                </template>
+            </DataTable>
+            <div class="border-t border-gray-200 dark:border-gray-700">
+                <Pagination :links="links" :meta="meta" />
             </div>
-        </div>
+        </CardSection>
 
         <!-- Create Modal -->
         <Modal :show="showCreate" max-width="2xl" @close="showCreate = false">
