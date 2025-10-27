@@ -16,7 +16,6 @@ class DashboardService
         $counts = $this->getCounts();
         return [
             'students' => $counts['students'],
-            'admins' => $counts['admins'],
             'exercises' => $counts['exercises'],
             'units' => $counts['units'],
             'lessons' => $counts['lessons'],
