@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import Pagination from '@/Components/Pagination.vue';
 import DataTable from '@/Components/DataTable.vue';
 import ImageCell from '@/Components/ImageCell.vue';
@@ -210,9 +211,9 @@ function submitEdit() {
                             <PrimaryButton @click="openEdit(row)" class="bg-red-500 hover:bg-red-700 text-white">
                                 <i class="fa-solid fa-pen-to-square mr-2"></i> Editar
                             </PrimaryButton>
-                            <PrimaryButton @click="deleteLesson(row.id)" class="bg-red-500 hover:bg-red-700 text-white">
+                            <DangerButton @click="deleteLesson(row.id)">
                                 <i class="fa-solid fa-trash mr-2"></i> Eliminar
-                            </PrimaryButton>
+                            </DangerButton>
                         </template>
                     </DataTable>
                     <div class="border-t border-gray-200 dark:border-gray-700">
