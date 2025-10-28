@@ -43,7 +43,8 @@ class DashboardService
             ->limit(3)
             ->get()
             ->map(function ($row) {
-                return ['type' => $row->type, 'attempts' => $row->attempts]; })
+                return ['type' => $row->type, 'attempts' => $row->attempts];
+            })
             ->toArray();
     }
 
@@ -54,13 +55,18 @@ class DashboardService
             ->where('status', 'completado')
             ->join('lessons', 'lesson_user_progress.lesson_id', '=', 'lessons.id')
             ->join('users', 'lesson_user_progress.user_id', '=', 'users.id')
-            ->select(DB::raw("CONCAT(users.first_name, ' ', SUBSTRING_INDEX(users.last_name, ' ', 1)) as short_name"), DB::raw('SUM(lessons.duration)/60 as hours'))
+            ->select('users.first_name', 'users.last_name', DB::raw('SUM(lessons.duration)/60 as hours'))
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->orderByDesc('hours')
             ->limit(5)
             ->get()
             ->map(function ($row) {
-                return ['name' => $row->short_name, 'hours' => round($row->hours, 1)]; })
+                $short_last_name = explode(' ', $row->last_name)[0];
+                return [
+                    'name' => $row->first_name . ' ' . $short_last_name,
+                    'hours' => round($row->hours, 1)
+                ];
+            })
             ->toArray();
     }
 
@@ -70,13 +76,18 @@ class DashboardService
         return DB::table('lesson_user_progress')
             ->where('status', 'completado')
             ->join('users', 'lesson_user_progress.user_id', '=', 'users.id')
-            ->select(DB::raw("CONCAT(users.first_name, ' ', SUBSTRING_INDEX(users.last_name, ' ', 1)) as short_name"), DB::raw('COUNT(*) as lessons'))
+            ->select('users.first_name', 'users.last_name', DB::raw('COUNT(*) as lessons'))
             ->groupBy('users.id', 'users.first_name', 'users.last_name')
             ->orderByDesc('lessons')
             ->limit(5)
             ->get()
             ->map(function ($row) {
-                return ['name' => $row->short_name, 'lessons' => $row->lessons]; })
+                $short_last_name = explode(' ', $row->last_name)[0];
+                return [
+                    'name' => $row->first_name . ' ' . $short_last_name,
+                    'lessons' => $row->lessons
+                ];
+            })
             ->toArray();
     }
 
@@ -93,7 +104,8 @@ class DashboardService
             ->limit(5)
             ->get()
             ->map(function ($row) {
-                return ['type' => $row->type, 'errors' => $row->errors]; })
+                return ['type' => $row->type, 'errors' => $row->errors];
+            })
             ->toArray();
     }
 
@@ -109,7 +121,8 @@ class DashboardService
             ->limit(3)
             ->get()
             ->map(function ($row) {
-                return ['lesson' => $row->name, 'completions' => $row->completions]; })
+                return ['lesson' => $row->name, 'completions' => $row->completions];
+            })
             ->toArray();
     }
 
@@ -119,7 +132,8 @@ class DashboardService
         return DB::table('user_exercise_attempts')
             ->join('users', 'user_exercise_attempts.user_id', '=', 'users.id')
             ->select(
-                DB::raw("CONCAT(users.first_name, ' ', SUBSTRING_INDEX(users.last_name, ' ', 1)) as short_name"),
+                'users.first_name',
+                'users.last_name',
                 DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct'),
                 DB::raw('COUNT(*) as total'),
                 DB::raw('ROUND(SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) as accuracy')
@@ -130,7 +144,12 @@ class DashboardService
             ->limit(3)
             ->get()
             ->map(function ($row) {
-                return ['name' => $row->short_name, 'accuracy' => $row->accuracy]; })
+                $short_last_name = explode(' ', $row->last_name)[0];
+                return [
+                    'name' => $row->first_name . ' ' . $short_last_name,
+                    'accuracy' => $row->accuracy
+                ];
+            })
             ->toArray();
     }
 
