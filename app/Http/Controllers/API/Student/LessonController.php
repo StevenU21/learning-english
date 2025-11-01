@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Http\Resources\LessonResource;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
@@ -12,17 +13,13 @@ class LessonController extends Controller
     /**
      * List lessons, optionally filtered by unit id or slug.
      */
-    public function index(Request $request)
+    public function index(Request $request, Unit $unit = null)
     {
-        $unitParam = $request->input('unit') ?? $request->input('unit_id');
+        if (!$unit) {
+            return response()->json(['error' => 'El parámetro unit es obligatorio.'], 422);
+        }
         $lessons = Lesson::query()
-            ->when($unitParam, function ($q) use ($unitParam) {
-                if (is_numeric($unitParam)) {
-                    $q->where('unit_id', $unitParam);
-                } else {
-                    $q->whereHas('unit', fn($q) => $q->where('slug', $unitParam));
-                }
-            })
+            ->where('unit_id', $unit->id)
             ->with(['unit', 'lessonUserProgress' => fn($q) => $q->where('user_id', auth()->id())])
             ->get();
 

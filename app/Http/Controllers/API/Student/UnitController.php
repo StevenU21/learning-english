@@ -28,13 +28,4 @@ class UnitController extends Controller
 
         return UnitResource::collection($units);
     }
-
-    /**
-     * Show a specific unit with progress.
-     */
-    public function show(Unit $unit)
-    {
-        $unit->load(['level', 'unitUserProgress' => fn($q) => $q->where('user_id', auth()->id())]);
-        return new UnitResource($unit);
-    }
 }
