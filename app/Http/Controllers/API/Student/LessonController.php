@@ -13,7 +13,7 @@ class LessonController extends Controller
     /**
      * List lessons, optionally filtered by unit id or slug.
      */
-    public function index(Request $request, Unit $unit = null)
+    public function index(Request $request, Unit $unit)
     {
         if (!$unit) {
             return response()->json(['error' => 'El parámetro unit es obligatorio.'], 422);
@@ -27,12 +27,15 @@ class LessonController extends Controller
     }
 
     /**
-     * Show a specific lesson with progress.
+     * Show a specific lesson with progress, requires both unit and lesson.
      */
-    public function show(Lesson $lesson)
+    public function show(Unit $unit, Lesson $lesson)
     {
+        // Optionally validate that the lesson belongs to the unit
+        if ($lesson->unit_id !== $unit->id) {
+            return response()->json(['error' => 'La lección no pertenece a la unidad especificada.'], 404);
+        }
         $lesson->load(['unit', 'lessonUserProgress' => fn($q) => $q->where('user_id', auth()->id())]);
-
         return new LessonResource($lesson);
     }
 }
