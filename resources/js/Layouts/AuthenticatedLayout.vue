@@ -5,7 +5,6 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import Sidebar from '@/Components/Sidebar.vue';
 
-
 const showingNavigationDropdown = ref(false);
 const sidebarOpen = ref(false);
 const sidebarCollapsed = ref(false);

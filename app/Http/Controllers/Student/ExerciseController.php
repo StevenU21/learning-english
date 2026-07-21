@@ -110,6 +110,7 @@ class ExerciseController extends Controller
             }
         }
     }
+    
     private function redirectAfterBatch($attempts)
     {
         $unitId = $attempts[0]['unit_id'] ?? null;
