@@ -11,14 +11,9 @@ use RuntimeException;
 
 class OpenAITextChatService
 {
-    public function generateReply(array $messages, ?string $level = null, ?float $temperature = null): array
+    public function generateStreamedReply(array $messages, ?string $level = null, ?float $temperature = null): \Closure
     {
-        $normalizedMessages = collect($messages)
-            ->filter(fn($m) => Str::of(Arr::get($m, 'content', ''))->trim()->isNotEmpty()
-                && in_array(Arr::get($m, 'role'), ['user', 'assistant'], true))
-            ->map(fn($m) => ['role' => Arr::get($m, 'role'), 'content' => trim(Arr::get($m, 'content'))])
-            ->values()
-            ->toArray();
+        $normalizedMessages = $this->normalizeMessages($messages);
 
         $model = Config::get('openai.text_chat_model', 'gpt-4o-mini');
         $temperature ??= (float) Config::get('openai.text_chat_temperature', 0.7);
@@ -27,30 +22,31 @@ class OpenAITextChatService
         $payload = [
             'model' => $model,
             'temperature' => max(0, min($temperature, 2)),
-            'response_format' => ['type' => 'json_object'],
+            'stream' => true,
             'messages' => array_merge([['role' => 'system', 'content' => $systemPrompt]], $normalizedMessages),
         ];
 
-        $response = $this->client()->post('chat/completions', $payload);
-        $response->throw();
+        return function () use ($payload) {
+            $client = $this->client()->withOptions(['stream' => true]);
+            $response = $client->post('chat/completions', $payload);
+            
+            $stream = $response->toPsrResponse()->getBody();
+            
+            // Limpiar todos los buffers de salida activos de PHP
+            if (ob_get_level() > 0) {
+                while (ob_get_level() > 0) {
+                    ob_end_flush();
+                }
+            }
 
-        $data = $response->json();
-        $rawContent = Arr::get($data, 'choices.0.message.content', '');
-
-        $parsed = $this->decodeContent($rawContent);
-
-        return [
-            'reply' => $parsed['reply'] ?? (is_string($rawContent) ? $rawContent : ''),
-            'vocabulary' => collect(Arr::get($parsed, 'vocabulary', []))
-                ->map(fn($i) => ['term' => trim(Arr::get($i, 'term', '')), 'definition' => trim(Arr::get($i, 'definition', ''))] +
-                    (trim(Arr::get($i, 'example', '')) ? ['example' => trim($i['example'])] : []))
-                ->filter(fn($e) => $e['term'] !== '' && $e['definition'] !== '')->values()->toArray(),
-            'grammar_tips' => collect(Arr::get($parsed, 'grammar_tips', []))
-                ->map(fn($i) => trim((string) $i))->filter()->values()->toArray(),
-            'follow_up_questions' => collect(Arr::get($parsed, 'follow_up_questions', []))
-                ->map(fn($i) => trim((string) $i))->filter()->values()->toArray(),
-            'raw' => $parsed,
-        ];
+            while (!$stream->eof()) {
+                echo $stream->read(1024);
+                if (connection_aborted()) {
+                    break;
+                }
+                flush();
+            }
+        };
     }
 
     protected function sanitizeVocabulary(array $items): array
@@ -81,13 +77,12 @@ class OpenAITextChatService
         $base = collect([
             'You are Nativo, a friendly AI tutor guiding Spanish-speaking students as they practice conversational English.',
             'Speak directly to the student in English, keep a warm and encouraging tone, give concise explanations, and motivate them to expand on their ideas.',
-            'Every response must be a well-formed JSON object with exactly the keys reply, vocabulary, grammar_tips, and follow_up_questions. Never add extra keys or commentary outside the JSON.',
-            'The reply field must contain the conversational answer in plain English sentences (no Markdown) that uses "you" statements to address the student directly. Keep your reply concise.',
-            'Every string you output must talk to the student, never to yourself or to another assistant. Do not include phrases like "Ask the student" or "The student should" inside the JSON.',
-            'Base every vocabulary item, grammar tip, and follow-up question on the student\'s most recent message and the reply you are providing right now. CRITICAL: To keep responses fast, you must strictly limit the amount of items.',
-            'Provide AT MOST 1 or 2 vocabulary items. Each vocabulary entry must explain how the student can use the word specifically to answer your current questions or continue the present topic, and the example must be a sentence the student could actually say next.',
-            'Provide AT MOST 1 grammar_tips entry. It must be a short coaching sentence that begins with "Try", "Remember", "Consider", or "Make sure you", explicitly referencing how the student just wrote or how they can improve their next reply.',
-            'Treat the follow_up_questions array as follow_up_responses: provide EXACTLY 1 short example reply (maximum 2) the student could send next. Each example must be written in the first person from the student\'s perspective and must build on the specific details you just mentioned or asked about.',
+            'Do not use JSON formatting. Respond with plain text, using Markdown to structure your response.',
+            'First, write your conversational reply to the student in plain English (using "you" statements to address them directly).',
+            'Then, add a "### Vocabulary" section with 1 or 2 new words relevant to the conversation.',
+            'Then, add a "### Grammar" section with 1 short, actionable grammar tip starting with "Try", "Remember", or "Consider".',
+            'Then, add a "### Follow-up" section with 1 short example reply the student could use next.',
+            'Base everything on the student\'s most recent message. Be concise and keep the response fast.',
         ])->implode(' ');
         $guidance = collect([
             'basico' => 'Use simple vocabulary, short sentences, and clear examples. Avoid idioms and advanced grammar.',

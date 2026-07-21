@@ -51,7 +51,7 @@ class TextChatController extends Controller
     /**
      * Enviar mensaje al servicio de chat y obtener respuesta.
      */
-    public function sendMessage(TextChatMessageRequest $request, OpenAITextChatService $chatService): JsonResponse
+    public function sendMessage(TextChatMessageRequest $request, OpenAITextChatService $chatService)
     {
         $validated = $request->validated();
 
@@ -62,13 +62,19 @@ class TextChatController extends Controller
         }
 
         try {
-            $reply = $chatService->generateReply(
+            $streamCallback = $chatService->generateStreamedReply(
                 $validated['messages'],
                 $validated['level'] ?? null,
                 data_get($validated, 'temperature'),
             );
 
-            return response()->json($reply, 200);
+            return response()->stream($streamCallback, 200, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+                'X-Accel-Buffering' => 'no',
+                'Content-Encoding' => 'none',
+            ]);
         } catch (\Throwable $exception) {
             report($exception);
             return response()->json([

@@ -57,8 +57,12 @@ export const createSendMessage = ({
         try {
             const payloadMessages = formattedMessages.value;
 
-            assistantMessage = createAssistantPlaceholder();
-            messages.value.push(assistantMessage);
+            const rawAssistantMessage = createAssistantPlaceholder();
+            messages.value.push(rawAssistantMessage);
+            
+            // In Vue 3, pushing a raw object into a ref array makes the array's version reactive.
+            // We must mutate the reactive proxy, not the raw object.
+            const assistantMessage = messages.value[messages.value.length - 1];
 
             const response = await fetch(route('student.text-chat.message'), {
                 method: 'POST',
@@ -88,26 +92,61 @@ export const createSendMessage = ({
                 throw new Error(message);
             }
 
-            const result = (await response.json()) as Record<string, unknown>;
-
-            const replyText = typeof result.reply === 'string' ? result.reply.trim() : '';
-            const vocabulary = sanitizeVocabulary(result.vocabulary);
-            const grammarFromSnake = sanitizeStringArray(result.grammar_tips);
-            const grammarFromCamel = sanitizeStringArray(result.grammarTips);
-            const followFromSnake = sanitizeStringArray(result.follow_up_questions);
-            const followFromCamel = sanitizeStringArray(result.followUpQuestions);
-
-            assistantMessage.content =
-                replyText || 'I am ready to continue! Could you restate your last question so I can respond?';
-            assistantMessage.vocabulary = vocabulary;
-            assistantMessage.grammarTips = grammarFromSnake.length ? grammarFromSnake : grammarFromCamel;
-            assistantMessage.followUpQuestions = followFromSnake.length ? followFromSnake : followFromCamel;
-            assistantMessage.streaming = false;
-
-            if (typeof result.raw === 'object' && result.raw !== null) {
-                assistantMessage.raw = result.raw as Record<string, unknown>;
+            const reader = response.body?.getReader();
+            if (!reader) {
+                throw new Error('Stream not available');
             }
 
+            const decoder = new TextDecoder('utf-8');
+            let buffer = '';
+
+            assistantMessage.content = '';
+            assistantMessage.streaming = true;
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                
+                buffer = lines.pop() || '';
+
+                for (const line of lines) {
+                    if (line.trim() === '') continue;
+                    if (line.startsWith('data: ')) {
+                        const dataStr = line.substring(6).trim();
+                        if (dataStr === '[DONE]') {
+                            continue;
+                        }
+                        try {
+                            const data = JSON.parse(dataStr);
+                            const content = data.choices?.[0]?.delta?.content;
+                            if (content) {
+                                assistantMessage.content += content;
+                            }
+                        } catch (e) {
+                            // ignore JSON parse error on incomplete chunks
+                        }
+                    }
+                }
+            }
+            
+            // process any remaining buffer just in case
+            if (buffer.startsWith('data: ') && buffer.trim() !== 'data: [DONE]') {
+                try {
+                    const data = JSON.parse(buffer.substring(6).trim());
+                    const content = data.choices?.[0]?.delta?.content;
+                    if (content) assistantMessage.content += content;
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            assistantMessage.streaming = false;
+            assistantMessage.vocabulary = [];
+            assistantMessage.grammarTips = [];
+            assistantMessage.followUpQuestions = [];
             errorMessage.value = '';
         } catch (error) {
             console.error(error);
@@ -116,12 +155,13 @@ export const createSendMessage = ({
                     ? error.message
                     : 'We could not get a response from the tutor. Please try again later.';
 
-            if (assistantMessage) {
-                assistantMessage.streaming = false;
-                assistantMessage.content = 'I had trouble responding. Could you try sending your last message again?';
-                assistantMessage.vocabulary = [];
-                assistantMessage.grammarTips = [];
-                assistantMessage.followUpQuestions = [];
+            if (messages.value.length > 0 && messages.value[messages.value.length - 1].role === 'assistant') {
+                const lastMsg = messages.value[messages.value.length - 1];
+                lastMsg.streaming = false;
+                lastMsg.content = 'I had trouble responding. Could you try sending your last message again?';
+                lastMsg.vocabulary = [];
+                lastMsg.grammarTips = [];
+                lastMsg.followUpQuestions = [];
             } else {
                 messages.value.push({
                     id: buildId(),
@@ -133,8 +173,11 @@ export const createSendMessage = ({
         } finally {
             isSending.value = false;
 
-            if (assistantMessage && assistantMessage.streaming) {
-                assistantMessage.streaming = false;
+            if (messages.value.length > 0 && messages.value[messages.value.length - 1].role === 'assistant') {
+                const lastMsg = messages.value[messages.value.length - 1];
+                if (lastMsg.streaming) {
+                    lastMsg.streaming = false;
+                }
             }
         }
     };
