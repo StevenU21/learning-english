@@ -20,7 +20,7 @@ class OpenAITextChatService
             ->values()
             ->toArray();
 
-        $model = Config::get('openai.text_chat_model', 'gpt-4.1');
+        $model = Config::get('openai.text_chat_model', 'gpt-4o-mini');
         $temperature ??= (float) Config::get('openai.text_chat_temperature', 0.7);
         $systemPrompt = $this->buildSystemPrompt($level);
 
@@ -113,40 +113,16 @@ class OpenAITextChatService
 
     protected function client(): PendingRequest
     {
-        $apiKey = Config::get('openai.api_key');
-        if (empty($apiKey)) {
-            throw new RuntimeException('OpenAI API key is not configured.');
-        }
-        $baseUri = $this->resolveBaseUri();
-        $timeout = (float) Config::get('openai.request_timeout', 30);
-        $connectTimeout = (float) Config::get('openai.connect_timeout', 10);
         $maxRetries = max(0, (int) Config::get('openai.max_retries', 2));
         $retryDelayMs = max(0, (int) Config::get('openai.retry_delay_ms', 1000));
 
-        $client = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
-            'Content-Type' => 'application/json',
-        ]);
+        $client = Http::openai()
+            ->withHeaders(['Content-Type' => 'application/json']);
 
         if ($maxRetries > 0) {
             $client = $client->retry($maxRetries, $retryDelayMs, throw: false);
         }
 
-        return $client
-            ->timeout($timeout)
-            ->connectTimeout($connectTimeout)
-            ->baseUrl($baseUri);
+        return $client;
     }
-
-    protected function resolveBaseUri(): string
-    {
-        $baseUri = Config::get('openai.base_uri');
-
-        if (!is_string($baseUri) || trim($baseUri) === '') {
-            $baseUri = 'https://api.openai.com/v1';
-        }
-
-        return rtrim($baseUri, '/') . '/';
-    }
-
 }

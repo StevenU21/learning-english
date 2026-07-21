@@ -43,6 +43,24 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Lesson::class, LessonPolicy::class);
         Gate::policy(Exercise::class, ExercisePolicy::class);
         Gate::policy(ExerciseType::class, ExerciseTypePolicy::class);
+        // Define an HTTP macro for standard OpenAI API requests
+        Http::macro('openai', function () {
+            $apiKey = config('openai.api_key');
+            if (empty($apiKey)) {
+                abort(503, 'El servicio de IA no está configurado. Contacta al equipo de soporte.');
+            }
+            
+            $baseUrl = config('openai.base_uri');
+            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+                $baseUrl = 'https://api.openai.com/v1';
+            }
+            
+            return Http::withToken($apiKey)
+                ->timeout((float) config('openai.request_timeout', 30))
+                ->connectTimeout((float) config('openai.connect_timeout', 10))
+                ->baseUrl(rtrim($baseUrl, '/') . '/');
+        });
+
         // Define an HTTP macro for OpenAI realtime sessions
         Http::macro('openaiRealtime', function () {
             $apiKey = config('openai.api_key');

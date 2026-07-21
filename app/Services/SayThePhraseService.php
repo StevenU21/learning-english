@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -14,12 +14,17 @@ class SayThePhraseService
         if (!$stream) {
             return '';
         }
-        $response = OpenAI::audio()->transcribe([
-            'model' => 'whisper-1',
-            'file' => $stream,
-            'language' => $language,
-        ]);
-        return Str::of($response->text)->trim();
+        
+        $response = Http::openai()
+            ->attach('file', $stream, basename($audioPath))
+            ->post('audio/transcriptions', [
+                'model' => 'whisper-1',
+                'language' => $language,
+            ]);
+            
+        $response->throw();
+        
+        return Str::of($response->json('text', ''))->trim();
     }
 
     public function processAttempt(array $data): array
