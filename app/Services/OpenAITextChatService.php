@@ -27,25 +27,46 @@ class OpenAITextChatService
         ];
 
         return function () use ($payload) {
-            $client = $this->client()->withOptions(['stream' => true]);
-            $response = $client->post('chat/completions', $payload);
-            
-            $stream = $response->toPsrResponse()->getBody();
-            
-            // Limpiar todos los buffers de salida activos de PHP
+            $apiKey = config('openai.api_key');
+            $baseUrl = config('openai.base_uri');
+            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+                $baseUrl = 'https://api.openai.com/v1';
+            }
+            $url = rtrim($baseUrl, '/') . '/chat/completions';
+
+            // Limpiar buffers
             if (ob_get_level() > 0) {
                 while (ob_get_level() > 0) {
                     ob_end_flush();
                 }
             }
 
-            while (!$stream->eof()) {
-                echo $stream->read(1024);
-                if (connection_aborted()) {
-                    break;
-                }
+            // Padding para forzar flush inicial
+            echo ": " . str_repeat(' ', 4096) . "\n\n";
+            flush();
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $apiKey,
+            ]);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0); // Disable auto-output
+            curl_setopt($ch, CURLOPT_ENCODING, ""); // Auto-decode gzip
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Fix Laragon SSL issues
+            
+            curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $data) {
+                echo $data;
                 flush();
+                return strlen($data);
+            });
+
+            $result = curl_exec($ch);
+            if ($result === false) {
+                throw new \Exception('cURL Error: ' . curl_error($ch));
             }
+            curl_close($ch);
         };
     }
 

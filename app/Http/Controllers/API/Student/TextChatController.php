@@ -68,10 +68,14 @@ class TextChatController extends Controller
                 data_get($validated, 'temperature'),
             );
 
+            if (function_exists('debugbar') && app()->bound('debugbar')) {
+                app('debugbar')->disable();
+            }
+
             return response()->stream($streamCallback, 200, [
                 'Content-Type' => 'text/event-stream',
-                'Cache-Control' => 'no-cache',
-                'Connection' => 'keep-alive',
+                'Cache-Control' => 'no-cache, must-revalidate',
+                'Connection' => 'close',
                 'X-Accel-Buffering' => 'no',
                 'Content-Encoding' => 'none',
             ]);

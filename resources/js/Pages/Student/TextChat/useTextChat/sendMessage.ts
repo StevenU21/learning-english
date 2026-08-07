@@ -124,6 +124,7 @@ export const createSendMessage = ({
                             const content = data.choices?.[0]?.delta?.content;
                             if (content) {
                                 assistantMessage.content += content;
+                                messages.value = [...messages.value];
                             }
                         } catch (e) {
                             // ignore JSON parse error on incomplete chunks
