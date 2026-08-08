@@ -1,6 +1,6 @@
 <template>
     <div
-        class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-md transition">
+        class="group relative bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.6)] transition-all duration-300">
         <!-- Imagen -->
         <div class="relative h-40 w-full overflow-hidden bg-gray-200 dark:bg-gray-700">
             <template v-if="lesson.image_url || lesson.image">
@@ -55,7 +55,7 @@
             </Link>
             <Link
                 :href="route('student.units.lessons.show', { unit: lesson.unit?.slug || lesson.unit_slug || lesson.unit_id, lesson: lesson.slug || lesson.id })"
-                class="inline-flex items-center rounded-md border-2 border-gray-200 dark:border-gray-700 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-offset-gray-800">
+                class="inline-flex items-center rounded-md border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 dark:text-gray-300 dark:hover:bg-white/10 dark:focus:ring-offset-gray-800">
                 <i class="fa-solid fa-book-open mr-2"></i> Contenido
             </Link>
         </div>

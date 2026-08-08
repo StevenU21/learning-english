@@ -1,6 +1,6 @@
 <template>
   <div :class="[
-    'rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/70 p-4 flex items-start justify-between',
+    'rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl p-5 flex items-start justify-between shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]',
     customClass
   ]">
     <div class="flex flex-col">

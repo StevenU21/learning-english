@@ -9,11 +9,17 @@ const page = usePage();
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-800">
+    <div class="relative min-h-screen bg-[#0B1120] text-gray-100 selection:bg-indigo-500 selection:text-white">
+        <!-- Background glows -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+            <div class="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full bg-indigo-600/15 blur-[120px]"></div>
+            <div class="absolute top-[60%] -left-[10%] w-[400px] h-[400px] rounded-full bg-purple-600/15 blur-[100px]"></div>
+        </div>
+
+        <div class="relative z-10 min-h-screen">
             <!-- Top navbar only -->
             <nav
-                class="sticky top-0 z-30 border-b border-gray-100 bg-white/80 backdrop-blur dark:border-gray-700 dark:bg-gray-800/80">
+                class="sticky top-0 z-30 border-b border-white/10 bg-gray-900/60 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/70">
                 <div class="w-full px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 items-center justify-between">
                         <!-- Left: Brand + desktop nav links -->
@@ -67,7 +73,7 @@ const page = usePage();
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300">
+                                                class="inline-flex items-center rounded-md border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-white/10 focus:outline-none">
                                                 <img v-if="$page.props.auth.user.avatar_url"
                                                     :src="$page.props.auth.user.avatar_url" alt="Avatar"
                                                     class="h-6 w-6 rounded-full object-cover mr-2" />
@@ -150,7 +156,7 @@ const page = usePage();
             </nav>
 
             <!-- Page Heading -->
-            <header v-if="$slots.header" class="bg-white shadow dark:bg-gray-800">
+            <header v-if="$slots.header">
                 <div class="w-full px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

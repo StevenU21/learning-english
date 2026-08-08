@@ -36,20 +36,19 @@ const props = defineProps({
     </nav>
 
     <!-- Compact Page header card -->
-    <section class="relative overflow-hidden rounded-xl bg-gradient-to-r shadow-md animate-gradient"
-        :class="gradientClasses">
-        <div class="absolute inset-0 opacity-10 pointer-events-none"
-            style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.25), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.15), transparent 40%);">
+    <section class="relative overflow-hidden rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
+        <div class="absolute inset-0 opacity-20 pointer-events-none dark:opacity-10"
+            style="background-image: radial-gradient(ellipse at top left, rgba(255,255,255,.35), transparent 40%), radial-gradient(ellipse at bottom right, rgba(0,0,0,.25), transparent 40%);">
         </div>
         <div class="relative py-2 px-4 min-h-0">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between min-h-0 gap-1">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-1">
                     <h1
-                        class="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center min-h-0 leading-tight m-0">
-                        <i v-if="icon" :class="[icon, 'text-white/90 mr-2']"></i>
+                        class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white tracking-tight flex items-center min-h-0 leading-tight m-0">
+                        <i v-if="icon" :class="[icon, 'text-indigo-600 dark:text-white/90 mr-2']"></i>
                         {{ title }}
                     </h1>
-                    <p v-if="subtitle" class="mt-0 text-white/80 text-sm leading-tight m-0 sm:ml-4">{{ subtitle }}</p>
+                    <p v-if="subtitle" class="mt-0 text-gray-600 dark:text-white/80 text-sm leading-tight m-0 sm:ml-4">{{ subtitle }}</p>
                 </div>
                 <div class="flex items-center gap-2 min-h-0">
                     <slot name="actions" />

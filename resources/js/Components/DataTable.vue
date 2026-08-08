@@ -53,7 +53,7 @@ import Pagination from '@/Components/Pagination.vue';
 <template>
     <div class="overflow-x-auto">
         <table class="w-full min-w-max">
-            <thead class="bg-gray-200 dark:bg-gray-700">
+            <thead class="bg-gray-200/50 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
                 <tr>
                     <th v-for="col in columns" :key="col.key" :class="headerClasses(col)">
                         <slot :name="`header-${col.key}`">
@@ -72,7 +72,7 @@ import Pagination from '@/Components/Pagination.vue';
                         {{ emptyText }}
                     </td>
                 </tr>
-                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex" class="transition-colors duration-150 hover:bg-gray-200 dark:hover:bg-gray-700/70">
+                <tr v-for="(row, rowIndex) in items" :key="row?.[rowKey] ?? rowIndex" class="transition-colors duration-150 hover:bg-gray-200/50 dark:hover:bg-white/5 border-b border-gray-200 dark:border-white/5 last:border-0">
                     <td v-for="col in columns" :key="col.key" :class="cellClasses(col)">
                         <slot :name="`cell-${col.key}`" :row="row" :index="rowIndex" :value="getValue(row, col.key)">
                             {{ getValue(row, col.key) }}
@@ -93,7 +93,7 @@ import Pagination from '@/Components/Pagination.vue';
         </table>
     </div>
     <!-- Pagination section -->
-    <div v-if="links && links.length > 0" class="border-t border-gray-200 dark:border-gray-700 px-4 py-3 sm:px-6">
+    <div v-if="links && links.length > 0" class="border-t border-gray-200 dark:border-white/10 px-4 py-3 sm:px-6">
         <Pagination :links="links" :meta="meta" />
     </div>
     <!-- Usage example:

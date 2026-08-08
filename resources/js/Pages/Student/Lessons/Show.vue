@@ -30,7 +30,7 @@ const exerciseTypeSummary = computed(() => {
                 <!-- Estadísticas rápidas y resumen -->
                 <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] p-4 border border-gray-200 dark:border-white/10 flex flex-col items-center">
                         <div class="mb-2">
                             <i class="fas fa-clock h-7 w-7 text-blue-500 dark:text-blue-400"></i>
                         </div>
@@ -39,7 +39,7 @@ const exerciseTypeSummary = computed(() => {
                         <div class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ lesson.duration }} min</div>
                     </div>
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] p-4 border border-gray-200 dark:border-white/10 flex flex-col items-center">
                         <div class="mb-2">
                             <i class="fas fa-signal h-7 w-7 text-green-500 dark:text-green-400"></i>
                         </div>
@@ -49,7 +49,7 @@ const exerciseTypeSummary = computed(() => {
                             }}</div>
                     </div>
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 flex flex-col items-center">
+                        class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] p-4 border border-gray-200 dark:border-white/10 flex flex-col items-center">
                         <div class="mb-2">
                             <i class="fas fa-tasks h-7 w-7 text-purple-500 dark:text-purple-400"></i>
                         </div>
@@ -61,7 +61,7 @@ const exerciseTypeSummary = computed(() => {
                 <!-- Fin estadísticas rápidas -->
                 <div v-if="exercises.length" class="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <div v-for="ex in exercises" :key="ex.id"
-                        class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition border border-gray-200 dark:border-gray-700">
+                        class="bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl p-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.6)] transition-all duration-300 border border-gray-200 dark:border-white/10">
                         <div class="flex items-center justify-between mb-1">
                             <h3 class="font-semibold text-gray-800 dark:text-gray-200">
                                 {{ ex.exercise_type.name }}
@@ -74,7 +74,7 @@ const exerciseTypeSummary = computed(() => {
                     </div>
                 </div>
                 <div v-else
-                    class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-400/40 dark:border-gray-600 text-gray-600 dark:text-gray-400">
+                    class="text-center py-16 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl rounded-xl border border-dashed border-gray-400/40 dark:border-white/10 text-gray-600 dark:text-gray-400 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
                     No hay ejercicios en esta lección.
                 </div>
             </div>

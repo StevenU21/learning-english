@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
     <div
-        class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow flex flex-col">
+        class="rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col">
         <div class="flex items-start justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wide">{{ title }}</h3>
         </div>
@@ -19,13 +19,13 @@ const props = defineProps({
             <table class="min-w-full text-xs">
                 <thead>
                     <tr
-                        class="text-left text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        class="text-left text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-white/10">
                         <th v-for="col in columns" :key="col.key"
                             :class="['py-2 px-3 font-medium', col.align === 'right' ? 'text-right' : '']">{{ col.label
                             }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-gray-200 dark:divide-white/5">
                     <tr v-if="items.length === 0">
                         <td :colspan="columns.length" class="py-4 px-3 text-center text-gray-500 dark:text-gray-400">{{
                             emptyText }}</td>
@@ -38,7 +38,7 @@ const props = defineProps({
                     </tr>
                 </tbody>
                 <tfoot v-if="totalLabel && totalValue !== null">
-                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                    <tr class="border-t border-gray-200 dark:border-white/10">
                         <td :colspan="columns.length - 1"
                             class="py-2 px-3 text-right text-[11px] font-semibold text-gray-500 dark:text-gray-400">{{
                             totalLabel }}</td>

@@ -1,12 +1,18 @@
 <template>
-    <div class="exercise-resolver-layout min-h-screen bg-gray-100 dark:bg-gray-800 flex flex-col">
-        <div class="w-full flex justify-center pt-8 pb-4 px-3 sm:px-0 sm:max-w-2xl mx-auto">
+    <div class="relative exercise-resolver-layout min-h-screen bg-[#0B1120] text-gray-100 flex flex-col selection:bg-indigo-500 selection:text-white">
+        <!-- Background glows -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+            <div class="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full bg-indigo-600/20 blur-[120px]"></div>
+            <div class="absolute top-[60%] -left-[10%] w-[400px] h-[400px] rounded-full bg-purple-600/20 blur-[100px]"></div>
+        </div>
+
+        <div class="relative z-10 w-full flex justify-center pt-8 pb-4 px-3 sm:px-0 sm:max-w-2xl mx-auto">
             <ExerciseProgressBar :value="progress" class="w-full h-8" />
         </div>
-        <main class="flex-1 flex flex-col items-center justify-center w-full sm:w-auto px-2 sm:px-4">
+        <main class="relative z-10 flex-1 flex flex-col items-center justify-center w-full sm:w-auto px-2 sm:px-4">
             <slot />
         </main>
-        <div class="w-full flex flex-col items-center justify-center pb-12">
+        <div class="relative z-10 w-full flex flex-col items-center justify-center pb-12">
             <slot name="actions" />
         </div>
     </div>

@@ -6,14 +6,14 @@
 
     <!-- Sidebar -->
     <aside :class="[
-        'fixed inset-y-0 left-0 z-50 transform bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-lg lg:shadow-none transition-all duration-200 ease-in-out',
+        'fixed inset-y-0 left-0 z-50 transform bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border-r border-gray-200 dark:border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.2)] lg:shadow-none transition-all duration-200 ease-in-out',
         modelValue ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         // Full width on mobile, dynamic width on desktop
         'w-64',
         effectiveCollapsed ? 'lg:w-16' : 'lg:w-64'
     ]">
         <div
-            :class="['h-16 flex items-center border-b border-gray-200 dark:border-gray-700 px-4 justify-between', effectiveCollapsed ? 'lg:px-2' : '']">
+            :class="['h-16 flex items-center border-b border-gray-200 dark:border-white/10 px-4 justify-between', effectiveCollapsed ? 'lg:px-2' : '']">
             <Link :href="homeHref" class="flex items-center gap-2 overflow-hidden flex-shrink-0">
             <img src="/img/logo03.png" alt="Learning English logo" class="w-10 h-10 object-contain" />
             <h1 v-show="!effectiveCollapsed"
@@ -42,7 +42,7 @@
                 <i class="fa-solid fa-briefcase"></i>
                 <span v-show="!effectiveCollapsed">Gestión</span>
             </div>
-            <hr :class="['my-3 border-gray-200 dark:border-gray-700', effectiveCollapsed ? 'mx-2' : '']" />
+            <hr :class="['my-3 border-gray-200 dark:border-white/10', effectiveCollapsed ? 'mx-2' : '']" />
 
             <!-- Admin links -->
             <template v-if="hasRole('admin')">
