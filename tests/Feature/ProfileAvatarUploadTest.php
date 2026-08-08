@@ -39,6 +39,6 @@ class ProfileAvatarUploadTest extends TestCase
         $this->assertNotNull($profile);
         $this->assertNotNull($profile->avatar);
         // Assert the file was stored on the public disk
-    $this->assertTrue(Storage::disk('public')->exists($profile->avatar));
+        $this->assertTrue(Storage::disk('public')->exists($profile->avatar));
     }
 }

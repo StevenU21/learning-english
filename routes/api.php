@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Auth\RegisterController;
-use App\Http\Controllers\API\Auth\LoginController;
 use App\Http\Controllers\API\Auth\GoogleController;
+use App\Http\Controllers\API\Auth\LoginController;
+use App\Http\Controllers\API\Auth\RegisterController;
 use App\Http\Controllers\API\Profile\ProfileController;
-use App\Http\Controllers\API\Student\UnitController;
+use App\Http\Controllers\API\Student\ExerciseController;
 use App\Http\Controllers\API\Student\LessonController;
 use App\Http\Controllers\API\Student\ResourceController;
-use App\Http\Controllers\API\Student\ExerciseController;
 use App\Http\Controllers\API\Student\TextChatController;
+use App\Http\Controllers\API\Student\UnitController;
 use App\Http\Controllers\API\Student\VoiceChatController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('register', [RegisterController::class, 'register']);
 Route::post('login', [LoginController::class, 'login']);

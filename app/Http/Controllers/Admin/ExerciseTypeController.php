@@ -16,42 +16,48 @@ class ExerciseTypeController extends Controller
     {
         $this->authorize('viewAny', ExerciseType::class);
         $exerciseTypes = ExerciseType::latest()->paginate(10);
+
         return Inertia::render('Admin/ExerciseTypes/Index', [
-            'exerciseTypes' => $exerciseTypes
+            'exerciseTypes' => $exerciseTypes,
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', ExerciseType::class);
+
         return Inertia::render('Admin/ExerciseTypes/Create');
     }
 
     public function store(ExerciseTypeRequest $request)
     {
         ExerciseType::create($request->validated());
+
         return redirect()->route('exercise-types.index')->with('success', 'Tipo de ejercicio creado correctamente');
     }
 
     public function show(ExerciseType $exerciseType)
     {
         $this->authorize('view', $exerciseType);
+
         return Inertia::render('Admin/ExerciseTypes/Show', [
-            'exerciseType' => $exerciseType
+            'exerciseType' => $exerciseType,
         ]);
     }
 
     public function edit(ExerciseType $exerciseType)
     {
         $this->authorize('update', $exerciseType);
+
         return Inertia::render('Admin/ExerciseTypes/Edit', [
-            'exerciseType' => $exerciseType
+            'exerciseType' => $exerciseType,
         ]);
     }
 
     public function update(ExerciseTypeRequest $request, ExerciseType $exerciseType)
     {
         $exerciseType->update($request->validated());
+
         return redirect()->route('exercise-types.index')->with('success', 'Tipo de ejercicio actualizado correctamente');
     }
 
@@ -59,6 +65,7 @@ class ExerciseTypeController extends Controller
     {
         $this->authorize('destroy', $exerciseType);
         $exerciseType->delete();
+
         return redirect()->route('exercise-types.index')->with('success', 'Tipo de ejercicio eliminado correctamente');
     }
 }

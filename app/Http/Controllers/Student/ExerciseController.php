@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Student;
 
 use App\Classes\CollectionHelper;
+use App\DTOs\AddLessonActivityDTO;
+use App\DTOs\RecalcUnitProgressDTO;
+use App\DTOs\UpdateLessonProgressDTO;
+use App\DTOs\UserStreakDTO;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserExerciseAttemptRequest;
 use App\Models\Lesson;
 use App\Models\Unit;
 use App\Models\UserExerciseAttempt;
-use App\Http\Requests\UserExerciseAttemptRequest;
-use Inertia\Inertia;
-use App\Services\StreakService;
 use App\Services\ActivityService;
 use App\Services\LessonProgressService;
-use App\Services\UnitProgressService;
 use App\Services\SayThePhraseService;
+use App\Services\StreakService;
+use App\Services\UnitProgressService;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ExerciseController extends Controller
 {
@@ -25,14 +29,14 @@ class ExerciseController extends Controller
         }
         $lesson->load(['exercises.exerciseType', 'unit']);
 
-        $exercises = CollectionHelper::transform(collect($lesson->exercises), fn($exercise) => [
+        $exercises = CollectionHelper::transform(collect($lesson->exercises), fn ($exercise) => [
             ...$exercise->toArray(),
             'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),
         ]);
 
         return Inertia::render('Student/Exercises/Sequence', [
             'lesson' => $lesson,
-            'exercises' => $exercises
+            'exercises' => $exercises,
         ]);
     }
 
@@ -47,8 +51,9 @@ class ExerciseController extends Controller
                 $nextAttemptNumber = $this->getNextAttemptNumber($userId, $attempt['exercise_id']);
                 $this->saveAttempt($userId, $attempt, $nextAttemptNumber);
             }
-            (new StreakService())->updateStreak($request->user());
+            (new StreakService)->updateStreak(new UserStreakDTO($request->user()));
             $this->updateProgressAndActivities($request, $userId, $attempts);
+
             return $this->redirectAfterBatch($attempts);
         });
     }
@@ -65,6 +70,7 @@ class ExerciseController extends Controller
             $attempt['is_correct'] = ($evaluation['score'] ?? 0) === 100;
             $attempt['score'] = $evaluation['score'] ?? null;
         }
+
         return $attempt;
     }
 
@@ -74,6 +80,7 @@ class ExerciseController extends Controller
             ->where('exercise_id', $exerciseId)
             ->orderByDesc('attempt_number')
             ->first();
+
         return $lastAttempt ? $lastAttempt->attempt_number + 1 : 1;
     }
 
@@ -101,23 +108,25 @@ class ExerciseController extends Controller
 
         if ($lessonId) {
             $lesson = Lesson::with('exercises')->find($lessonId);
-            $lp = app(LessonProgressService::class)->updateFromAttempts($userId, $lesson, $attempts);
+            $lp = app(LessonProgressService::class)->updateFromAttempts(new UpdateLessonProgressDTO($userId, $lesson, $attempts));
             if (($lp['finished'] ?? false) === true) {
-                app(ActivityService::class)->addLessonActivity($request->user(), $lesson);
+                app(ActivityService::class)->addLessonActivity(new AddLessonActivityDTO($request->user(), $lesson));
             }
             if ($unitId) {
-                app(UnitProgressService::class)->recalc($userId, (int) $unitId);
+                app(UnitProgressService::class)->recalc(new RecalcUnitProgressDTO($userId, (int) $unitId));
             }
         }
     }
-    
+
     private function redirectAfterBatch($attempts)
     {
         $unitId = $attempts[0]['unit_id'] ?? null;
         if ($unitId) {
             $unit = Unit::find($unitId);
+
             return redirect()->route('student.units.lessons.index', $unit);
         }
+
         return redirect()->route('student.units.index');
     }
 }

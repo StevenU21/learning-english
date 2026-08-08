@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Exercise;
 use App\Models\ExerciseType;
 use App\Models\Lesson;
+use Illuminate\Database\Seeder;
 
 class ExerciseSeeder extends Seeder
 {

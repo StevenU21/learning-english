@@ -2,18 +2,19 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
 use App\Models\Exercise;
-use App\Models\Unit;
 use App\Models\Lesson;
+use App\Models\Unit;
+use App\Models\User;
 use App\Models\UserExerciseAttempt;
+use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
     public function getStats()
     {
         $counts = $this->getCounts();
+
         return [
             'students' => $counts['students'],
             'exercises' => $counts['exercises'],
@@ -31,6 +32,7 @@ class DashboardService
             'top_exercises_most_attempted' => $this->getTopExercisesMostAttempted(),
         ];
     }
+
     // Top 3 ejercicios más realizados (más intentos)
     public function getTopExercisesMostAttempted()
     {
@@ -62,9 +64,10 @@ class DashboardService
             ->get()
             ->map(function ($row) {
                 $short_last_name = explode(' ', $row->last_name)[0];
+
                 return [
-                    'name' => $row->first_name . ' ' . $short_last_name,
-                    'hours' => round($row->hours, 1)
+                    'name' => $row->first_name.' '.$short_last_name,
+                    'hours' => round($row->hours, 1),
                 ];
             })
             ->toArray();
@@ -83,9 +86,10 @@ class DashboardService
             ->get()
             ->map(function ($row) {
                 $short_last_name = explode(' ', $row->last_name)[0];
+
                 return [
-                    'name' => $row->first_name . ' ' . $short_last_name,
-                    'lessons' => $row->lessons
+                    'name' => $row->first_name.' '.$short_last_name,
+                    'lessons' => $row->lessons,
                 ];
             })
             ->toArray();
@@ -145,9 +149,10 @@ class DashboardService
             ->get()
             ->map(function ($row) {
                 $short_last_name = explode(' ', $row->last_name)[0];
+
                 return [
-                    'name' => $row->first_name . ' ' . $short_last_name,
-                    'accuracy' => $row->accuracy
+                    'name' => $row->first_name.' '.$short_last_name,
+                    'accuracy' => $row->accuracy,
                 ];
             })
             ->toArray();
@@ -173,6 +178,7 @@ class DashboardService
             ->groupBy('user_id')
             ->having('completed_units', '>=', $totalUnits)
             ->count();
+
         return $totalStudents > 0 ? round($studentsWithAllUnits * 100 / $totalStudents, 1) : 0;
     }
 
@@ -182,6 +188,7 @@ class DashboardService
             ->where('status', 'completado')
             ->join('lessons', 'lesson_user_progress.lesson_id', '=', 'lessons.id')
             ->sum('lessons.duration');
+
         return round($totalMinutes / 60, 1);
     }
 
@@ -189,6 +196,7 @@ class DashboardService
     {
         $totalAttempts = UserExerciseAttempt::count();
         $totalCorrect = UserExerciseAttempt::where('is_correct', true)->count();
+
         return $totalAttempts > 0 ? round($totalCorrect * 100 / $totalAttempts, 1) : 0;
     }
 }

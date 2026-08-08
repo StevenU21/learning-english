@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Lesson;
+use App\DTOs\AddLessonActivityDTO;
 use App\Models\LessonActivity;
-use App\Models\ProfileStreak;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ActivityService
 {
-    public function addLessonActivity(User $user, Lesson $lesson): void
+    public function addLessonActivity(AddLessonActivityDTO $dto): void
     {
+        $user = $dto->user;
+        $lesson = $dto->lesson;
         $profile = $user->profile;
-        if (!$profile) {
+        if (! $profile) {
             return;
         }
 

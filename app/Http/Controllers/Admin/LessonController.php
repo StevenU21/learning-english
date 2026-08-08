@@ -6,10 +6,10 @@ use App\Classes\CollectionHelper;
 use App\Classes\PermissionHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LessonRequest;
-use Illuminate\Http\Request;
 use App\Models\Lesson;
 use App\Models\Unit;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -22,7 +22,7 @@ class LessonController extends Controller
         PermissionHelper::getPermissions('lessons');
 
         $lessons = Lesson::with('unit')
-            ->when($request->filled('unit'), fn($q) => $q->where('unit_id', $request->input('unit')))
+            ->when($request->filled('unit'), fn ($q) => $q->where('unit_id', $request->input('unit')))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -39,6 +39,7 @@ class LessonController extends Controller
         });
 
         $units = Unit::all();
+
         return Inertia::render('Admin/Lessons/Index', [
             'lessons' => $lessons,
             'units' => $units,
@@ -52,6 +53,7 @@ class LessonController extends Controller
     {
         $this->authorize('view', $lesson);
         $lesson->load('unit');
+
         return Inertia::render('Admin/Lessons/Show', [
             'lesson' => [
                 'id' => $lesson->id,
@@ -60,15 +62,16 @@ class LessonController extends Controller
                 'description' => $lesson->description,
                 'duration' => (int) $lesson->duration,
                 'unit' => $lesson->unit,
-            ]
+            ],
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', Lesson::class);
+
         return Inertia::render('Admin/Lessons/Create', [
-            'units' => Unit::all()
+            'units' => Unit::all(),
         ]);
     }
 
@@ -76,15 +79,17 @@ class LessonController extends Controller
     {
         $this->authorize('create', Lesson::class);
         Lesson::create($request->validated());
+
         return redirect()->route('lessons.index', $request->query())->with('success', 'Lección creada correctamente');
     }
 
     public function edit(Lesson $lesson)
     {
         $this->authorize('update', $lesson);
+
         return Inertia::render('Admin/Lessons/Edit', [
             'lesson' => $lesson,
-            'units' => Unit::all()
+            'units' => Unit::all(),
         ]);
     }
 
@@ -92,6 +97,7 @@ class LessonController extends Controller
     {
         $this->authorize('update', $lesson);
         $lesson->update($request->validated());
+
         return redirect()->route('lessons.index', $request->query())->with('success', 'Lección actualizada correctamente');
     }
 
@@ -99,6 +105,7 @@ class LessonController extends Controller
     {
         $this->authorize('destroy', $lesson);
         $lesson->delete();
+
         return redirect()->route('lessons.index', request()->query())->with('success', 'Lección eliminada correctamente');
     }
 }

@@ -4,11 +4,11 @@ namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use App\Services\FileService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
@@ -33,7 +33,7 @@ class GoogleController extends Controller
         $lastName = $nameParts->count() > 1 ? $nameParts->slice(1)->implode(' ') : 'Google';
 
         $user = User::where('email', $email)->first();
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'first_name' => $firstName ?: 'Usuario',
                 'last_name' => $lastName ?: 'Google',

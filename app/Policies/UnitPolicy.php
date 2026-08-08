@@ -4,8 +4,8 @@ namespace App\Policies;
 
 use App\Models\Unit;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Traits\HasPermissionCheck;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UnitPolicy
 {

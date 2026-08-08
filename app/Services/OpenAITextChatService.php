@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use RuntimeException;
 
 class OpenAITextChatService
 {
@@ -29,10 +28,10 @@ class OpenAITextChatService
         return function () use ($payload) {
             $apiKey = config('openai.api_key');
             $baseUrl = config('openai.base_uri');
-            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+            if (! is_string($baseUrl) || trim($baseUrl) === '') {
                 $baseUrl = 'https://api.openai.com/v1';
             }
-            $url = rtrim($baseUrl, '/') . '/chat/completions';
+            $url = rtrim($baseUrl, '/').'/chat/completions';
 
             // Limpiar buffers
             if (ob_get_level() > 0) {
@@ -42,29 +41,30 @@ class OpenAITextChatService
             }
 
             // Padding para forzar flush inicial
-            echo ": " . str_repeat(' ', 4096) . "\n\n";
+            echo ': '.str_repeat(' ', 4096)."\n\n";
             flush();
 
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . $apiKey,
+                'Authorization: Bearer '.$apiKey,
             ]);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0); // Disable auto-output
-            curl_setopt($ch, CURLOPT_ENCODING, ""); // Auto-decode gzip
+            curl_setopt($ch, CURLOPT_ENCODING, ''); // Auto-decode gzip
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Fix Laragon SSL issues
-            
+
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $data) {
                 echo $data;
                 flush();
+
                 return strlen($data);
             });
 
             $result = curl_exec($ch);
             if ($result === false) {
-                throw new \Exception('cURL Error: ' . curl_error($ch));
+                throw new \Exception('cURL Error: '.curl_error($ch));
             }
             curl_close($ch);
         };
@@ -73,23 +73,23 @@ class OpenAITextChatService
     protected function sanitizeVocabulary(array $items): array
     {
         return collect($items)
-            ->map(fn($i) => ['term' => trim(Arr::get($i, 'term', '')), 'definition' => trim(Arr::get($i, 'definition', ''))] +
+            ->map(fn ($i) => ['term' => trim(Arr::get($i, 'term', '')), 'definition' => trim(Arr::get($i, 'definition', ''))] +
                 (trim(Arr::get($i, 'example', '')) ? ['example' => trim($i['example'])] : []))
-            ->filter(fn($e) => $e['term'] !== '' && $e['definition'] !== '')
+            ->filter(fn ($e) => $e['term'] !== '' && $e['definition'] !== '')
             ->values()->toArray();
     }
 
     protected function sanitizeStringArray(array $items): array
     {
-        return collect($items)->map(fn($i) => trim((string) $i))->filter()->values()->toArray();
+        return collect($items)->map(fn ($i) => trim((string) $i))->filter()->values()->toArray();
     }
 
     protected function normalizeMessages(array $messages): array
     {
         return collect($messages)
-            ->filter(fn($m) => Str::of(Arr::get($m, 'content', ''))->trim()->isNotEmpty()
+            ->filter(fn ($m) => Str::of(Arr::get($m, 'content', ''))->trim()->isNotEmpty()
                 && in_array(Arr::get($m, 'role'), ['user', 'assistant'], true))
-            ->map(fn($m) => ['role' => Arr::get($m, 'role'), 'content' => trim(Arr::get($m, 'content'))])
+            ->map(fn ($m) => ['role' => Arr::get($m, 'role'), 'content' => trim(Arr::get($m, 'content'))])
             ->values()->toArray();
     }
 
@@ -110,7 +110,8 @@ class OpenAITextChatService
             'intermedio' => 'Use everyday vocabulary with occasional new expressions. Provide quick notes to clarify grammar or vocabulary.',
             'avanzado' => 'Use nuanced language, challenge the student with complex questions, and highlight advanced expressions.',
         ]);
-        return $base . ' ' . ($guidance->get($level, $guidance->get('intermedio')));
+
+        return $base.' '.($guidance->get($level, $guidance->get('intermedio')));
     }
 
     /**
@@ -121,9 +122,10 @@ class OpenAITextChatService
         if (is_array($content)) {
             return $content;
         }
-        if (!is_string($content) || trim($content) === '') {
+        if (! is_string($content) || trim($content) === '') {
             return [];
         }
+
         return json_decode($content, true) ?? [];
     }
 

@@ -12,7 +12,7 @@ class ExerciseType extends Model
 
     protected $fillable = [
         'name',
-        'description'
+        'description',
     ];
 
     public function exercises(): HasMany

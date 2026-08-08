@@ -2,20 +2,21 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\LessonUserProgress;
-use App\Models\UnitUserProgress;
 use App\Models\Lesson;
-use App\Models\Unit;
-use App\Models\UserExerciseAttempt;
 use App\Models\LessonActivity;
+use App\Models\LessonUserProgress;
+use App\Models\Unit;
+use App\Models\UnitUserProgress;
+use App\Models\UserExerciseAttempt;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProfileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)
@@ -26,7 +27,7 @@ class ProfileResource extends JsonResource
         // Lessons stats
         $lessonsWorked = LessonUserProgress::where('user_id', $userId)->count();
         $lessonsCompleted = LessonUserProgress::where('user_id', $userId)
-            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completado'))
+            ->where(fn ($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completado'))
             ->count();
         $avgLessonProgress = (float) (LessonUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $lessonsTotal = (int) Lesson::count();
@@ -34,7 +35,7 @@ class ProfileResource extends JsonResource
         // Units stats
         $unitsWorked = UnitUserProgress::where('user_id', $userId)->count();
         $unitsCompleted = UnitUserProgress::where('user_id', $userId)
-            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completado'))
+            ->where(fn ($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completado'))
             ->count();
         $avgUnitProgress = (float) (UnitUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $unitsTotal = (int) Unit::count();

@@ -2,14 +2,17 @@
 
 namespace App\Services;
 
+use App\DTOs\RecalcUnitProgressDTO;
 use App\Models\Lesson;
 use App\Models\LessonUserProgress;
 use App\Models\UnitUserProgress;
 
 class UnitProgressService
 {
-    public function recalc(int $userId, int $unitId): void
+    public function recalc(RecalcUnitProgressDTO $dto): void
     {
+        $userId = $dto->userId;
+        $unitId = $dto->unitId;
         $lessonIds = Lesson::where('unit_id', $unitId)->pluck('id');
         $userLessonProgress = LessonUserProgress::where('user_id', $userId)
             ->whereIn('lesson_id', $lessonIds)

@@ -4,11 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Profile;
 use App\Models\User;
-use Database\Seeders\ExerciseTypeSeeder;
-use Database\Seeders\LevelSeeder;
-use Database\Seeders\ContentSeeder;
-use Database\Seeders\ExerciseSeeder;
-use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

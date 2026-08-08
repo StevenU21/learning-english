@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Resource;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResourceRequest extends FormRequest
@@ -26,7 +27,7 @@ class ResourceRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -71,16 +72,16 @@ class ResourceRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es obligatorio.',
-            'name.string'   => 'El nombre debe ser una cadena de texto.',
-            'name.min'      => 'El nombre debe tener al menos :min caracteres.',
-            'name.max'      => 'El nombre no debe exceder de :max caracteres.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
             'description.string' => 'La descripción debe ser una cadena de texto.',
             'unit_id.required' => 'La unidad es obligatoria.',
-            'unit_id.exists'   => 'La unidad seleccionada no es válida.',
+            'unit_id.exists' => 'La unidad seleccionada no es válida.',
             'file_path.required' => 'El archivo es obligatorio.',
-            'file_path.file'     => 'El archivo debe ser un archivo válido.',
-            'file_path.mimes'    => 'El archivo debe ser de tipo: :values.',
-            'file_path.max'      => 'El archivo no debe exceder de :max kilobytes.',
+            'file_path.file' => 'El archivo debe ser un archivo válido.',
+            'file_path.mimes' => 'El archivo debe ser de tipo: :values.',
+            'file_path.max' => 'El archivo no debe exceder de :max kilobytes.',
         ];
     }
 }

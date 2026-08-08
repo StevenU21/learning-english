@@ -7,21 +7,21 @@ use App\Traits\HasRouteKeyName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
 class Lesson extends Model
 {
-    use HasFactory, HasSlug, HasResolveModelBinding, HasRouteKeyName;
+    use HasFactory, HasResolveModelBinding, HasRouteKeyName, HasSlug;
 
     protected $fillable = [
         'name',
         'image',
         'duration',
         'description',
-        'unit_id'
+        'unit_id',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -34,13 +34,13 @@ class Lesson extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return $this->image ? asset('storage/' . $this->image) : null;
+        return $this->image ? asset('storage/'.$this->image) : null;
     }
 
     public function setImageAttribute($value)
     {
         if ($value instanceof UploadedFile) {
-            if (!empty($this->attributes['image'])) {
+            if (! empty($this->attributes['image'])) {
                 Storage::disk('public')->delete($this->attributes['image']);
             }
             $this->attributes['image'] = $value->store('lessons', 'public');

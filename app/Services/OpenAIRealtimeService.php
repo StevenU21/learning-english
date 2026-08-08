@@ -4,10 +4,9 @@ namespace App\Services;
 
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 
 class OpenAIRealtimeService
 {
@@ -37,7 +36,7 @@ class OpenAIRealtimeService
             $response = Http::openaiRealtime()
                 ->post('https://api.openai.com/v1/realtime/sessions', $payload);
             $response->throw();
-        } catch (RequestException | ConnectionException $e) {
+        } catch (RequestException|ConnectionException $e) {
             throw $e;
         }
 
@@ -82,6 +81,6 @@ class OpenAIRealtimeService
 
         $selectedGuidance = data_get($levelGuidance, $conversationLevel, $levelGuidance['intermedio']);
 
-        return $baseInstructions . ' ' . $selectedGuidance;
+        return $baseInstructions.' '.$selectedGuidance;
     }
 }

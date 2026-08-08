@@ -8,9 +8,7 @@ use Illuminate\Validation\Rule;
 
 class ListenWriteStrategy implements ExerciseValidationStrategy
 {
-    public function prepareForValidation(Request $request): void
-    {
-    }
+    public function prepareForValidation(Request $request): void {}
 
     public function rules(Request $request): array
     {

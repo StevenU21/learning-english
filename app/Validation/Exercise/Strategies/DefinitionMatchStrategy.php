@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class DefinitionMatchStrategy implements ExerciseValidationStrategy
 {
-    public function prepareForValidation(Request $request): void
-    {
-    }
+    public function prepareForValidation(Request $request): void {}
 
     public function rules(Request $request): array
     {

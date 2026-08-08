@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Unit;
 use App\Models\Lesson;
+use App\Models\LessonUserProgress;
+use App\Models\Unit;
 use App\Models\UnitUserProgress;
 use App\Models\User;
-use App\Models\LessonUserProgress;
 use App\Models\UserExerciseAttempt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,15 +26,15 @@ class ProgressController extends Controller
         $lessons = Lesson::all(['id', 'name', 'unit_id']);
 
         $progress = LessonUserProgress::with(['user.profile', 'lesson.unit'])
-            ->when($unitId, fn($q) => $q->whereIn('lesson_id', Lesson::where('unit_id', $unitId)->pluck('id')))
-            ->when($userId, fn($q) => $q->where('user_id', $userId))
-            ->when($lessonId, fn($q) => $q->where('lesson_id', $lessonId))
-            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($unitId, fn ($q) => $q->whereIn('lesson_id', Lesson::where('unit_id', $unitId)->pluck('id')))
+            ->when($userId, fn ($q) => $q->where('user_id', $userId))
+            ->when($lessonId, fn ($q) => $q->where('lesson_id', $lessonId))
+            ->when($status, fn ($q) => $q->where('status', $status))
             ->latest()
             ->paginate(10)
             ->appends($request->all());
 
-        $progress->getCollection()->transform(fn($item) => tap($item, fn($i) => $i->avatar_url = optional($i->user->profile)->avatar_url));
+        $progress->getCollection()->transform(fn ($item) => tap($item, fn ($i) => $i->avatar_url = optional($i->user->profile)->avatar_url));
 
         return Inertia::render('Admin/Progress/Index', [
             'units' => $units,
@@ -44,7 +44,7 @@ class ProgressController extends Controller
             'selectedUnit' => $unitId,
             'selectedUser' => $userId,
             'selectedLesson' => $lessonId,
-            'selectedStatus' => $status
+            'selectedStatus' => $status,
         ]);
     }
 
@@ -69,7 +69,7 @@ class ProgressController extends Controller
                 \DB::raw('(
                     SELECT exercise_id, MAX(attempt_number) as max_attempt
                     FROM user_exercise_attempts
-                    WHERE user_id = ' . (int) $userId . '
+                    WHERE user_id = '.(int) $userId.'
                     GROUP BY exercise_id
                 ) as latest'),
                 function ($join) {
@@ -89,7 +89,7 @@ class ProgressController extends Controller
             'lessons' => $lessons,
             'lessonProgress' => $lessonProgress,
             'unitProgress' => $unitProgress,
-            'attempts' => $latestAttempts
+            'attempts' => $latestAttempts,
         ]);
     }
 
@@ -100,6 +100,7 @@ class ProgressController extends Controller
             ->where('exercise_id', $exerciseId)
             ->orderBy('attempt_number')
             ->get();
+
         return response()->json($attempts);
     }
 
@@ -127,14 +128,15 @@ class ProgressController extends Controller
             'lessons' => $lessons,
             'lessonProgress' => $lessonProgress,
             'unitProgress' => $unitProgress,
-            'attempts' => $attempts
+            'attempts' => $attempts,
         ];
 
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('reports.student_progress', $data);
+
         return response($pdf->output(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="reporte_progreso_estudiante_' . $user->id . '.pdf"'
+            'Content-Disposition' => 'inline; filename="reporte_progreso_estudiante_'.$user->id.'.pdf"',
         ]);
     }
 }

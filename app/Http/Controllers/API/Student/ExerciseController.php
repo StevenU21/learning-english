@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\API\Student;
 
+use App\DTOs\AddLessonActivityDTO;
+use App\DTOs\RecalcUnitProgressDTO;
+use App\DTOs\UpdateLessonProgressDTO;
+use App\DTOs\UserStreakDTO;
 use App\Http\Controllers\Controller;
-use App\Models\Lesson;
-use App\Http\Resources\ExerciseResource;
 use App\Http\Requests\UserExerciseAttemptRequest;
+use App\Http\Resources\ExerciseResource;
+use App\Models\Lesson;
 use App\Models\UserExerciseAttempt;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Services\StreakService;
 use App\Services\ActivityService;
 use App\Services\LessonProgressService;
+use App\Services\StreakService;
 use App\Services\UnitProgressService;
+use Illuminate\Support\Facades\DB;
 
 class ExerciseController extends Controller
 {
@@ -58,7 +61,7 @@ class ExerciseController extends Controller
                 );
             }
 
-            (new StreakService())->updateStreak($request->user());
+            (new StreakService)->updateStreak(new UserStreakDTO($request->user()));
 
             $lessonId = $attempts[0]['lesson_id'] ?? null;
             $unitId = $attempts[0]['unit_id'] ?? null;
@@ -67,15 +70,15 @@ class ExerciseController extends Controller
             if ($lessonId) {
                 $lessonModel = Lesson::with('exercises')->find($lessonId);
                 $lessonProgress = app(LessonProgressService::class)
-                    ->updateFromAttempts($userId, $lessonModel, $attempts);
+                    ->updateFromAttempts(new UpdateLessonProgressDTO($userId, $lessonModel, $attempts));
 
                 if (($lessonProgress['finished'] ?? false) === true) {
-                    app(ActivityService::class)->addLessonActivity($request->user(), $lessonModel);
+                    app(ActivityService::class)->addLessonActivity(new AddLessonActivityDTO($request->user(), $lessonModel));
                 }
             }
 
             if ($unitId) {
-                app(UnitProgressService::class)->recalc($userId, (int) $unitId);
+                app(UnitProgressService::class)->recalc(new RecalcUnitProgressDTO($userId, (int) $unitId));
             }
 
             return ['lesson_progress' => $lessonProgress];

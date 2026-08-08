@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
-use App\Services\OpenAIRealtimeService;
 use App\Http\Requests\VoiceChatSessionRequest;
+use App\Services\OpenAIRealtimeService;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,15 +32,17 @@ class VoiceChatController extends Controller
             );
         } catch (\Throwable $exception) {
             report($exception);
+
             return response()->json([
                 'message' => 'No se pudo iniciar la sesión de voz con el servicio de IA en este momento.',
             ], 503);
         }
-        if (!($session['client_secret'] ?? null)) {
+        if (! ($session['client_secret'] ?? null)) {
             return response()->json([
                 'message' => 'El servicio de IA no devolvió las credenciales necesarias para iniciar la sesión.',
             ], 502);
         }
+
         return response()->json($session);
     }
 }

@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Classes\PermissionHelper;
+use App\DTOs\ExerciseDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExerciseRequest;
+use App\Models\Exercise;
+use App\Models\ExerciseType;
 use App\Models\Lesson;
+use App\Models\Unit;
+use App\Services\ExerciseService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
-use App\Models\Exercise;
-use App\Models\ExerciseType;
-use App\Models\Unit;
-use App\Services\ExerciseService;
-use App\DTOs\ExerciseDTO;
 
 class ExerciseController extends Controller
 {
@@ -33,21 +33,21 @@ class ExerciseController extends Controller
         $unit = request('unit');
 
         $exercises = Exercise::query()
-            ->when($type, fn($q) => $q->where('exercise_type_id', $type))
-            ->when($lesson, fn($q) => $q->where('lesson_id', $lesson))
-            ->when($unit, fn($q) => $q->whereHas('lesson', fn($q) => $q->where('unit_id', $unit)))
+            ->when($type, fn ($q) => $q->where('exercise_type_id', $type))
+            ->when($lesson, fn ($q) => $q->where('lesson_id', $lesson))
+            ->when($unit, fn ($q) => $q->whereHas('lesson', fn ($q) => $q->where('unit_id', $unit)))
             ->with(['exerciseType', 'lesson'])
             ->latest()
             ->paginate(10)
             ->appends(request()->all());
 
         $typeIds = Exercise::query()
-            ->when($lesson, fn($q) => $q->where('lesson_id', $lesson))
+            ->when($lesson, fn ($q) => $q->where('lesson_id', $lesson))
             ->distinct()->pluck('exercise_type_id')->filter()->values();
         $types = ExerciseType::whereIn('id', $typeIds)->orderBy('name')->get(['id', 'name']);
 
         $lessonIds = Exercise::query()
-            ->when($type, fn($q) => $q->where('exercise_type_id', $type))
+            ->when($type, fn ($q) => $q->where('exercise_type_id', $type))
             ->distinct()->pluck('lesson_id')->filter()->values();
         $lessons = Lesson::whereIn('id', $lessonIds)->orderBy('name')->get(['id', 'name']);
 
@@ -70,6 +70,7 @@ class ExerciseController extends Controller
     public function create()
     {
         $this->authorize('create', Exercise::class);
+
         return Inertia::render('Admin/Exercises/Create', [
             'types' => ExerciseType::all(['id', 'name']),
             'lessons' => Lesson::orderBy('name')->get(['id', 'name', 'unit_id']),
@@ -80,12 +81,12 @@ class ExerciseController extends Controller
     public function store(ExerciseRequest $request): RedirectResponse
     {
         $this->authorize('create', Exercise::class);
-        
+
         try {
             $dto = ExerciseDTO::fromRequest($request);
             $this->exerciseService->createExercise($dto);
         } catch (\Exception $e) {
-            return back()->withErrors(['general' => 'Ocurrió un error al crear el ejercicio: ' . $e->getMessage()])->withInput();
+            return back()->withErrors(['general' => 'Ocurrió un error al crear el ejercicio: '.$e->getMessage()])->withInput();
         }
 
         return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio creado correctamente');
@@ -96,6 +97,7 @@ class ExerciseController extends Controller
         $this->authorize('view', $exercise);
         $exercise->load(['exerciseType', 'lesson']);
         $permissions = PermissionHelper::getPermissions('exercises');
+
         return Inertia::render('Admin/Exercises/Show', [
             'exercise' => $exercise,
             'permissions' => $permissions,
@@ -105,6 +107,7 @@ class ExerciseController extends Controller
     public function edit(Exercise $exercise)
     {
         $this->authorize('update', $exercise);
+
         return Inertia::render('Admin/Exercises/Edit', [
             'exercise' => $exercise,
             'types' => ExerciseType::all(['id', 'name']),
@@ -116,7 +119,7 @@ class ExerciseController extends Controller
     public function update(ExerciseRequest $request, Exercise $exercise): RedirectResponse
     {
         $this->authorize('update', $exercise);
-        
+
         try {
             $dto = ExerciseDTO::fromRequest($request);
             $this->exerciseService->updateExercise($exercise, $dto);
@@ -131,6 +134,7 @@ class ExerciseController extends Controller
     {
         $this->authorize('destroy', $exercise);
         $exercise->delete();
+
         return redirect()->route('exercises.index', request()->query())->with('success', 'Ejercicio eliminado correctamente');
     }
 }

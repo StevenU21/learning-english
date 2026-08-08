@@ -38,13 +38,14 @@ class Profile extends Model
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return null;
         }
         // If avatar is an absolute URL, return it directly
         if (Str::startsWith($this->avatar, ['http://', 'https://'])) {
             return $this->avatar;
         }
-        return asset('storage/' . $this->avatar);
+
+        return asset('storage/'.$this->avatar);
     }
 }

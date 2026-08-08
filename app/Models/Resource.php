@@ -24,6 +24,6 @@ class Resource extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return $this->file_path ? asset('storage/' . $this->file_path) : null;
+        return $this->file_path ? asset('storage/'.$this->file_path) : null;
     }
 }

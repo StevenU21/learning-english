@@ -14,11 +14,11 @@ use App\Policies\LessonPolicy;
 use App\Policies\LevelPolicy;
 use App\Policies\ResourcePolicy;
 use App\Policies\UnitPolicy;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Http;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,16 +49,16 @@ class AppServiceProvider extends ServiceProvider
             if (empty($apiKey)) {
                 abort(503, 'El servicio de IA no está configurado. Contacta al equipo de soporte.');
             }
-            
+
             $baseUrl = config('openai.base_uri');
-            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+            if (! is_string($baseUrl) || trim($baseUrl) === '') {
                 $baseUrl = 'https://api.openai.com/v1';
             }
-            
+
             return Http::withToken($apiKey)
                 ->timeout((float) config('openai.request_timeout', 30))
                 ->connectTimeout((float) config('openai.connect_timeout', 10))
-                ->baseUrl(rtrim($baseUrl, '/') . '/');
+                ->baseUrl(rtrim($baseUrl, '/').'/');
         });
 
         // Define an HTTP macro for OpenAI realtime sessions
@@ -68,17 +68,18 @@ class AppServiceProvider extends ServiceProvider
                 abort(503, 'El servicio de IA no está configurado. Contacta al equipo de soporte.');
             }
             $client = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
+                'Authorization' => 'Bearer '.$apiKey,
                 'Content-Type' => 'application/json',
                 'OpenAI-Beta' => 'realtime=v1',
             ])
                 ->timeout((float) config('openai.request_timeout', 30))
                 ->connectTimeout((float) config('openai.connect_timeout', 10));
             $baseUrl = config('openai.base_uri');
-            if (!is_string($baseUrl) || trim($baseUrl) === '') {
+            if (! is_string($baseUrl) || trim($baseUrl) === '') {
                 $baseUrl = 'https://api.openai.com/v1';
             }
-            $client = $client->baseUrl(rtrim($baseUrl, '/') . '/');
+            $client = $client->baseUrl(rtrim($baseUrl, '/').'/');
+
             return $client;
         });
     }

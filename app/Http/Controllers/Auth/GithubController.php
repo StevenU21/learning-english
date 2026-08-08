@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\FileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use App\Services\FileService;
 
 class GithubController extends Controller
 {
@@ -25,7 +25,7 @@ class GithubController extends Controller
 
         $email = $githubUser->getEmail();
         // GitHub puede no devolver email si es privado; genera uno temporal basado en id
-        if (!$email) {
+        if (! $email) {
             $email = sprintf('%s@users.noreply.github.com', $githubUser->getId());
         }
         $name = $githubUser->getName() ?: ($githubUser->getNickname() ?: '');
@@ -38,7 +38,7 @@ class GithubController extends Controller
         $lastName = $nameParts->count() > 1 ? $nameParts->slice(1)->implode(' ') : 'Github';
 
         $user = User::where('email', $email)->first();
-        if (!$user) {
+        if (! $user) {
             $data = [
                 'first_name' => $firstName ?: 'Usuario',
                 'last_name' => $lastName ?: 'Github',
@@ -68,7 +68,7 @@ class GithubController extends Controller
             if (empty($user->email_verified_at)) {
                 $updates['email_verified_at'] = now();
             }
-            if (!empty($updates)) {
+            if (! empty($updates)) {
                 $user->fill($updates)->save();
             }
         }

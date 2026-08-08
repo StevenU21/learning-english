@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Services;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class SayThePhraseService
@@ -11,19 +12,19 @@ class SayThePhraseService
     public function transcribeAudio(string $audioPath, string $language = 'en'): string
     {
         $stream = Storage::readStream($audioPath);
-        if (!$stream) {
+        if (! $stream) {
             return '';
         }
-        
+
         $response = Http::openai()
             ->attach('file', $stream, basename($audioPath))
             ->post('audio/transcriptions', [
                 'model' => 'whisper-1',
                 'language' => $language,
             ]);
-            
+
         $response->throw();
-        
+
         return Str::of($response->json('text', ''))->trim();
     }
 
@@ -33,9 +34,9 @@ class SayThePhraseService
         $solution = Arr::get($data, 'solution', '');
         $language = Arr::get($data, 'language', 'en');
 
-        if (!$audioPath || !$solution) {
+        if (! $audioPath || ! $solution) {
             return [
-                'error' => 'Faltan datos requeridos: audio_path o solution.'
+                'error' => 'Faltan datos requeridos: audio_path o solution.',
             ];
         }
 
@@ -60,7 +61,7 @@ class SayThePhraseService
         $allMatch = count($expectedWords) === count($userWords);
         if ($allMatch) {
             foreach ($expectedWords as $i => $word) {
-                if (!isset($userWords[$i]) || $userWords[$i] !== $word) {
+                if (! isset($userWords[$i]) || $userWords[$i] !== $word) {
                     $allMatch = false;
                     break;
                 }
@@ -124,6 +125,7 @@ class SayThePhraseService
         foreach ($contractions as $pattern => $replacement) {
             $text = preg_replace($pattern, $replacement, $text);
         }
+
         return $text;
     }
 }

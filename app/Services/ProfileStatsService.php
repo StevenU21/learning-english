@@ -2,29 +2,31 @@
 
 namespace App\Services;
 
+use App\DTOs\ProfileStatsDTO;
 use App\Models\Lesson;
-use App\Models\Unit;
+use App\Models\LessonActivity;
 use App\Models\LessonUserProgress;
+use App\Models\Unit;
 use App\Models\UnitUserProgress;
 use App\Models\UserExerciseAttempt;
-use App\Models\LessonActivity;
 
 class ProfileStatsService
 {
-    public function getStatsForUser($user)
+    public function getStatsForUser(ProfileStatsDTO $dto)
     {
+        $user = $dto->user;
         $userId = $user->id;
 
         $lessonsWorked = LessonUserProgress::where('user_id', $userId)->count();
         $lessonsCompleted = LessonUserProgress::where('user_id', $userId)
-            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
+            ->where(fn ($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
             ->count();
         $avgLessonProgress = (float) (LessonUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $lessonsTotal = (int) Lesson::count();
 
         $unitsWorked = UnitUserProgress::where('user_id', $userId)->count();
         $unitsCompleted = UnitUserProgress::where('user_id', $userId)
-            ->where(fn($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
+            ->where(fn ($q) => $q->where('progress', '>=', 100)->orWhere('status', 'completed'))
             ->count();
         $avgUnitProgress = (float) (UnitUserProgress::where('user_id', $userId)->avg('progress') ?? 0);
         $unitsTotal = (int) Unit::count();

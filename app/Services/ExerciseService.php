@@ -12,7 +12,7 @@ class ExerciseService
     {
         return DB::transaction(function () use ($dto) {
             $data = $dto->toArray();
-            
+
             // Model mutators (setFileAttribute, setFileBAttribute) will handle the actual file upload and storing
             return Exercise::create($data);
         });

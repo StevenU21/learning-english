@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Unit;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,7 +28,7 @@ class UnitRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -68,17 +69,17 @@ class UnitRequest extends FormRequest
     {
         return [
             'name.required' => 'El nombre es obligatorio.',
-            'name.string'   => 'El nombre debe ser una cadena de texto.',
-            'name.min'      => 'El nombre debe tener al menos :min caracteres.',
-            'name.max'      => 'El nombre no debe exceder de :max caracteres.',
-            'name.unique'   => 'El nombre ya está en uso.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.min' => 'El nombre debe tener al menos :min caracteres.',
+            'name.max' => 'El nombre no debe exceder de :max caracteres.',
+            'name.unique' => 'El nombre ya está en uso.',
             'description.string' => 'La descripción debe ser una cadena de texto.',
-            'description.max'    => 'La descripción no debe exceder de :max caracteres.',
-            'image.image'            => 'La imagen debe ser un archivo de imagen válido.',
-            'image.mimes'            => 'La imagen debe ser de tipo: :values.',
-            'image.max'              => 'La imagen no debe exceder de :max kilobytes.',
+            'description.max' => 'La descripción no debe exceder de :max caracteres.',
+            'image.image' => 'La imagen debe ser un archivo de imagen válido.',
+            'image.mimes' => 'La imagen debe ser de tipo: :values.',
+            'image.max' => 'La imagen no debe exceder de :max kilobytes.',
             'level_id.required' => 'El nivel es obligatorio.',
-            'level_id.exists'   => 'El nivel seleccionado no es válido.',
+            'level_id.exists' => 'El nivel seleccionado no es válido.',
         ];
     }
 }

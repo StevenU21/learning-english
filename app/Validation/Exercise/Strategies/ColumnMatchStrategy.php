@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class ColumnMatchStrategy implements ExerciseValidationStrategy
 {
-    public function prepareForValidation(Request $request): void
-    {
-    }
+    public function prepareForValidation(Request $request): void {}
 
     public function rules(Request $request): array
     {

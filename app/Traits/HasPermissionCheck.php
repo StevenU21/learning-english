@@ -17,7 +17,7 @@ trait HasPermissionCheck
 
     public function checkPermission(User $user, string $permission, ?Model $model = null)
     {
-        if (!$user->hasPermissionTo($permission)) {
+        if (! $user->hasPermissionTo($permission)) {
             return $this->handleUnauthorized();
         }
 
@@ -37,6 +37,7 @@ trait HasPermissionCheck
         if (request()->expectsJson()) {
             throw new UnauthorizedException(403);
         }
+
         // Para peticiones web (Inertia)
         return redirect()->back()->withErrors(['permission' => 'No tienes permiso para realizar esta acción.']);
     }

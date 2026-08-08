@@ -2,21 +2,24 @@
 
 namespace App\Services;
 
-use App\Models\Lesson;
+use App\DTOs\UpdateLessonProgressDTO;
 use App\Models\LessonUserProgress;
 
 class LessonProgressService
 {
-    public function updateFromAttempts(int $userId, Lesson $lesson, array $attempts): array
+    public function updateFromAttempts(UpdateLessonProgressDTO $dto): array
     {
-        if (!$lesson->relationLoaded('exercises')) {
+        $userId = $dto->userId;
+        $lesson = $dto->lesson;
+        $attempts = $dto->attempts;
+        if (! $lesson->relationLoaded('exercises')) {
             $lesson->load('exercises');
         }
 
         $total = $lesson->exercises->count();
 
         $attemptsCollection = collect($attempts)
-            ->filter(fn($a) => (int) data_get($a, 'lesson_id') === (int) $lesson->id);
+            ->filter(fn ($a) => (int) data_get($a, 'lesson_id') === (int) $lesson->id);
 
         $correct = $attemptsCollection->where('is_correct', true)->count();
         $attemptedExerciseIds = $attemptsCollection->pluck('exercise_id')->unique()->filter()->values();

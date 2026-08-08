@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -11,7 +11,7 @@ class ProfileUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -71,13 +71,13 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'avatar.image' => 'El :attribute debe ser una imagen.',
             'avatar.mimes' => 'El :attribute debe ser un archivo de tipo: :values.',
-            'avatar.max'   => 'El :attribute no debe pesar más de :max kilobytes.',
+            'avatar.max' => 'El :attribute no debe pesar más de :max kilobytes.',
             'nickname.string' => 'El apodo debe ser una cadena de texto.',
-            'nickname.max'    => 'El apodo no debe exceder de :max caracteres.',
-            'birthdate.date'  => 'La fecha de nacimiento no es válida.',
+            'nickname.max' => 'El apodo no debe exceder de :max caracteres.',
+            'birthdate.date' => 'La fecha de nacimiento no es válida.',
             'daily_goal_minutes.integer' => 'La :attribute debe ser un número entero.',
             'daily_goal_minutes.min' => 'La :attribute no puede ser negativa.',
-            'gender.in'         => 'El género seleccionado no es válido.',
+            'gender.in' => 'El género seleccionado no es válido.',
         ];
     }
 }

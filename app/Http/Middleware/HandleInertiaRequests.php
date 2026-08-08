@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\DTOs\UserStreakDTO;
+use App\Services\StreakService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -47,7 +49,7 @@ class HandleInertiaRequests extends Middleware
                             // Array of permission names
                             'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
                             // Streak days from service (computed)
-                            'streak_days' => app(\App\Services\StreakService::class)->getCurrentStreak($user),
+                            'streak_days' => app(StreakService::class)->getCurrentStreak(new UserStreakDTO($user)),
                         ]
                     )
                     : null,

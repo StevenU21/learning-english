@@ -57,6 +57,7 @@ class PermissionManager
     public function withRoles(array $rolesDefinition): self
     {
         $this->rolesDefinition = collect($rolesDefinition);
+
         return $this;
     }
 
@@ -72,7 +73,7 @@ class PermissionManager
                 $resource = $this->resolveResourceName($key, $value);
                 $actions = $this->determineActions($key, $value);
 
-                $basePermissions = $actions->map(fn($action) => sprintf('%s %s', $action, $resource));
+                $basePermissions = $actions->map(fn ($action) => sprintf('%s %s', $action, $resource));
                 $specials = collect($this->specialPermissions->get($resource, []))->filter();
 
                 return [
@@ -86,7 +87,7 @@ class PermissionManager
 
     public function ensureBuilt(): self
     {
-        if (!$this->built) {
+        if (! $this->built) {
             $this->filteredPermissions = $this->buildPermissions();
             $this->built = true;
         }
@@ -97,7 +98,7 @@ class PermissionManager
     public function get(): array
     {
         return $this->filteredPermissions
-            ->map(fn(Collection $actions) => $actions->all())
+            ->map(fn (Collection $actions) => $actions->all())
             ->toArray();
     }
 
@@ -107,8 +108,8 @@ class PermissionManager
         $clone = clone $this;
 
         $clone->filteredPermissions = $clone->filteredPermissions
-            ->map(fn(Collection $actions) => $actions->reject(fn($permission) => $removals->contains($permission))->values())
-            ->filter(fn(Collection $actions) => $actions->isNotEmpty());
+            ->map(fn (Collection $actions) => $actions->reject(fn ($permission) => $removals->contains($permission))->values())
+            ->filter(fn (Collection $actions) => $actions->isNotEmpty());
 
         return $clone;
     }
@@ -119,8 +120,8 @@ class PermissionManager
         $clone = clone $this;
 
         $clone->filteredPermissions = $clone->filteredPermissions
-            ->map(fn(Collection $actions) => $actions->filter(fn($permission) => $allowed->contains($permission))->values())
-            ->filter(fn(Collection $actions) => $actions->isNotEmpty());
+            ->map(fn (Collection $actions) => $actions->filter(fn ($permission) => $allowed->contains($permission))->values())
+            ->filter(fn (Collection $actions) => $actions->isNotEmpty());
 
         return $clone;
     }
@@ -132,7 +133,7 @@ class PermissionManager
         }
 
         return $this->filteredPermissions
-            ->flatMap(fn(Collection $actions) => $actions)
+            ->flatMap(fn (Collection $actions) => $actions)
             ->unique()
             ->values()
             ->all();
@@ -143,7 +144,7 @@ class PermissionManager
         $catalog = collect($this->all())->flip();
 
         return collect($permissionNames)
-            ->filter(fn($permission) => $catalog->has($permission))
+            ->filter(fn ($permission) => $catalog->has($permission))
             ->unique()
             ->values()
             ->all();
@@ -155,13 +156,13 @@ class PermissionManager
         $catalog = $allPermissions->flip();
 
         return collect($definitions)
-            ->map(fn($definition) => $this->compileRolePermissions($definition, $catalog, $allPermissions)->all())
+            ->map(fn ($definition) => $this->compileRolePermissions($definition, $catalog, $allPermissions)->all())
             ->toArray();
     }
 
     public function sync(?array $rolesDefinition = null): array
     {
-        if (!class_exists(PermissionModel::class) || !class_exists(RoleModel::class)) {
+        if (! class_exists(PermissionModel::class) || ! class_exists(RoleModel::class)) {
             throw new \RuntimeException('Spatie Permission classes not found.');
         }
 
@@ -211,9 +212,9 @@ class PermissionManager
             return collect(self::DEFAULT_ACTIONS);
         }
 
-        $actions = collect(Arr::wrap($value))->filter(fn($action) => $action !== null && $action !== '');
+        $actions = collect(Arr::wrap($value))->filter(fn ($action) => $action !== null && $action !== '');
 
-        return $actions->whenEmpty(fn() => collect(self::DEFAULT_ACTIONS));
+        return $actions->whenEmpty(fn () => collect(self::DEFAULT_ACTIONS));
     }
 
     protected function compileRolePermissions($definition, Collection $catalog, Collection $allPermissions): Collection
@@ -231,13 +232,14 @@ class PermissionManager
                 if ($catalog->has($maybePermission)) {
                     $permissions->push($maybePermission);
                 }
+
                 continue;
             }
 
             $this->normalizeDefinitionItems($items)
-                ->map(fn($item) => $this->expandPermissionName($item, (string) $resource))
-                ->filter(fn($permission) => $catalog->has($permission))
-                ->each(fn($permission) => $permissions->push($permission));
+                ->map(fn ($item) => $this->expandPermissionName($item, (string) $resource))
+                ->filter(fn ($permission) => $catalog->has($permission))
+                ->each(fn ($permission) => $permissions->push($permission));
         }
 
         return $permissions->unique()->values();
@@ -258,7 +260,7 @@ class PermissionManager
 
     protected function normalizeRoleDefinition($definition): Collection
     {
-        if (!is_array($definition)) {
+        if (! is_array($definition)) {
             return collect(['*' => $definition]);
         }
 
@@ -268,12 +270,12 @@ class PermissionManager
     protected function normalizeDefinitionItems($items): Collection
     {
         if (is_array($items)) {
-            return collect($items)->flatten()->filter(fn($item) => $item !== null && $item !== '');
+            return collect($items)->flatten()->filter(fn ($item) => $item !== null && $item !== '');
         }
 
         $parsed = preg_split('/[\s,|]+/', trim((string) $items)) ?: [];
 
-        return collect($parsed)->filter(fn($item) => $item !== null && $item !== '');
+        return collect($parsed)->filter(fn ($item) => $item !== null && $item !== '');
     }
 
     protected function expandPermissionName(string $item, string $resource): string

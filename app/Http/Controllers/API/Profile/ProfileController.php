@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\API\Profile;
 
+use App\DTOs\LocalFileDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProfileResource;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\ProfileResource;
 use App\Services\FileService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
@@ -35,7 +36,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Usuario actualizado exitosamente',
-            'user' => $user
+            'user' => $user,
         ], 200);
     }
 
@@ -58,7 +59,7 @@ class ProfileController extends Controller
         $profile->fill($data);
 
         if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-            $stored = $fileService->updateLocal($profile, 'avatar', $request->file('avatar'));
+            $stored = $fileService->updateLocal(new LocalFileDTO($profile, 'avatar', $request->file('avatar')));
             if (is_string($stored) && $stored !== '') {
                 $profile->avatar = $stored;
             }
@@ -69,7 +70,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'message' => 'Perfil actualizado exitosamente',
-            'profile' => new ProfileResource($user)
+            'profile' => new ProfileResource($user),
         ], 200);
     }
 
@@ -89,7 +90,7 @@ class ProfileController extends Controller
         $user->delete();
 
         return response()->json([
-            'message' => 'Cuenta eliminada exitosamente'
+            'message' => 'Cuenta eliminada exitosamente',
         ], 200);
     }
 }

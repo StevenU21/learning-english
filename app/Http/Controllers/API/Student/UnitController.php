@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API\Student;
 
 use App\Http\Controllers\Controller;
-use App\Models\Unit;
 use App\Http\Resources\UnitResource;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -20,10 +20,10 @@ class UnitController extends Controller
                 if (is_numeric($levelParam)) {
                     $q->where('level_id', $levelParam);
                 } else {
-                    $q->whereHas('level', fn($q) => $q->where('slug', $levelParam));
+                    $q->whereHas('level', fn ($q) => $q->where('slug', $levelParam));
                 }
             })
-            ->with(['level', 'unitUserProgress' => fn($q) => $q->where('user_id', auth()->id())])
+            ->with(['level', 'unitUserProgress' => fn ($q) => $q->where('user_id', auth()->id())])
             ->get();
 
         return UnitResource::collection($units);

@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\API\Student;
 
 use App\Http\Controllers\Controller;
-use App\Models\Resource;
 use App\Http\Resources\ResourceResource;
+use App\Models\Resource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
@@ -16,6 +15,7 @@ class ResourceController extends Controller
     public function index(Request $request, $unitId)
     {
         $resources = Resource::where('unit_id', $unitId)->get();
+
         return ResourceResource::collection($resources);
     }
 
@@ -27,10 +27,11 @@ class ResourceController extends Controller
         if ($resource->unit === null) {
             return response()->json(['message' => 'Recurso no válido'], 404);
         }
-        $path = storage_path('app/public/' . $resource->file_path);
-        if (!file_exists($path)) {
+        $path = storage_path('app/public/'.$resource->file_path);
+        if (! file_exists($path)) {
             return response()->json(['message' => 'Archivo no encontrado'], 404);
         }
+
         return response()->download($path);
     }
 }

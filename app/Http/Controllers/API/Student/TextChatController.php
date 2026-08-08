@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TextChatMessageRequest;
 use App\Services\OpenAITextChatService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TextChatController extends Controller
 {
@@ -55,7 +54,7 @@ class TextChatController extends Controller
     {
         $validated = $request->validated();
 
-        if (!config('openai.api_key')) {
+        if (! config('openai.api_key')) {
             return response()->json([
                 'message' => 'El servicio de IA no está configurado. Contacta al equipo de soporte.',
             ], 503);
@@ -81,6 +80,7 @@ class TextChatController extends Controller
             ]);
         } catch (\Throwable $exception) {
             report($exception);
+
             return response()->json([
                 'message' => 'No se pudo obtener la respuesta de la IA en este momento.',
             ], 503);

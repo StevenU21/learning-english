@@ -13,6 +13,7 @@ class Exercise extends Model
         'file_url',
         'file_b_url',
     ];
+
     protected $fillable = [
         'prompt',
         'file',
@@ -21,7 +22,7 @@ class Exercise extends Model
         'solution',
         'explanation',
         'exercise_type_id',
-        'lesson_id'
+        'lesson_id',
     ];
 
     protected function casts(): array
@@ -34,18 +35,18 @@ class Exercise extends Model
 
     public function getFileUrlAttribute(): ?string
     {
-        return $this->file ? asset('storage/' . $this->file) : null;
+        return $this->file ? asset('storage/'.$this->file) : null;
     }
 
     public function getFileBUrlAttribute(): ?string
     {
-        return $this->file_b ? asset('storage/' . $this->file_b) : null;
+        return $this->file_b ? asset('storage/'.$this->file_b) : null;
     }
 
     public function setFileAttribute($value)
     {
         if ($value instanceof UploadedFile) {
-            if (!empty($this->attributes['file'])) {
+            if (! empty($this->attributes['file'])) {
                 Storage::disk('public')->delete($this->attributes['file']);
             }
             $this->attributes['file'] = $value->store('units', 'public');
@@ -57,7 +58,7 @@ class Exercise extends Model
     public function setFileBAttribute($value)
     {
         if ($value instanceof UploadedFile) {
-            if (!empty($this->attributes['file_b'])) {
+            if (! empty($this->attributes['file_b'])) {
                 Storage::disk('public')->delete($this->attributes['file_b']);
             }
             $this->attributes['file_b'] = $value->store('units', 'public');

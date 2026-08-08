@@ -19,12 +19,12 @@ class UnitController extends Controller
                 if (is_numeric($levelParam)) {
                     $q->where('level_id', $levelParam);
                 } else {
-                    $q->whereHas('level', fn($q) => $q->where('slug', $levelParam));
+                    $q->whereHas('level', fn ($q) => $q->where('slug', $levelParam));
                 }
             })
             ->with([
                 'level',
-                'unitUserProgress' => fn($q) => $q->where('user_id', auth()->id()),
+                'unitUserProgress' => fn ($q) => $q->where('user_id', auth()->id()),
             ])
             ->withSum('lessons as lessons_sum_duration', 'duration')
             ->get()
@@ -46,7 +46,7 @@ class UnitController extends Controller
         return Inertia::render('Student/Units/Index', [
             'levels' => $levels,
             'units' => $units,
-            'selectedLevel' => $levelParam
+            'selectedLevel' => $levelParam,
         ]);
     }
 }

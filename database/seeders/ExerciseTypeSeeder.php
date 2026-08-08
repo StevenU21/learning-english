@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\ExerciseType;
+use Illuminate\Database\Seeder;
 
 class ExerciseTypeSeeder extends Seeder
 {

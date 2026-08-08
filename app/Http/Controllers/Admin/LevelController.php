@@ -16,42 +16,48 @@ class LevelController extends Controller
     {
         $this->authorize('viewAny', Level::class);
         $levels = Level::latest()->paginate(10);
+
         return Inertia::render('Admin/Levels/Index', [
-            'levels' => $levels
+            'levels' => $levels,
         ]);
     }
 
     public function create()
     {
         $this->authorize('create', Level::class);
+
         return Inertia::render('Admin/Levels/Create');
     }
 
     public function store(LevelRequest $request)
     {
         Level::create($request->validated());
+
         return redirect()->route('levels.index')->with('success', 'Nivel creado correctamente');
     }
 
     public function show(Level $level)
     {
         $this->authorize('view', $level);
+
         return Inertia::render('Admin/Levels/Show', [
-            'level' => $level
+            'level' => $level,
         ]);
     }
 
     public function edit(Level $level)
     {
         $this->authorize('update', $level);
+
         return Inertia::render('Admin/Levels/Edit', [
-            'level' => $level
+            'level' => $level,
         ]);
     }
 
     public function update(LevelRequest $request, Level $level)
     {
         $level->update($request->validated());
+
         return redirect()->route('levels.index')->with('success', 'Nivel actualizado correctamente');
     }
 
@@ -59,6 +65,7 @@ class LevelController extends Controller
     {
         $this->authorize('destroy', $level);
         $level->delete();
+
         return redirect()->route('levels.index')->with('success', 'Nivel eliminado correctamente');
     }
 }

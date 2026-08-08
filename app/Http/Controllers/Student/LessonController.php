@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Student;
 
 use App\Classes\CollectionHelper;
 use App\Http\Controllers\Controller;
-
-use App\Models\Unit;
 use App\Models\Lesson;
+use App\Models\Unit;
 use Inertia\Inertia;
 
 class LessonController extends Controller
@@ -15,8 +14,8 @@ class LessonController extends Controller
     {
         $units = Unit::all();
         $unit->load([
-            'lessons.lessonUserProgress' => fn($q) => $q->where('user_id', auth()->id()),
-            'lessons.unit:id,slug'
+            'lessons.lessonUserProgress' => fn ($q) => $q->where('user_id', auth()->id()),
+            'lessons.unit:id,slug',
         ]);
         $lessons = CollectionHelper::transform($unit->lessons, function ($lesson) {
             return [
@@ -37,7 +36,7 @@ class LessonController extends Controller
             'units' => $units,
             'unit' => $unit,
             'lessons' => $lessons,
-            'selectedUnit' => $unit->slug
+            'selectedUnit' => $unit->slug,
         ]);
     }
 
@@ -66,6 +65,7 @@ class LessonController extends Controller
                 'options' => is_array($exercise->options) ? $exercise->options : json_decode($exercise->options, true),
             ];
         });
+
         return Inertia::render('Student/Lessons/Show', [
             'lesson' => $lessonData,
             'exercises' => $exercises,

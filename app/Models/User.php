@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,8 +12,8 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasApiTokens;
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -70,8 +71,6 @@ class User extends Authenticatable
 
     /**
      * Get the user's name attribute for JSON.
-     *
-     * @return string
      */
     public function getNameAttribute(): string
     {
@@ -86,6 +85,7 @@ class User extends Authenticatable
         $firstName = $this->first_name;
         $lastName = $this->last_name;
         $firstLastName = $lastName ? explode(' ', trim($lastName))[0] : '';
+
         return trim("$firstName $firstLastName");
     }
 

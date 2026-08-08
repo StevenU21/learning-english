@@ -2,46 +2,57 @@
 
 namespace App\Services;
 
+use App\DTOs\LocalFileDTO;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class FileService
 {
     protected UploadedFile $file;
 
-    public function storeLocal(Model $model, string $file_attribute, UploadedFile $file, string $folder = null)
+    public function storeLocal(LocalFileDTO $dto)
     {
+        $model = $dto->model;
+        $file_attribute = $dto->fileAttribute;
+        $file = $dto->file;
+        $folder = $dto->folder;
         $modelName = Str::lower(class_basename($model));
-        $folderName = $modelName . '_' . $file_attribute;
+        $folderName = $modelName.'_'.$file_attribute;
+
         return $file->store($folder ?? $folderName, 'public');
     }
 
-    public function updateLocal(Model $model, string $file_attribute, UploadedFile $file, string $folder = null)
+    public function updateLocal(LocalFileDTO $dto)
     {
-        if (!empty($model->$file_attribute)) {
+        $model = $dto->model;
+        $file_attribute = $dto->fileAttribute;
+
+        if (! empty($model->$file_attribute)) {
             Storage::disk('public')->delete($model->$file_attribute);
         }
-        return $this->storeLocal($model, $file_attribute, $file, $folder);
+
+        return $this->storeLocal($dto);
     }
 
     public function deleteLocal(Model $model, $file_attribute)
     {
-        if (!empty($model->$file_attribute)) {
+        if (! empty($model->$file_attribute)) {
             return Storage::disk('public')->delete($model->$file_attribute);
         }
+
         return false;
     }
-    
-    public function storeRemote(Model $model, string $file_attribute, string $url, string $folder = null)
+
+    public function storeRemote(Model $model, string $file_attribute, string $url, ?string $folder = null)
     {
         $this->deleteLocal($model, $file_attribute);
 
         try {
             $response = Http::get($url);
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return false;
             }
             $contents = $response->body();
@@ -52,9 +63,10 @@ class FileService
         $path = parse_url($url, PHP_URL_PATH) ?: '';
         $ext = pathinfo($path, PATHINFO_EXTENSION) ?: 'jpg';
         $modelName = Str::lower(class_basename($model));
-        $baseFolder = $folder ?? ($modelName . '_' . $file_attribute);
-        $filename = $baseFolder . '/' . $model->id . '_' . now()->timestamp . '.' . $ext;
+        $baseFolder = $folder ?? ($modelName.'_'.$file_attribute);
+        $filename = $baseFolder.'/'.$model->id.'_'.now()->timestamp.'.'.$ext;
         Storage::disk('public')->put($filename, $contents);
+
         return $filename;
     }
 }

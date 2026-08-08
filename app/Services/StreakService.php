@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
+use App\DTOs\UserStreakDTO;
 use App\Models\ProfileStreak;
-use App\Models\User;
 use App\Models\UserExerciseAttempt;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class StreakService
 {
-    public function updateStreak(User $user): int
+    public function updateStreak(UserStreakDTO $dto): int
     {
+        $user = $dto->user;
         $profile = $user->profile;
-        if (!$profile) {
+        if (! $profile) {
             return 0;
         }
 
@@ -30,7 +30,7 @@ class StreakService
                 'activity_date' => $today->toDateString(),
             ];
             $exists = ProfileStreak::where($key)->exists();
-            if (!$exists) {
+            if (! $exists) {
                 DB::table('profile_streaks')->insertOrIgnore(array_merge($key, [
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -38,13 +38,14 @@ class StreakService
             }
         }
 
-        return $this->getCurrentStreak($user);
+        return $this->getCurrentStreak($dto);
     }
 
-    public function getCurrentStreak(User $user): int
+    public function getCurrentStreak(UserStreakDTO $dto): int
     {
+        $user = $dto->user;
         $profile = $user->profile;
-        if (!$profile) {
+        if (! $profile) {
             return 0;
         }
 

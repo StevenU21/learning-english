@@ -13,6 +13,7 @@ use Inertia\Inertia;
 class UnitController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $this->authorize('viewAny', Unit::class);
@@ -22,7 +23,7 @@ class UnitController extends Controller
             ->latest()
             ->paginate(10);
 
-        CollectionHelper::transformPaginated($units, function($unit) {
+        CollectionHelper::transformPaginated($units, function ($unit) {
             return [
                 'id' => $unit->id,
                 'name' => $unit->name,
@@ -42,8 +43,9 @@ class UnitController extends Controller
     public function create()
     {
         $this->authorize('create', Unit::class);
+
         return Inertia::render('Admin/Units/Create', [
-            'levels' => Level::all()
+            'levels' => Level::all(),
         ]);
     }
 
@@ -51,6 +53,7 @@ class UnitController extends Controller
     {
         $this->authorize('create', Unit::class);
         Unit::create($request->validated());
+
         return redirect()->route('units.index')->with('success', 'Unidad creada correctamente');
     }
 
@@ -67,23 +70,26 @@ class UnitController extends Controller
             'image_url' => $unit->image_url,
             'level' => $unit->level,
         ];
+
         return Inertia::render('Admin/Units/Show', [
-            'unit' => $unitData
+            'unit' => $unitData,
         ]);
     }
 
     public function edit(Unit $unit)
     {
         $this->authorize('update', $unit);
+
         return Inertia::render('Admin/Units/Edit', [
             'unit' => $unit,
-            'levels' => Level::all()
+            'levels' => Level::all(),
         ]);
     }
 
     public function update(UnitRequest $request, Unit $unit)
     {
         $unit->update($request->validated());
+
         return redirect()->route('units.index')->with('success', 'Unidad actualizada correctamente');
     }
 
@@ -91,6 +97,7 @@ class UnitController extends Controller
     {
         $this->authorize('destroy', $unit);
         $unit->delete();
+
         return redirect()->route('units.index')->with('success', 'Unidad eliminada correctamente');
     }
 }

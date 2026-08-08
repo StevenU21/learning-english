@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ExerciseTypeEnum;
 use App\Models\Exercise;
 use App\Models\ExerciseType;
-use App\Enums\ExerciseTypeEnum;
 use App\Validation\Exercise\ExerciseValidationFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -31,18 +31,18 @@ class ExerciseRequest extends FormRequest
         }
 
         $options = collect($this->input('options', []))
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->filter(fn ($v) => ! is_null($v) && ! (is_string($v) && trim($v) === ''))
             ->values()->all();
         $this->merge(['options' => $options]);
 
         $solution = collect($this->input('solution', []))
-            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->filter(fn ($v) => ! is_null($v) && ! (is_string($v) && trim($v) === ''))
             ->values()->all();
         $this->merge(['solution' => $solution]);
 
         $exerciseType = ExerciseType::find($this->input('exercise_type_id'));
         $typeEnum = $exerciseType ? ExerciseTypeEnum::tryFrom($exerciseType->name) : null;
-        
+
         $strategy = ExerciseValidationFactory::make($typeEnum);
         $strategy->prepareForValidation($this);
     }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\LocalFileDTO;
+use App\DTOs\ProfileStatsDTO;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Services\FileService;
 use App\Services\ProfileStatsService;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,13 +22,15 @@ class ProfileController extends Controller
     public function index(Request $request): Response
     {
         $user = $request->user()->load(['profile']);
-        $stats = app(ProfileStatsService::class)->getStatsForUser($user);
+        $stats = app(ProfileStatsService::class)->getStatsForUser(new ProfileStatsDTO($user));
+
         return Inertia::render('Profile/Index', $stats);
     }
 
     public function edit(Request $request): Response
     {
         $user = $request->user()->load(['profile']);
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
@@ -45,10 +50,11 @@ class ProfileController extends Controller
                 'email',
             ]));
             if ($user->isDirty('email') && $user->email !== $originalEmail) {
-                $user->email_verified_at = $user->email_verified_at instanceof \Carbon\Carbon ? null : $user->email_verified_at;
+                $user->email_verified_at = $user->email_verified_at instanceof Carbon ? null : $user->email_verified_at;
             }
             $user->save();
         }
+
         return Redirect::route('profile.edit');
     }
 
@@ -74,7 +80,7 @@ class ProfileController extends Controller
             $profile->fill($data);
 
             if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-                $stored = $fileService->updateLocal($profile, 'avatar', $request->file('avatar'));
+                $stored = $fileService->updateLocal(new LocalFileDTO($profile, 'avatar', $request->file('avatar')));
                 if (is_string($stored) && $stored !== '') {
                     $profile->avatar = $stored;
                 }
@@ -83,6 +89,7 @@ class ProfileController extends Controller
             $profile->user()->associate($user);
             $profile->save();
         }
+
         return Redirect::route('profile.edit');
     }
 
@@ -97,6 +104,7 @@ class ProfileController extends Controller
         $user->delete();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return Redirect::to('/');
     }
 }
