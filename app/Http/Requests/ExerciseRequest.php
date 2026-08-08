@@ -3,13 +3,13 @@
 namespace App\Http\Requests;
 
 use App\Models\Exercise;
+use App\Models\ExerciseType;
+use App\Enums\ExerciseTypeEnum;
+use App\Validation\Exercise\ExerciseValidationFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ExerciseRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         if ($this->isMethod('post')) {
@@ -22,45 +22,53 @@ class ExerciseRequest extends FormRequest
 
         return false;
     }
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-    public function rules(): array
-    {
-        return [
-            'prompt' => ['required', 'string', 'min:6', 'max:255'],
-            'file' => ['nullable', 'file', 'mimes:mp3,wav,ogg', 'max:20480'],
-            'file_b' => ['nullable', 'file', 'mimes:mp3,wav,ogg', 'max:20480'],
-            'options' => ['array', 'max:4'],
-            'solution' => ['array', 'max:4'],
-            'explanation' => ['nullable', 'string', 'min:6', 'max:255'],
-            'exercise_type_id' => ['required', 'exists:exercise_types,id'],
-            'lesson_id' => ['required', 'exists:lessons,id'],
-        ];
-    }
 
     protected function prepareForValidation(): void
     {
-        // Normalize empty optional fields
         $explanation = $this->input('explanation');
         if (is_string($explanation) && trim($explanation) === '') {
             $this->merge(['explanation' => null]);
         }
+
+        $options = collect($this->input('options', []))
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        $this->merge(['options' => $options]);
+
+        $solution = collect($this->input('solution', []))
+            ->filter(fn($v) => !is_null($v) && !(is_string($v) && trim($v) === ''))
+            ->values()->all();
+        $this->merge(['solution' => $solution]);
+
+        $exerciseType = ExerciseType::find($this->input('exercise_type_id'));
+        $typeEnum = $exerciseType ? ExerciseTypeEnum::tryFrom($exerciseType->name) : null;
+        
+        $strategy = ExerciseValidationFactory::make($typeEnum);
+        $strategy->prepareForValidation($this);
     }
 
-    public function withValidator($validator)
+    public function rules(): array
     {
-        // no-op
+        $baseRules = [
+            'prompt' => ['nullable', 'string', 'min:6', 'max:255'],
+            'file' => ['nullable', 'file', 'mimes:mp3,wav,ogg', 'max:20480'],
+            'file_b' => ['nullable', 'file', 'mimes:mp3,wav,ogg', 'max:20480'],
+            'options' => ['array', 'max:10'],
+            'solution' => ['array'],
+            'explanation' => ['nullable', 'string', 'min:6', 'max:255'],
+            'exercise_type_id' => ['required', 'exists:exercise_types,id'],
+            'lesson_id' => ['required', 'exists:lessons,id'],
+        ];
+
+        $exerciseType = ExerciseType::find($this->input('exercise_type_id'));
+        $typeEnum = $exerciseType ? ExerciseTypeEnum::tryFrom($exerciseType->name) : null;
+
+        $strategy = ExerciseValidationFactory::make($typeEnum);
+        $specificRules = $strategy->rules($this);
+
+        return array_merge($baseRules, $specificRules);
     }
 
-    // Removed verbose file debug logging
-    /**
-     * Custom attribute names.
-     *
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [
@@ -75,35 +83,16 @@ class ExerciseRequest extends FormRequest
         ];
     }
 
-    /**
-     * Custom validation messages in Spanish.
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [
             'prompt.required' => 'El enunciado es obligatorio.',
-            'prompt.string' => 'El enunciado debe ser una cadena de texto.',
-            'prompt.min' => 'El enunciado debe tener al menos :min caracteres.',
-            'prompt.max' => 'El enunciado no debe exceder de :max caracteres.',
-            'options.array' => 'Las opciones deben ser un arreglo.',
-            'options.max' => 'Las opciones no pueden ser más de :max.',
-            'solution.array' => 'La solución debe ser un arreglo.',
-            'solution.max' => 'La solución no puede ser más de :max.',
-            'explanation.string' => 'La explicación debe ser una cadena de texto.',
-            'explanation.min' => 'La explicación debe tener al menos :min caracteres.',
-            'explanation.max' => 'La explicación no debe exceder de :max caracteres.',
-            'exercise_type_id.required' => 'El tipo de ejercicio es obligatorio.',
-            'exercise_type_id.exists' => 'El tipo de ejercicio seleccionado no es válido.',
-            'lesson_id.required' => 'La lección es obligatoria.',
-            'lesson_id.exists' => 'La lección seleccionada no es válida.',
-            'file.file' => 'El archivo debe ser un archivo válido.',
-            'file.mimes' => 'El audio debe ser MP3, WAV u OGG.',
-            'file.max' => 'El audio no debe superar los :max kilobytes.',
-            'file_b.file' => 'El segundo archivo debe ser un archivo válido.',
-            'file_b.mimes' => 'El segundo audio debe ser MP3, WAV u OGG.',
-            'file_b.max' => 'El segundo audio no debe superar los :max kilobytes.',
+            'solution.required' => 'Debes ingresar la solución.',
+            'options.min' => 'Debes agregar al menos :min opciones.',
+            'solution.in' => 'La solución no está entre las opciones permitidas.',
+            'solution.*.in' => 'La solución debe estar entre las opciones.',
+            'file.required' => 'Debes subir un archivo de audio.',
+            'file_b.required' => 'Debes subir el segundo audio.',
         ];
     }
 }

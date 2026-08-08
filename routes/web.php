@@ -1,29 +1,22 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExerciseController;
 use App\Http\Controllers\Admin\ExerciseTypeController;
 use App\Http\Controllers\Admin\LessonController;
 use App\Http\Controllers\Admin\LevelController;
 use App\Http\Controllers\Admin\ProgressController;
 use App\Http\Controllers\Admin\ResourceController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Student\TextChatController;
 use App\Http\Controllers\Admin\UnitController;
 use App\Http\Controllers\Auth\GithubController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Student\SayThePhraseController;
+use App\Http\Controllers\Student\TextChatController;
+use App\Http\Controllers\Student\VoiceChatController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::redirect('/', '/login');
 
 Route::middleware('guest')->group(function () {
     // Google
@@ -34,7 +27,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/auth/github/redirect', [GithubController::class, 'redirect'])->name('auth.github.redirect');
     Route::get('/auth/github/callback', [GithubController::class, 'callback'])->name('auth.github.callback');
 });
-
 
 Route::middleware('auth')->group(function () {
 
@@ -48,21 +40,21 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('student')->name('student.')->group(function () {
-        
-        Route::get('units', [\App\Http\Controllers\Student\UnitController::class, 'index'])->name('units.index');
-        Route::get('units/{unit}/lessons', [\App\Http\Controllers\Student\LessonController::class, 'index'])->name('units.lessons.index');
-        Route::get('units/{unit}/resources', [\App\Http\Controllers\Student\ResourceController::class, 'index'])->name('units.resources.index');
 
-        Route::get('resources/{resource}/download', [\App\Http\Controllers\Student\ResourceController::class, 'download'])->name('resources.download');
+        Route::get('units', [App\Http\Controllers\Student\UnitController::class, 'index'])->name('units.index');
+        Route::get('units/{unit}/lessons', [App\Http\Controllers\Student\LessonController::class, 'index'])->name('units.lessons.index');
+        Route::get('units/{unit}/resources', [App\Http\Controllers\Student\ResourceController::class, 'index'])->name('units.resources.index');
 
-        Route::get('units/{unit}/lessons/{lesson}/exercise', [\App\Http\Controllers\Student\ExerciseController::class, 'showSequence'])->name('units.lessons.sequence');
-        Route::get('units/{unit}/lessons/{lesson}', [\App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
+        Route::get('resources/{resource}/download', [App\Http\Controllers\Student\ResourceController::class, 'download'])->name('resources.download');
 
-        Route::post('exercises/attempts-batch', [\App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
-        Route::post('say-the-phrase/attempt', [\App\Http\Controllers\Student\SayThePhraseController::class, 'attempt'])->name('say-the-phrase.attempt');
+        Route::get('units/{unit}/lessons/{lesson}/exercise', [App\Http\Controllers\Student\ExerciseController::class, 'showSequence'])->name('units.lessons.sequence');
+        Route::get('units/{unit}/lessons/{lesson}', [App\Http\Controllers\Student\LessonController::class, 'show'])->name('units.lessons.show');
 
-        Route::get('voice-chat', [\App\Http\Controllers\Student\VoiceChatController::class, 'index'])->name('voice-chat.index');
-        Route::post('voice-chat/session', [\App\Http\Controllers\Student\VoiceChatController::class, 'createSession'])->name('voice-chat.session');
+        Route::post('exercises/attempts-batch', [App\Http\Controllers\Student\ExerciseController::class, 'storeAttemptsBatch'])->name('exercises.attemptsBatch');
+        Route::post('say-the-phrase/attempt', [SayThePhraseController::class, 'attempt'])->name('say-the-phrase.attempt');
+
+        Route::get('voice-chat', [VoiceChatController::class, 'index'])->name('voice-chat.index');
+        Route::post('voice-chat/session', [VoiceChatController::class, 'createSession'])->name('voice-chat.session');
 
         Route::get('text-chat', [TextChatController::class, 'index'])->name('text-chat.index');
         Route::post('text-chat/message', [TextChatController::class, 'sendMessage'])->name('text-chat.message');
@@ -85,4 +77,4 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
