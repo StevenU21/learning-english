@@ -33,14 +33,12 @@ class OpenAITextChatService
             }
             $url = rtrim($baseUrl, '/').'/chat/completions';
 
-            // Limpiar buffers
             if (ob_get_level() > 0) {
                 while (ob_get_level() > 0) {
                     ob_end_flush();
                 }
             }
 
-            // Padding para forzar flush inicial
             echo ': '.str_repeat(' ', 4096)."\n\n";
             flush();
 
@@ -51,9 +49,9 @@ class OpenAITextChatService
             ]);
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0); // Disable auto-output
-            curl_setopt($ch, CURLOPT_ENCODING, ''); // Auto-decode gzip
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Fix Laragon SSL issues
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $data) {
                 echo $data;
