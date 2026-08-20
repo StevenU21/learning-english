@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,14 +15,22 @@ class DatabaseSeeder extends Seeder
     {
         // Roles, permissions and admin user
         $this->call(RolesAndPermissionsSeeder::class);
-        $adminUser = User::factory()->create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'),
-        ]);
-        Profile::factory()->create(['user_id' => $adminUser->id]);
-        $adminUser->assignRole('admin');
+
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $adminUser->profile()->firstOrCreate([]);
+
+        if (! $adminUser->hasRole('admin')) {
+            $adminUser->assignRole('admin');
+        }
 
         // Core content seeders
         $this->call([
