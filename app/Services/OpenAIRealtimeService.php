@@ -110,7 +110,7 @@ class OpenAIRealtimeService
             'id' => $data['id'] ?? null,
             'model' => $data['model'] ?? $model,
             'voice' => $data['voice'] ?? $voice,
-            'client_secret' => data_get($data, 'client_secret.value'),
+            'client_secret' => data_get($data, 'value', data_get($data, 'client_secret.value')),
             'expires_in' => $expiresInResponse ?? $expiresIn,
             'expires_at' => $expiresAt,
         ];
