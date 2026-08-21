@@ -234,7 +234,9 @@ export const useVoiceChat = (props: VoiceChatProps) => {
             );
 
             if (!sdpResponse.ok) {
-                throw new Error('OpenAI no aceptó la negociación de audio.');
+                const errorText = await sdpResponse.text();
+                console.error('Error WebRTC de OpenAI:', errorText, 'Status:', sdpResponse.status);
+                throw new Error(`OpenAI no aceptó la negociación de audio. Detalle: ${errorText}`);
             }
 
             const answerSdp = await sdpResponse.text();
