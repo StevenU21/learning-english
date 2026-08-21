@@ -9,20 +9,18 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { useVoiceChat, type VoiceChatProps } from './useVoiceChat/index';
 
 const props = withDefaults(defineProps<VoiceChatProps>(), {
-    defaultVoice: 'alloy',
-    defaultModel: 'gpt-realtime-mini-2025-10-06',
+    defaultVoice: 'marin',
+    defaultModel: 'gpt-realtime-2.1',
     sessionDuration: 120,
 });
 
 const voiceOptions = [
-    { value: 'alloy', label: 'Alloy' },
-    { value: 'ash', label: 'Ash' },
-    { value: 'coral', label: 'Coral' },
-    { value: 'echo', label: 'Echo' },
-    { value: 'fable', label: 'Fable' },
-    { value: 'onyx', label: 'Onyx' },
-    { value: 'nova', label: 'Nova' },
+    { value: 'marin', label: 'Marin' },
     { value: 'sage', label: 'Sage' },
+    { value: 'oak', label: 'Oak' },
+    { value: 'juniper', label: 'Juniper' },
+    { value: 'ember', label: 'Ember' },
+    { value: 'orion', label: 'Orion' },
     { value: 'shimmer', label: 'Shimmer' },
 ] satisfies Array<{ value: string; label: string }>;
 

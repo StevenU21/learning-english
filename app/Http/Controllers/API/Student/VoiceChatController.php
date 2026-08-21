@@ -15,8 +15,8 @@ class VoiceChatController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'defaultVoice' => config('openai.realtime_voice', 'alloy'),
-            'defaultModel' => config('openai.realtime_model', 'gpt-realtime-mini-2025-10-06'),
+            'defaultVoice' => config('openai.realtime_voice', 'marin'),
+            'defaultModel' => config('openai.realtime_model', 'gpt-realtime-2.1'),
             'sessionDuration' => config('openai.realtime_session_duration', 120),
         ], 200);
     }
@@ -35,6 +35,7 @@ class VoiceChatController extends Controller
                 model: $validated['model'] ?? null,
                 expiresIn: $validated['expires_in'] ?? config('openai.realtime_session_duration', 120),
                 conversationLevel: $validated['level'] ?? null,
+                userId: (string) $request->user()->id,
             );
         } catch (\Throwable $exception) {
             report($exception);
