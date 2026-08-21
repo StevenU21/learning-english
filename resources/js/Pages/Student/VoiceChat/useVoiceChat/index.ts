@@ -221,7 +221,7 @@ export const useVoiceChat = (props: VoiceChatProps) => {
             await connection.setLocalDescription(offer);
 
             const sdpResponse = await fetch(
-                `https://api.openai.com/v1/realtime?model=${encodeURIComponent(sessionData.model)}`,
+                `https://api.openai.com/v1/realtime/calls`,
                 {
                     method: 'POST',
                     headers: {
