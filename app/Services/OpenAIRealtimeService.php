@@ -25,9 +25,13 @@ class OpenAIRealtimeService
 
         $sessionConfig = [
             'model' => $model,
-            'voice' => $voice,
-            'modalities' => ['text', 'audio'],
             'type' => 'realtime',
+            'modalities' => ['text', 'audio'],
+            'audio' => [
+                'output' => [
+                    'voice' => $voice,
+                ],
+            ],
         ];
         if ($instructions) {
             $sessionConfig['instructions'] = $instructions;
