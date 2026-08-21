@@ -53,11 +53,13 @@ class TextChatController extends Controller
         }
 
         try {
-            $streamCallback = $chatService->generateStreamedReply(
+            $reply = $chatService->generateReply(
                 $validated['messages'],
                 $validated['level'] ?? null,
                 data_get($validated, 'temperature'),
             );
+
+            return response()->json($reply);
         } catch (\Throwable $exception) {
             report($exception);
 
@@ -65,17 +67,5 @@ class TextChatController extends Controller
                 'message' => 'No se pudo obtener la respuesta de la IA en este momento.',
             ], 503);
         }
-
-        if (function_exists('debugbar') && app()->bound('debugbar')) {
-            app('debugbar')->disable();
-        }
-
-        return response()->stream($streamCallback, 200, [
-            'Content-Type' => 'text/event-stream',
-            'Cache-Control' => 'no-cache, must-revalidate',
-            'Connection' => 'close',
-            'X-Accel-Buffering' => 'no',
-            'Content-Encoding' => 'none',
-        ]);
     }
 }

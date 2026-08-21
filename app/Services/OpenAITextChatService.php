@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class OpenAITextChatService
 {
-    public function generateStreamedReply(array $messages, ?string $level = null, ?float $temperature = null): \Closure
+    public function generateReply(array $messages, ?string $level = null, ?float $temperature = null): array
     {
         $normalizedMessages = $this->normalizeMessages($messages);
 
@@ -21,51 +21,25 @@ class OpenAITextChatService
         $payload = [
             'model' => $model,
             'temperature' => max(0, min($temperature, 2)),
-            'stream' => true,
+            'response_format' => ['type' => 'json_object'],
             'messages' => array_merge([['role' => 'system', 'content' => $systemPrompt]], $normalizedMessages),
         ];
 
-        return function () use ($payload) {
-            $apiKey = config('openai.api_key');
-            $baseUrl = config('openai.base_uri');
-            if (! is_string($baseUrl) || trim($baseUrl) === '') {
-                $baseUrl = 'https://api.openai.com/v1';
-            }
-            $url = rtrim($baseUrl, '/').'/chat/completions';
+        $response = $this->client()->post('chat/completions', $payload);
 
-            if (ob_get_level() > 0) {
-                while (ob_get_level() > 0) {
-                    ob_end_flush();
-                }
-            }
+        if ($response->failed()) {
+            throw new \Exception('API Error: '.$response->body());
+        }
 
-            echo ': '.str_repeat(' ', 4096)."\n\n";
-            flush();
+        $content = $response->json('choices.0.message.content', '');
+        $data = $this->decodeContent($content);
 
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Authorization: Bearer '.$apiKey,
-            ]);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
-            curl_setopt($ch, CURLOPT_ENCODING, '');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-            curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $data) {
-                echo $data;
-                flush();
-
-                return strlen($data);
-            });
-
-            $result = curl_exec($ch);
-            if ($result === false) {
-                throw new \Exception('cURL Error: '.curl_error($ch));
-            }
-            curl_close($ch);
-        };
+        return [
+            'content' => trim(Arr::get($data, 'content', '')),
+            'vocabulary' => $this->sanitizeVocabulary(Arr::get($data, 'vocabulary', [])),
+            'grammarTips' => $this->sanitizeStringArray(Arr::get($data, 'grammarTips', [])),
+            'followUpQuestions' => $this->sanitizeStringArray(Arr::get($data, 'followUpQuestions', [])),
+        ];
     }
 
     protected function sanitizeVocabulary(array $items): array
@@ -96,11 +70,11 @@ class OpenAITextChatService
         $base = collect([
             'You are Nativo, a friendly AI tutor guiding Spanish-speaking students as they practice conversational English.',
             'Speak directly to the student in English, keep a warm and encouraging tone, give concise explanations, and motivate them to expand on their ideas.',
-            'Do not use JSON formatting. Respond with plain text, using Markdown to structure your response.',
-            'First, write your conversational reply to the student in plain English (using "you" statements to address them directly).',
-            'Then, add a "### Vocabulary" section with 1 or 2 new words relevant to the conversation.',
-            'Then, add a "### Grammar" section with 1 short, actionable grammar tip starting with "Try", "Remember", or "Consider".',
-            'Then, add a "### Follow-up" section with 1 short example reply the student could use next.',
+            'You must respond in JSON format with the following keys:',
+            '- "content": Your conversational reply to the student in plain English (using "you" statements).',
+            '- "vocabulary": An array of 1 or 2 new words relevant to the conversation. Each object must have "term", "definition", and optionally "example".',
+            '- "grammarTips": An array with 1 short, actionable grammar tip starting with "Try", "Remember", or "Consider".',
+            '- "followUpQuestions": An array with 1 short example reply the student could use next.',
             'Base everything on the student\'s most recent message. Be concise and keep the response fast.',
         ])->implode(' ');
         $guidance = collect([

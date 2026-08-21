@@ -92,62 +92,13 @@ export const createSendMessage = ({
                 throw new Error(message);
             }
 
-            const reader = response.body?.getReader();
-            if (!reader) {
-                throw new Error('Stream not available');
-            }
+            const data = await response.json();
 
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-
-            assistantMessage.content = '';
-            assistantMessage.streaming = true;
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split('\n');
-                
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    if (line.trim() === '') continue;
-                    if (line.startsWith('data: ')) {
-                        const dataStr = line.substring(6).trim();
-                        if (dataStr === '[DONE]') {
-                            continue;
-                        }
-                        try {
-                            const data = JSON.parse(dataStr);
-                            const content = data.choices?.[0]?.delta?.content;
-                            if (content) {
-                                assistantMessage.content += content;
-                                messages.value = [...messages.value];
-                            }
-                        } catch (e) {
-                            // ignore JSON parse error on incomplete chunks
-                        }
-                    }
-                }
-            }
-            
-            // process any remaining buffer just in case
-            if (buffer.startsWith('data: ') && buffer.trim() !== 'data: [DONE]') {
-                try {
-                    const data = JSON.parse(buffer.substring(6).trim());
-                    const content = data.choices?.[0]?.delta?.content;
-                    if (content) assistantMessage.content += content;
-                } catch (e) {
-                    // ignore
-                }
-            }
-
+            assistantMessage.content = data.content || '';
+            assistantMessage.vocabulary = data.vocabulary || [];
+            assistantMessage.grammarTips = data.grammarTips || [];
+            assistantMessage.followUpQuestions = data.followUpQuestions || [];
             assistantMessage.streaming = false;
-            assistantMessage.vocabulary = [];
-            assistantMessage.grammarTips = [];
-            assistantMessage.followUpQuestions = [];
             errorMessage.value = '';
         } catch (error) {
             console.error(error);
