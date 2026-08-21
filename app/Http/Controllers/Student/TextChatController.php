@@ -46,12 +46,6 @@ class TextChatController extends Controller
     {
         $validated = $request->validated();
 
-        if (! config('openai.api_key')) {
-            return response()->json([
-                'message' => 'El servicio de IA no está configurado. Contacta al equipo de soporte.',
-            ], 503);
-        }
-
         try {
             $reply = $chatService->generateReply(
                 $validated['messages'],

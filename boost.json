@@ -2,7 +2,7 @@
     "agents": [
         "antigravity"
     ],
-    "cloud": false,
+    "cloud": true,
     "guidelines": true,
     "mcp": true,
     "nightwatch": false,
@@ -11,6 +11,8 @@
     ],
     "sail": false,
     "skills": [
+        "infer-conventions",
+        "ai-sdk-development",
         "laravel-best-practices",
         "socialite-development",
         "inertia-vue-development",
