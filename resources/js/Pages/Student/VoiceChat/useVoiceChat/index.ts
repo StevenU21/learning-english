@@ -221,13 +221,12 @@ export const useVoiceChat = (props: VoiceChatProps) => {
             await connection.setLocalDescription(offer);
 
             const sdpResponse = await fetch(
-                `https://api.openai.com/v1/realtime/calls`,
+                `https://api.openai.com/v1/realtime`,
                 {
                     method: 'POST',
                     headers: {
                         Authorization: `Bearer ${sessionData.client_secret}`,
                         'Content-Type': 'application/sdp',
-                        'OpenAI-Beta': 'realtime=v1',
                     },
                     body: offer.sdp ?? '',
                 },
