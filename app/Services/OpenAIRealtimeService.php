@@ -23,18 +23,22 @@ class OpenAIRealtimeService
 
         $instructions = $instructions ?? $this->buildInstructions($conversationLevel);
 
-        $payload = [
-            'model' => $model,
+        $sessionConfig = [
             'voice' => $voice,
             'modalities' => ['text', 'audio'],
         ];
         if ($instructions) {
-            $payload['instructions'] = $instructions;
+            $sessionConfig['instructions'] = $instructions;
         }
+
+        $payload = [
+            'model' => $model,
+            'session' => $sessionConfig,
+        ];
 
         try {
             $response = Http::withToken(config('ai.providers.openai.key'))
-                ->post('https://api.openai.com/v1/realtime/sessions', $payload);
+                ->post('https://api.openai.com/v1/realtime/client_secrets', $payload);
             $response->throw();
         } catch (RequestException|ConnectionException $e) {
             throw $e;
