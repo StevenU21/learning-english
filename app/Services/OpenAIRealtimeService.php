@@ -24,6 +24,7 @@ class OpenAIRealtimeService
         $instructions = $instructions ?? $this->buildInstructions($conversationLevel);
 
         $sessionConfig = [
+            'model' => $model,
             'voice' => $voice,
             'modalities' => ['text', 'audio'],
         ];
@@ -32,7 +33,6 @@ class OpenAIRealtimeService
         }
 
         $payload = [
-            'model' => $model,
             'session' => $sessionConfig,
         ];
 
