@@ -33,7 +33,7 @@ class OpenAIRealtimeService
         }
 
         try {
-            $response = Http::openaiRealtime()
+            $response = Http::withToken(config('ai.providers.openai.key'))
                 ->post('https://api.openai.com/v1/realtime/sessions', $payload);
             $response->throw();
         } catch (RequestException|ConnectionException $e) {
