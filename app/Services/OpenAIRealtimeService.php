@@ -19,10 +19,9 @@ class OpenAIRealtimeService
 
     // Modelos soportados
     private const SUPPORTED_MODELS = [
-        'gpt-4o-realtime-preview-2024-12-17',
-        'gpt-4o-mini-realtime-preview-2024-12-17',
-        'gpt-4o-realtime-preview',
-        'gpt-4o-mini-realtime-preview',
+        'gpt-realtime-2.1',
+        'gpt-realtime-translate',
+        'gpt-live-transcribe',
     ];
 
     public function createVoiceSession(
@@ -34,7 +33,7 @@ class OpenAIRealtimeService
         ?string $userId = null
     ): array {
         // Validar y asignar modelo
-        $model = $model ?? Config::get('openai.realtime_model', 'gpt-4o-mini-realtime-preview-2024-12-17');
+        $model = $model ?? Config::get('openai.realtime_model', 'gpt-realtime-2.1');
         if (!in_array($model, self::SUPPORTED_MODELS)) {
             throw new InvalidArgumentException(
                 "Modelo no soportado: {$model}. Use uno de: " . implode(', ', self::SUPPORTED_MODELS)
@@ -56,14 +55,23 @@ class OpenAIRealtimeService
         $instructions = $instructions ?? $this->buildInstructions($conversationLevel);
 
         // Configuración de sesión según documentación oficial
-        $payload = [
+        $sessionConfig = [
+            'type' => 'realtime',
             'model' => $model,
-            'voice' => $voice,
+            'audio' => [
+                'output' => [
+                    'voice' => $voice,
+                ],
+            ],
         ];
 
         if ($instructions) {
-            $payload['instructions'] = $instructions;
+            $sessionConfig['instructions'] = $instructions;
         }
+
+        $payload = [
+            'session' => $sessionConfig,
+        ];
 
         try {
             $headers = [
@@ -76,7 +84,7 @@ class OpenAIRealtimeService
             }
 
             $response = Http::withHeaders($headers)
-                ->post('https://api.openai.com/v1/realtime/sessions', $payload);
+                ->post('https://api.openai.com/v1/realtime/client_secrets', $payload);
 
             $response->throw();
         } catch (RequestException|ConnectionException $e) {
